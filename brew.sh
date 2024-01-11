@@ -2,8 +2,8 @@
 
 # Check operating system
 if [ "$(uname)" != "Darwin" ] ; then
-	echo "Not macOS!"
-	exit 1
+  echo "Not macOS!"
+  exit 1
 fi
 
 function login_check {

@@ -9,6 +9,7 @@ brew "gnu-sed"
 brew "gnu-tar"
 brew "grep"
 brew "gzip"
+brew "iproute2mac"
 
 # utility commands
 brew "git"
