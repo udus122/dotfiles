@@ -24,10 +24,11 @@ brew "fzf"
 brew "ghq"
 brew "gh"
 brew "direnv"
-brew "awscli"
-
-brew "hashicorp/tap/terraform"
 brew "docker", link: false
+brew "kubectl"
+brew "kind"
+brew "hashicorp/tap/terraform"
+brew "awscli"
 
 cask "visual-studio-code"
 cask "karabiner-elements"
