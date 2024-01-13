@@ -1,0 +1,11 @@
+[tools]
+python = "latest"
+go = "latest"
+kubectl = "latest"
+kind = "0.19.0"
+argo = "latest"
+terraform = "latest"
+awscli = "latest"
+gcloud = "latest"
+java = "latest"
+node = "latest"
