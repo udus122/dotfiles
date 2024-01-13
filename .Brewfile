@@ -25,9 +25,13 @@ brew "unzip"
 brew "fzf"
 brew "ghq"
 brew "gh"
+brew "mise"
+
+# zsh customise
+brew "zsh-completions"
+brew "zsh-autosuggestions"
 brew "olets/tap/zsh-abbr"
 brew "starship"
-brew "mise"
 
 # fonts
 cask "font-hack-nerd-font"
