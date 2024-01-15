@@ -22,14 +22,16 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 # abbr: https://github.com/olets/zsh-abbr
 source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh
-abbr -S g='git'
-abbr -S k='kubectl'
-abbr -S l='ls -FG'
-abbr -S la='ls -FGa'
-abbr -S ll='ls -FGl'
-abbr -S lla='ls -FGla'
-abbr -S r="mise run --"
-abbr -S x="mise exec --"
+abbr -S g='git' > /dev/null
+abbr -S t="tmux" > /dev/null
+abbr -S k='kubectl' > /dev/null
+abbr -S l='ls -FG' > /dev/null
+abbr -S la='ls -FGa' > /dev/null
+abbr -S ll='ls -FGl' > /dev/null
+abbr -S lla='ls -FGla' > /dev/null
+abbr -S r="mise run --" > /dev/null
+abbr -S x="mise exec --" > /dev/null
+abbr -S reload="exec -l $SHELL" > /dev/null
 
 # path
 ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
@@ -95,3 +97,22 @@ eval "$(starship init zsh)"
 # Warp
 # For zsh subshells, add to ~/.zshrc.
 printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "zsh"}}\x9c'
+
+# Automatic startup of tmux
+if [[ ! -n $TMUX && $- == *l* ]]; then
+  # get the IDs
+  ID=$(tmux list-sessions)
+  if [[ -z "$ID" ]]; then
+    tmux new-session
+  fi
+  create_new_session="Create New Session"
+  ID="$ID\n${create_new_session}:"
+  ID="`echo $ID | fzf | cut -d: -f1`"
+  if [[ "$ID" = "${create_new_session}" ]]; then
+    tmux new-session
+  elif [[ -n "$ID" ]]; then
+    tmux attach-session -t "$ID"
+  else
+    :  # Start terminal normally
+  fi
+fi
