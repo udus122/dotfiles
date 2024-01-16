@@ -72,9 +72,11 @@ HISTFILE=$HOME/.zsh-history
 # メモリに保存される履歴の数
 HISTSIZE=10000
 ## ファイルに保存する履歴の数
-SAVEHIST=10000
+SAVEHIST=100000
 ## 履歴をインクリメンタルに追加
-setopt inc_append_history
+# setopt inc_append_history  # share_historyと同時に設定してはいけないため、コメントアウト
+## コマンド履歴ファイルを共有する
+setopt share_history
 ## historyに追加されるコマンド行が古いものと同じなら古いものを削除
 setopt hist_ignore_all_dups
 ## ヒストリを呼び出してから実行する間に一旦編集可能
