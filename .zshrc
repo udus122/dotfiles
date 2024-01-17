@@ -39,10 +39,8 @@ abbr -S t="tmux" > /dev/null
 abbr -S k='kubectl' > /dev/null
 abbr -S kg='kubectl get' > /dev/null
 abbr -S kcuc='kubectl config use-context' > /dev/null
-abbr -S kcsc='kubectl config set-context' > /dev/null
-abbr -S kcdc='kubectl config delete-context' > /dev/null
-abbr -S kccc='kubectl config current-context' > /dev/null
 abbr -S kcgc='kubectl config get-contexts' > /dev/null
+abbr -S kcv='kubectl config view' > /dev/null
 abbr -S l='ls -FG' > /dev/null
 abbr -S la='ls -FGa' > /dev/null
 abbr -S ll='ls -FGl' > /dev/null
@@ -105,6 +103,10 @@ setopt pushd_ignore_dups
 
 # starship
 eval "$(starship init zsh)"
+
+# gcloud
+source "$(mise where gcloud)/path.zsh.inc"
+source "$(mise where gcloud)/completion.zsh.inc"
 
 # Warp
 # For zsh subshells, add to ~/.zshrc.
