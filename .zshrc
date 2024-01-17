@@ -1,8 +1,18 @@
+# path
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="/Users/yusuda/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+# XDG
+export XDG_CONFIG_HOME="$HOME/.config"
+# dotfiles
+export DOTFILES="$(ghq root)/github.com/udus122/dotfiles"
+# Java
+# export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 # mise
-eval "$(mise activate zsh)"
 export PATH="$HOME/.local/share/mise/shims:$PATH"
+eval "$(mise activate zsh)"
 
 # completion
 if type brew &>/dev/null; then
@@ -20,11 +30,19 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
+alias vi='nvim'
+alias vim='nvim'
 # abbr: https://github.com/olets/zsh-abbr
 source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh
 abbr -S g='git' > /dev/null
 abbr -S t="tmux" > /dev/null
 abbr -S k='kubectl' > /dev/null
+abbr -S kg='kubectl get' > /dev/null
+abbr -S kcuc='kubectl config use-context' > /dev/null
+abbr -S kcsc='kubectl config set-context' > /dev/null
+abbr -S kcdc='kubectl config delete-context' > /dev/null
+abbr -S kccc='kubectl config current-context' > /dev/null
+abbr -S kcgc='kubectl config get-contexts' > /dev/null
 abbr -S l='ls -FG' > /dev/null
 abbr -S la='ls -FGa' > /dev/null
 abbr -S ll='ls -FGl' > /dev/null
@@ -32,15 +50,7 @@ abbr -S lla='ls -FGla' > /dev/null
 abbr -S r="mise run --" > /dev/null
 abbr -S x="mise exec --" > /dev/null
 abbr -S reload="exec -l $SHELL" > /dev/null
-
-# path
-### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
-export PATH="/Users/yusuda/.rd/bin:$PATH"
-### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
-# XDG
-export XDG_CONFIG_HOME="$HOME/.config"
-# Java
-# export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+abbr -S edot="${EDITOR:-vim} $DOTFILES" > /dev/null
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
