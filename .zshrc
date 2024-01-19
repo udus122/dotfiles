@@ -108,6 +108,9 @@ eval "$(starship init zsh)"
 source "$(mise where gcloud)/path.zsh.inc"
 source "$(mise where gcloud)/completion.zsh.inc"
 
+# awscli
+complete -C "$(mise where awscli)/aws_completer" aws
+
 # Warp
 # For zsh subshells, add to ~/.zshrc.
 printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "zsh"}}\x9c'
