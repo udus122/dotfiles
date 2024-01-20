@@ -26,6 +26,7 @@ brew "fzf"
 brew "ghq"
 brew "gh"
 brew "mise"
+brew "pipx"
 
 # zsh customise
 brew "zsh-completions"
