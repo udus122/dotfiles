@@ -2,14 +2,12 @@
 ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
 export PATH="/Users/yusuda/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
 # XDG
 export XDG_CONFIG_HOME="$HOME/.config"
 # dotfiles
 export DOTFILES="$(ghq root)/github.com/udus122/dotfiles"
-# Java
-# export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
-# homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
 # mise
 export PATH="$HOME/.local/share/mise/shims:$PATH"
 eval "$(mise activate zsh)"
