@@ -12,6 +12,14 @@ export DOTFILES="$(ghq root)/github.com/udus122/dotfiles"
 export PATH="$HOME/.local/share/mise/shims:$PATH"
 eval "$(mise activate zsh)"
 
+# linux compatible commands
+# https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
+if type brew &> /dev/null; then
+    BREW_PREFIX=$(brew --prefix)
+    for bindir in "${BREW_PREFIX}/opt/"*"/libexec/gnubin"; do export PATH=$bindir:$PATH; done
+    for mandir in "${BREW_PREFIX}/opt/"*"/libexec/gnuman"; do export MANPATH=$mandir:$MANPATH; done
+fi
+
 # completion
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
@@ -115,18 +123,20 @@ printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "zsh"}}\x9c'
 
 # Automatic startup of tmux
 if [[ ! -n $TMUX && $- == *l* ]]; then
-  # get the IDs
-  ID=$(tmux list-sessions)
-  if [[ -z "$ID" ]]; then
-    tmux new-session
+  # Retrieves the terminal being used, stored in the TERM_PROGRAM variable or as a fallback, the TERM variable
+  TP=${TERM_PROGRAM:-$TERM}
+  # get the session id
+  SS=$(tmux list-sessions)
+  if [[ -z "$SS" ]]; then
+    tmux new-session -t $TP
   fi
   create_new_session="Create New Session"
-  ID="$ID\n${create_new_session}:"
-  ID="`echo $ID | fzf | cut -d: -f1`"
-  if [[ "$ID" = "${create_new_session}" ]]; then
-    tmux new-session
-  elif [[ -n "$ID" ]]; then
-    tmux attach-session -t "$ID"
+  SS="$SS\n${create_new_session}:"
+  SS="`echo $SS | fzf | cut -d: -f1`"
+  if [[ "$SS" = "${create_new_session}" ]]; then
+    tmux new-session -t $TP
+  elif [[ -n "$SS" ]]; then
+    tmux attach-session -t "$SS"
   else
     :  # Start terminal normally
   fi
