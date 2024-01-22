@@ -128,15 +128,15 @@ if [[ ! -n $TMUX && $- == *l* ]]; then
   # get the session id
   SS=$(tmux list-sessions)
   if [[ -z "$SS" ]]; then
-    tmux new-session -t $TP
+    tmux new-session -s $TP
   fi
   create_new_session="Create New Session"
   SS="$SS\n${create_new_session}:"
   SS="`echo $SS | fzf | cut -d: -f1`"
   if [[ "$SS" = "${create_new_session}" ]]; then
-    tmux new-session -t $TP
+    tmux new-session -s $TP
   elif [[ -n "$SS" ]]; then
-    tmux attach-session -t "$SS"
+    tmux attach-session -s "$SS"
   else
     :  # Start terminal normally
   fi
