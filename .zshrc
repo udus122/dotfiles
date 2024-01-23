@@ -56,6 +56,11 @@ abbr -S x="mise exec --" > /dev/null
 abbr -S reload="exec -l $SHELL" > /dev/null
 abbr -S edot="${EDITOR:-vim} $DOTFILES" > /dev/null
 
+# Function to perform simple arithmetic operations using awk
+function calc() {
+  awk "BEGIN {print $*}"
+}
+
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
