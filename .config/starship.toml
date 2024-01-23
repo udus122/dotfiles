@@ -7,7 +7,6 @@ truncation_symbol = '…/'
 
 [kubernetes]
 disabled = false
-detect_files = ['k8s']
 
 [shell]
 disabled = false
