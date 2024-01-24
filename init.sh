@@ -4,7 +4,6 @@ set -euo pipefail
 # Install brew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 if [ "$(uname -m)" = "arm64" ] ; then
-  # (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/${USER}/.zprofile
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
@@ -17,3 +16,14 @@ if ! xcode-select --print-path &> /dev/null; then
 else
   echo "Command line tools are already installed."
 fi
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # MacOS向けのコマンド
+  echo "Running on MacOS"
+  # Disable Character Picker in VSCode for Smooth cursor movement in VSCode Neovim.
+  defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
+elif [[ "$OSTYPE" == "linux"* ]]; then
+  # Linux向けのコマンド
+  echo "Running on Linux"
+fi
+
