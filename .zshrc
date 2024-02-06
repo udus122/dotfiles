@@ -11,6 +11,9 @@ export DOTFILES="$(ghq root)/github.com/udus122/dotfiles"
 # mise
 export PATH="$HOME/.local/share/mise/shims:$PATH"
 eval "$(mise activate zsh)"
+# krew
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
 
 # linux compatible commands
 # https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
@@ -126,23 +129,23 @@ complete -C "$(mise where awscli)/aws_completer" aws
 # For zsh subshells, add to ~/.zshrc.
 printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "zsh"}}\x9c'
 
-# Automatic startup of tmux
-if [[ ! -n $TMUX && $- == *l* ]]; then
-  # Retrieves the terminal being used, stored in the TERM_PROGRAM variable or as a fallback, the TERM variable
-  TP=${TERM_PROGRAM:-$TERM}
-  # get the session id
-  SS=$(tmux list-sessions)
-  if [[ -z "$SS" ]]; then
-    tmux new-session -s $TP
-  fi
-  create_new_session="Create New Session"
-  SS="$SS\n${create_new_session}:"
-  SS="`echo $SS | fzf | cut -d: -f1`"
-  if [[ "$SS" = "${create_new_session}" ]]; then
-    tmux new-session -s $TP
-  elif [[ -n "$SS" ]]; then
-    tmux attach-session -s "$SS"
-  else
-    :  # Start terminal normally
-  fi
-fi
+# # Automatic startup of tmux
+# if [[ ! -n $TMUX && $- == *l* ]]; then
+#   # Retrieves the terminal being used, stored in the TERM_PROGRAM variable or as a fallback, the TERM variable
+#   TP=${TERM_PROGRAM:-$TERM}
+#   # get the session id
+#   SS=$(tmux list-sessions)
+#   if [[ -z "$SS" ]]; then
+#     tmux new-session -s $TP
+#   fi
+#   create_new_session="Create New Session"
+#   SS="$SS\n${create_new_session}:"
+#   SS="`echo $SS | fzf | cut -d: -f1`"
+#   if [[ "$SS" = "${create_new_session}" ]]; then
+#     tmux new-session -s $TP
+#   elif [[ -n "$SS" ]]; then
+#     tmux attach-session -s "$SS"
+#   else
+#     :  # Start terminal normally
+#   fi
+# fi

@@ -5,6 +5,9 @@
 truncate_to_repo = false
 truncation_symbol = '…/'
 
+[gcloud]
+symbol = '️󱇶 '
+
 [kubernetes]
 disabled = false
 
