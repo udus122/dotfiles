@@ -5,7 +5,10 @@ export PATH="/Users/yusuda/.rd/bin:$PATH"
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 # XDG
-export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CONFIG_HOME="$HOME/.config"  # /etc
+export XDG_DATA_HOME="$HOME/.local/share"  # /usr/share
+export XDG_CACHE_HOME="$HOME/.cache"  # /var/cache
+export XDG_STATE_HOME="$HOME/.local/state"  # /var/lib
 # dotfiles
 export DOTFILES="$(ghq root)/github.com/udus122/dotfiles"
 # mise
@@ -13,6 +16,10 @@ export PATH="$HOME/.local/share/mise/shims:$PATH"
 eval "$(mise activate zsh)"
 # krew
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+# poetry
+export POETRY_CONFIG_DIR="$XDG_CONFIG_HOME/pypoetry"
+export POETRY_DATA_DIR="$XDG_DATA_HOME/pypoetry"
+export POETRY_CACHE_DIR="$XDG_CACHE_HOME/pypoetry"
 
 
 # linux compatible commands
