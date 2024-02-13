@@ -18,3 +18,7 @@ nnoremap <Esc><Esc> :nohlsearch<CR> " Escを2回押すとハイライトを消�
 set noswapfile " swpファイル出力無効
 set nobackup " バックアップファイル出力無効
 set noundofile " undoファイル出力無効
+
+" clipboardの設定
+set clipboard& " clipboardオプションの値をデフォルト値にセット
+set clipboard^=unnamedplus " クリップボードを有効にする
