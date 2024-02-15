@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Install brew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-if [ "$(uname -m)" = "arm64" ] ; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+set -v  # verbose mode(入力されたコマンドをそのままエコー出力)
+
+if ! type brew >/dev/null 2>&1; then
+  # Install brew if not installed
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  if [ "$(uname -m)" = "arm64" ]; then
+    # ARM版Mac(M*)用
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  else
+    # Intel版Mac用
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+else
+  echo "Homebrew is already installed."
 fi
 
 # Install xcode
 # Check if command line tools are installed
-if ! xcode-select --print-path &> /dev/null; then
+if ! xcode-select --print-path >/dev/null 2>&1; then
   # Install command line tools
   echo "Command line tools not found. Installing..."
   xcode-select --install
@@ -27,3 +38,8 @@ elif [[ "$OSTYPE" == "linux"* ]]; then
   echo "Running on Linux"
 fi
 
+# git configの設定
+# userなどは環境固有の設定にしたいためあえて設定しない
+git config --global --unset-all include.path >/dev/null 2>&1  # include.pathを一度リセット
+# aliasを追加する
+git config --global --add include.path "$XDG_CONFIG_HOME/git/alias"
