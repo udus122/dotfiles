@@ -1,5 +1,6 @@
 # abbr: https://github.com/olets/zsh-abbr
 
+abbr -S d='docker' > /dev/null
 abbr -S g='git' > /dev/null
 abbr -S t="tmux" > /dev/null
 abbr -S k='kubectl' > /dev/null
