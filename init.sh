@@ -43,3 +43,5 @@ fi
 git config --global --unset-all include.path >/dev/null 2>&1  # include.pathを一度リセット
 # aliasを追加する
 git config --global --add include.path "$XDG_CONFIG_HOME/git/alias"
+# deltaの設定を追加する
+git config --global --add include.path "$XDG_CONFIG_HOME/delta/config"

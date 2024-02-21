@@ -28,6 +28,8 @@ brew "gh"
 brew "mise"
 brew "pipx"
 brew "tfenv"
+brew "bat"
+brew "delta"
 
 # zsh customise
 brew "zsh-completions"

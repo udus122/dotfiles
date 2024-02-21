@@ -52,6 +52,8 @@ alias vim='nvim'
 source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh
 source ${ZDOTDIR}/abbreviations
 
+delta --generate-completion zsh
+
 # Function to perform simple arithmetic operations using awk
 function calc() {
   awk "BEGIN {print $*}"
