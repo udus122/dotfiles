@@ -67,13 +67,23 @@ function calc() {
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# find-ghq - select local repository
 if type "ghq" > /dev/null 2>&1; then
   function find-ghq () {
+    # select local repository in ghq
     declare -r REPO_NAME="$(ghq list | fzf )";
     [[ -n "${REPO_NAME}" ]] && cd "$(ghq root)/${REPO_NAME}" && exec -l "${SHELL}";
   }
-  alias fgh='find-ghq; : select local repository'
+  alias fgh=find-ghq
+
+  function gcloud-change-project() {
+    # select gcp project
+    local proj=$(gcloud projects list | fzf --header-lines=1 | awk '{print $1}')
+    if [ -n $proj ]; then
+      gcloud config set project $proj
+      return $?
+    fi
+  }
+  alias gcp=gcloud-change-project
 fi
 
 # Warp
