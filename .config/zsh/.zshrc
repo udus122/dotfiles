@@ -19,11 +19,13 @@ setopt pushd_ignore_dups
 eval "$(starship init zsh)"
 
 # completion
+autoload -Uz compinit
+compinit
+autoload -U bashcompinit
+bashcompinit
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
   source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-  autoload -Uz compinit
-  compinit
 fi
 
 zstyle ':completion:*:default' menu select=2  # 補完後、メニュー選択モードになり左右キーで移動が出来る
@@ -38,6 +40,11 @@ source <(docker completion zsh)
 # kubernetes
 source <(kubectl completion zsh)
 
+# terraform
+if type terraform &> /dev/null; then
+  complete -C terraform terraform
+fi
+
 # gcloud
 source "$(mise where gcloud)/path.zsh.inc"
 source "$(mise where gcloud)/completion.zsh.inc"
@@ -51,8 +58,6 @@ alias vim='nvim'
 # zsh-abbr: https://github.com/olets/zsh-abbr
 source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh
 source ${ZDOTDIR}/abbreviations
-
-delta --generate-completion zsh
 
 # Function to perform simple arithmetic operations using awk
 function calc() {
