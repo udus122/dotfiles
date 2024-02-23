@@ -1,14 +1,77 @@
 # Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'
 
+format = """
+$directory\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$direnv\
+$package\
+$fill\
+$python\
+$nodejs\
+$golang\
+$java\
+$rust\
+$helm\
+$docker_context\
+$kubernetes
+$username\
+$hostname\
+$localip\
+$time\
+$status\
+$shell\
+$os\
+$container\
+$fill\
+$gcloud\
+$aws\
+$azure
+$character\
+"""
+
+[direnv]
+disabled = false
+
+[aws]
+symbol = "󰸏 "
+force_display = true
+format = '[$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
+
 [directory]
 truncate_to_repo = false
 truncation_symbol = '…/'
+style = "bold green"
+
+[docker_context]
+only_with_files = false
+format = '[$symbol$context]($style) '
+
+[fill]
+symbol = "."
 
 [gcloud]
-symbol = '️󱇶 '
+symbol = " "
+format = '[$symbol$project$region@$account$domain]($style)'
+
+[git_metrics]
+disabled = false
+
+[git_commit]
+only_detached = false
+tag_disabled = false
 
 [kubernetes]
+disabled = false
+format = '[$symbol$context( \($namespace\))]($style)'
+
+[os]
+format = "on [($name )]($style)"
+style = "bold blue"
 disabled = false
 
 [shell]
