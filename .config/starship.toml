@@ -51,9 +51,6 @@ style = "bold green"
 only_with_files = false
 format = '[$symbol$context]($style) '
 
-[fill]
-symbol = "."
-
 [gcloud]
 symbol = " "
 format = '[$symbol$project$region@$account$domain]($style)'
