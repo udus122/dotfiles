@@ -40,6 +40,9 @@ source <(docker completion zsh)
 # kubernetes
 source <(kubectl completion zsh)
 
+# kind
+kind completion zsh > "${fpath[1]}/_kind" && compinit
+
 # terraform
 if type terraform &> /dev/null; then
   complete -C terraform terraform
