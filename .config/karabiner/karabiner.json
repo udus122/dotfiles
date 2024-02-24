@@ -18,7 +18,7 @@
         },
         "rules": [
           {
-            "description": "Change right_command+hjkl to arrow keys",
+            "description": "Change right_command+hjkl to arrow keys without HHKB",
             "manipulators": [
               {
                 "from": {
@@ -37,7 +37,19 @@
                     "key_code": "left_arrow"
                   }
                 ],
-                "type": "basic"
+                "type": "basic",
+                "conditions": [
+                  {
+                      "type": "device_if",
+                      "identifiers": [
+                          {
+                              "vendor_id": "1278",
+                              "product_id": "33"
+                          }
+                      ],
+                      "is_exclude": true
+                  }
+              ]
               },
               {
                 "from": {
@@ -56,7 +68,19 @@
                     "key_code": "down_arrow"
                   }
                 ],
-                "type": "basic"
+                "type": "basic",
+                "conditions": [
+                  {
+                      "type": "device_if",
+                      "identifiers": [
+                          {
+                              "vendor_id": "1278",
+                              "product_id": "33"
+                          }
+                      ],
+                      "is_exclude": true
+                  }
+              ]
               },
               {
                 "from": {
@@ -75,7 +99,19 @@
                     "key_code": "up_arrow"
                   }
                 ],
-                "type": "basic"
+                "type": "basic",
+                "conditions": [
+                  {
+                      "type": "device_if",
+                      "identifiers": [
+                          {
+                              "vendor_id": "1278",
+                              "product_id": "33"
+                          }
+                      ],
+                      "is_exclude": true
+                  }
+              ]
               },
               {
                 "from": {
@@ -94,7 +130,19 @@
                     "key_code": "right_arrow"
                   }
                 ],
-                "type": "basic"
+                "type": "basic",
+                "conditions": [
+                  {
+                      "type": "device_if",
+                      "identifiers": [
+                          {
+                              "vendor_id": "1278",
+                              "product_id": "33"
+                          }
+                      ],
+                      "is_exclude": true
+                  }
+              ]
               }
             ]
           },
