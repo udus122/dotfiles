@@ -37,8 +37,11 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 # docker
 source <(docker completion zsh)
 
-# kubernetes
+# kubectl
 source <(kubectl completion zsh)
+
+# stern
+source <(stern --completion=zsh)
 
 # kind
 kind completion zsh > "${fpath[1]}/_kind" && compinit
