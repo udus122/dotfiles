@@ -10,13 +10,13 @@ export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME}/zsh"
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# # linux compatible commands
-# https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
-# if type brew &> /dev/null; then
-#     BREW_PREFIX=$(brew --prefix)
-#     for bindir in "${BREW_PREFIX}/opt/"*"/libexec/gnubin"; do export PATH=$bindir:$PATH; done
-#     for mandir in "${BREW_PREFIX}/opt/"*"/libexec/gnuman"; do export MANPATH=$mandir:$MANPATH; done
-# fi
+# linux compatible commands
+https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
+if type brew &> /dev/null; then
+    BREW_PREFIX=$(brew --prefix)
+    for bindir in "${BREW_PREFIX}/opt/"*"/libexec/gnubin"; do export PATH=$bindir:$PATH; done
+    for mandir in "${BREW_PREFIX}/opt/"*"/libexec/gnuman"; do export MANPATH=$mandir:$MANPATH; done
+fi
 
 # mise
 export PATH="$HOME/.local/share/mise/shims:$PATH"
