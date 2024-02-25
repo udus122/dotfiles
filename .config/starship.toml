@@ -64,7 +64,11 @@ tag_disabled = false
 
 [kubernetes]
 disabled = false
-format = '[$symbol$cluster\($namespace\)]($style)'
+format = '[$symbol$cluster:$namespace]($style)'
+
+[[kubernetes.contexts]]
+context_pattern = ".*prd.*"
+style = "bold red"
 
 [os]
 format = "on [($name )]($style)"
