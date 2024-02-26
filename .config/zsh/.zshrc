@@ -58,9 +58,10 @@ source "$(mise where gcloud)/completion.zsh.inc"
 # awscli
 complete -C "$(mise where awscli)/aws_completer" aws
 
-# alias and abbreviations
+# aliases
 alias vi='nvim'
 alias vim='nvim'
+# abbreviations
 # zsh-abbr: https://github.com/olets/zsh-abbr
 source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh
 source ${ZDOTDIR}/abbreviations
