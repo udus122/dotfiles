@@ -10,6 +10,7 @@ $git_metrics\
 $git_status\
 $direnv\
 $package\
+$terraform\
 $fill\
 $python\
 $nodejs\
@@ -77,6 +78,9 @@ disabled = false
 
 [shell]
 disabled = false
+
+[terraform]
+format = '[$symbol$version\($workspace\)]($style) '
 
 [time]
 disabled = false
