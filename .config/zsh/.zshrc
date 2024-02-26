@@ -81,18 +81,20 @@ if type "ghq" > /dev/null 2>&1; then
   }
   alias fgh=find-ghq
   
-  # ref: https://qiita.com/sonots/items/906798c408132e26b41c#peco-%E3%81%8A%E3%82%88%E3%81%B3-zsh-completions-%E3%81%A7%E4%B8%80%E8%A6%A7%E3%81%8B%E3%82%89%E3%81%AE%E9%81%B8%E6%8A%9E%E5%88%87%E3%82%8A%E6%9B%BF%E3%81%88%E3%81%8C%E3%81%A7%E3%81%8D%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%97%E3%81%A6%E3%81%8A%E3%81%8F%E3%81%A8%E4%BE%BF%E5%88%A9
   function gx() {
-    name="$1"
-    if [ -z "$name" ]; then
+    input_name="$1"
+    if [ -z "$input_name" ]; then
       line=$(gcloud config configurations list | fzf --header-lines=1)
-      name=$(echo "${line}" | awk '{print $1}')
     else
-      line=$(gcloud config configurations list | grep "$name")
+      line=$(gcloud config configurations list | grep "$input_name")
     fi
+    name=$(echo "${line}" | awk '{print $1}')
+    project=$(echo "${line}" | awk '{print $4}')
     echo "gcloud config configurations activate \"${name}\""
+    gcloud auth application-default set-quota-project "${name}"
     gcloud config configurations activate "${name}"
   }
+
   function gx-complete() {
     _values $(gcloud config configurations list | awk '{print $1}')
   }
