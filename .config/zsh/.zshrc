@@ -58,49 +58,20 @@ source "$(mise where gcloud)/completion.zsh.inc"
 # awscli
 complete -C "$(mise where awscli)/aws_completer" aws
 
-# aliases
-alias vi='nvim'
-alias vim='nvim'
-# abbreviations
-# zsh-abbr: https://github.com/olets/zsh-abbr
-source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh
-source ${ZDOTDIR}/abbreviations
-
-# Function to perform simple arithmetic operations using awk
-function calc() {
-  awk "BEGIN {print $*}"
-}
-
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-if type "ghq" > /dev/null 2>&1; then
-  function find-ghq () {
-    # select local repository in ghq
-    declare -r REPO_NAME="$(ghq list | fzf )";
-    [[ -n "${REPO_NAME}" ]] && cd "$(ghq root)/${REPO_NAME}" && exec -l "${SHELL}";
-  }
-  alias fgh=find-ghq
-  
-  function gx() {
-    input_name="$1"
-    if [ -z "$input_name" ]; then
-      line=$(gcloud config configurations list | fzf --header-lines=1)
-    else
-      line=$(gcloud config configurations list | grep "$input_name")
-    fi
-    name=$(echo "${line}" | awk '{print $1}')
-    project=$(echo "${line}" | awk '{print $4}')
-    echo "gcloud config configurations activate \"${name}\""
-    gcloud auth application-default set-quota-project "${name}"
-    gcloud config configurations activate "${name}"
-  }
+# aliases
+alias vi='nvim'
+alias vim='nvim'
 
-  function gx-complete() {
-    _values $(gcloud config configurations list | awk '{print $1}')
-  }
-  compdef gx-complete gx
-fi
+# abbreviations
+# zsh-abbr: https://github.com/olets/zsh-abbr
+source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh
+source ${ZDOTDIR}/abbreviations.zsh
+
+# utility functions
+source ${ZDOTDIR}/functions.zsh
 
 # # Automatic startup of tmux
 # if [[ ! -n $TMUX && $- == *l* ]]; then
