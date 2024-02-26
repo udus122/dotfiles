@@ -17,8 +17,8 @@ $golang\
 $java\
 $rust\
 $helm\
-$docker_context\
-$kubernetes
+$kubernetes\
+$docker_context
 $username\
 $hostname\
 $localip\
@@ -34,13 +34,13 @@ $azure
 $character\
 """
 
-[direnv]
-disabled = false
-
 [aws]
 symbol = "󰸏 "
 force_display = true
 format = '[$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
+
+[direnv]
+disabled = false
 
 [directory]
 truncate_to_repo = false
@@ -64,7 +64,7 @@ tag_disabled = false
 
 [kubernetes]
 disabled = false
-format = '[$symbol$cluster:$namespace]($style)'
+format = '[$symbol$cluster:$namespace]($style) '
 
 [[kubernetes.contexts]]
 context_pattern = ".*prd.*"
