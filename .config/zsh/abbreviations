@@ -13,6 +13,7 @@ abbr -S 'kcgc'='kubectl config get-contexts' > /dev/null
 abbr -S 'kcv'='kubectl config view' > /dev/null
 abbr -S 'kx'='kubectl ctx' > /dev/null
 abbr -S 'kn'='kubectl ns' > /dev/null
+abbr -S 'gco'='open "https://console.cloud.google.com/home/dashboard?project=$(gcloud config get-value project)"' > /dev/null
 abbr -S 'l'='ls -FG' > /dev/null
 abbr -S 'la'='ls -FGa' > /dev/null
 abbr -S 'll'='ls -FGl' > /dev/null
