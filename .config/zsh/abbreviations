@@ -14,6 +14,7 @@ abbr -S 'kcv'='kubectl config view' > /dev/null
 abbr -S 'kx'='kubectl ctx' > /dev/null
 abbr -S 'kn'='kubectl ns' > /dev/null
 abbr -S 'gc'='gcloud' > /dev/null
+abbr -S 'gccl'='gcloud config configurations list' > /dev/null
 abbr -S 'gco'='open "https://console.cloud.google.com/home/dashboard?project=$(gcloud config get-value project)"' > /dev/null
 abbr -S 'l'='ls -FG' > /dev/null
 abbr -S 'ls'='ls -FG' > /dev/null
@@ -23,4 +24,3 @@ abbr -S 'lla'='ls -FGla' > /dev/null
 abbr -S 'r'="mise run --" > /dev/null
 abbr -S 'x'="mise exec --" > /dev/null
 abbr -S 'reload'="exec -l $SHELL" > /dev/null
-abbr -S 'edot'="${EDITOR:-vim} $DOTFILES" > /dev/null
