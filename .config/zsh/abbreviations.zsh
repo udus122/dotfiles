@@ -11,8 +11,8 @@ abbr -S 'kg'='kubectl get' > /dev/null
 abbr -S 'kcuc'='kubectl config use-context' > /dev/null
 abbr -S 'kcgc'='kubectl config get-contexts' > /dev/null
 abbr -S 'kcv'='kubectl config view' > /dev/null
-abbr -S 'kx'='kubectl ctx' > /dev/null
-abbr -S 'kn'='kubectl ns' > /dev/null
+abbr -S 'kx'='kubectx' > /dev/null
+abbr -S 'kn'='kubens' > /dev/null
 abbr -S 'gc'='gcloud' > /dev/null
 abbr -S 'gccl'='gcloud config configurations list' > /dev/null
 abbr -S 'gco'='open "https://console.cloud.google.com/home/dashboard?project=$(gcloud config get-value project)"' > /dev/null
