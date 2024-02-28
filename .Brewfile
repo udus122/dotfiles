@@ -30,7 +30,7 @@ brew "mise"
 brew "pipx"
 brew "tfenv"
 brew "bat"
-brew "delta"
+brew "git-delta"
 brew "kubectx"
 
 # zsh customise
