@@ -1,3 +1,36 @@
+
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+# linux compatible commands. ref: https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
+if type brew &> /dev/null; then
+  BREW_PREFIX=$(brew --prefix)
+  for bindir in "${BREW_PREFIX}/opt/"*"/libexec/gnubin"; do export PATH=$bindir:$PATH; done
+  for mandir in "${BREW_PREFIX}/opt/"*"/libexec/gnuman"; do export MANPATH=$mandir:$MANPATH; done
+fi
+
+# mise
+export PATH="$HOME/.local/share/mise/shims:$PATH"
+eval "$(mise activate zsh)"
+
+# krew
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+# poetry
+export POETRY_CONFIG_DIR="$XDG_CONFIG_HOME/pypoetry"
+export POETRY_DATA_DIR="$XDG_DATA_HOME/pypoetry"
+export POETRY_CACHE_DIR="$XDG_CACHE_HOME/pypoetry"
+
+# pnpm
+export PNPM_HOME="/Users/yusuda/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="/Users/yusuda/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+
 # history
 HISTFILE="$ZDOTDIR/history"  # ヒストリファイルの保存先
 HISTSIZE=10000  # メモリに保存される履歴の数
@@ -34,8 +67,11 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'  # 補完で大文字にも�
 export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
+# mise
+mise completion zsh > "${fpath[1]}/_mise" && compinit
+
 # docker
-source <(docker completion zsh)
+source <(docker completion zsh) 
 
 # kubectl
 source <(kubectl completion zsh)
@@ -47,9 +83,7 @@ source <(stern --completion=zsh)
 kind completion zsh > "${fpath[1]}/_kind" && compinit
 
 # terraform
-if type terraform &> /dev/null; then
-  complete -C terraform terraform
-fi
+complete -C terraform terraform
 
 # gcloud
 source "$(mise where gcloud)/path.zsh.inc"
