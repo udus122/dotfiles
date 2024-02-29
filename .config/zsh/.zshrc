@@ -71,7 +71,7 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 mise completion zsh > "${fpath[1]}/_mise" && compinit
 
 # docker
-source <(docker completion zsh) 
+source <(docker completion zsh)
 
 # kubectl
 source <(kubectl completion zsh)
