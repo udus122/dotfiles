@@ -45,3 +45,5 @@ git config --global --unset-all include.path >/dev/null 2>&1  # include.pathを�
 git config --global --add include.path "$XDG_CONFIG_HOME/git/alias"
 # deltaの設定を追加する
 git config --global --add include.path "$XDG_CONFIG_HOME/delta/config"
+# rebase時に自動的にautosquashモードにする
+git config --global --replace-all rebase.autosquash true
