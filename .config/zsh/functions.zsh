@@ -62,6 +62,7 @@ function safe-gcloud() {
         command gcloud "$@"
     fi
 }
+complete -o nospace -o default -F _python_argcomplete "safe-gcloud"
 alias gcloud='safe-gcloud'
 
 function gx() {
@@ -81,7 +82,7 @@ function gx() {
 function gx-complete() {
   _values $(command gcloud config configurations list | awk '{print $1}')
 }
-  compdef gx-complete gx
+compdef gx-complete gx
 
 function create-gcloud-config() {
   # 設定名を入力
@@ -119,5 +120,5 @@ function safe-kubectl() {
         command kubectl "$@"
     fi
 }
-
+compdef _kubectl safe-kubectl
 alias kubectl='safe-kubectl'
