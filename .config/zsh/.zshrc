@@ -1,4 +1,3 @@
-
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 # linux compatible commands. ref: https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
@@ -7,6 +6,9 @@ if type brew &> /dev/null; then
   for bindir in "${BREW_PREFIX}/opt/"*"/libexec/gnubin"; do export PATH=$bindir:$PATH; done
   for mandir in "${BREW_PREFIX}/opt/"*"/libexec/gnuman"; do export MANPATH=$mandir:$MANPATH; done
 fi
+
+# less
+export LESS='-i -M -R'
 
 # mise
 export PATH="$HOME/.local/share/mise/shims:$PATH"
