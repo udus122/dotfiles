@@ -41,9 +41,9 @@ fi
 # git configの設定
 # userなどは環境固有の設定にしたいためあえて設定しない
 git config --global --unset-all include.path >/dev/null 2>&1  # include.pathを一度リセット
+# 環境共通の設定を追加する
+git config --global --add include.path "$XDG_CONFIG_HOME/git/common"
 # aliasを追加する
 git config --global --add include.path "$XDG_CONFIG_HOME/git/alias"
 # deltaの設定を追加する
 git config --global --add include.path "$XDG_CONFIG_HOME/delta/config"
-# rebase時に自動的にautosquashモードにする
-git config --global --replace-all rebase.autosquash true
