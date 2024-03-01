@@ -1,0 +1,5 @@
+[rebase]
+    autosquash = true
+    autostash = true
+[pull]
+    autostash = true
