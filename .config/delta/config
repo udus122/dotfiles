@@ -1,3 +1,4 @@
+# This configuration is included and adapted in git config.
 [delta]
     line-numbers = true
     hyperlinks = true
