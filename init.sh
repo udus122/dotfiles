@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-set -v  # verbose mode(入力されたコマンドをそのままエコー出力)
+set -v
 
 if ! type brew >/dev/null 2>&1; then
   # Install brew if not installed
