@@ -52,7 +52,8 @@ alias fgh=find-ghq
 function safe-gcloud() {
     local active_config=$(cat $HOME/.config/gcloud/active_config)
     if [[ $active_config == *"prd"* ]]; then
-        read "REPLY?You're in a production environment. Are you sure you want to proceed (Y/yes)?"
+        echo "You're in a production environment. Are you sure you want to proceed (Y/yes)"
+        read REPLY
         if [[ $REPLY =~ ^([Yy]|[Yy]es)$ ]]; then
             command gcloud "$@"
         else
@@ -113,8 +114,8 @@ function kubectl-bat() {
 function safe-kubectl() {
     local current_context=$(command kubectl config current-context)
     if [[ $current_context == *"prd"* ]]; then
-        read "REPLY?You're in a production context. If you want to continue, type y(es) and press Enter."
-        echo
+        echo "You're in a production context. If you want to continue, type y(es) and press Enter."
+        read REPLY
         if [[ $REPLY =~ ^([Yy]|[Yy]es)$ ]]; then
             kubectl-bat "$@"
         else
