@@ -17,4 +17,13 @@ config.use_ime = true
 config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = true
 
+-- key assignment
+config.keys = {
+    {
+        key = 'p',
+        mods = 'SUPER|SHIFT',
+        action = wezterm.action.ActivateCommandPalette
+    },
+}
+
 return config
