@@ -106,23 +106,18 @@ function create-gcloud-config() {
   command gcloud config set project "${project_id}"
 }
 
-# kubernetes
-function kubectl-bat() {
-  command kubectl "$@" | bat
-}
-
 function safe-kubectl() {
     local current_context=$(command kubectl config current-context)
     if [[ $current_context == *"prd"* ]]; then
         echo -n "You're in a production context. If you want to continue, type y(es) and press Enter: "
         read REPLY
         if [[ $REPLY =~ ^([Yy]|[Yy]es)$ ]]; then
-            kubectl-bat "$@"
+            command kubectl "$@"
         else
             echo "Aborted!"
         fi
     else
-        kubectl-bat "$@"
+        command kubectl "$@"
     fi
 }
 compdef _kubectl safe-kubectl
