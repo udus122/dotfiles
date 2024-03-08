@@ -7,6 +7,7 @@ abbr -S 'tf'="terraform" > /dev/null
 abbr -S 'k'='kubectl' > /dev/null
 abbr -S 'kc'='kubectl config' > /dev/null
 abbr -S 'kubectl c'='kubectl config' > /dev/null
+abbr -S 'kubectl g'='kubectl get' > /dev/null
 abbr -S 'kg'='kubectl get' > /dev/null
 abbr -S 'kcuc'='kubectl config use-context' > /dev/null
 abbr -S 'kcgc'='kubectl config get-contexts' > /dev/null
