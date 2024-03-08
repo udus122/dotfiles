@@ -10,7 +10,7 @@ if type brew &> /dev/null; then
 fi
 
 # less
-export LESS='-i -M -R'
+export LESS='-iMNRS'
 
 # mise
 export PATH="$HOME/.local/share/mise/shims:$PATH"
