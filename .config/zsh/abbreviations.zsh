@@ -17,7 +17,6 @@ abbr -S 'gc'='gcloud' > /dev/null
 abbr -S 'gccl'='gcloud config configurations list' > /dev/null
 abbr -S 'gco'='open "https://console.cloud.google.com/home/dashboard?project=$(gcloud config get-value project)"' > /dev/null
 abbr -S 'l'='ls -F --color=auto' > /dev/null
-abbr -S 'ls'='ls -F --color=auto' > /dev/null
 abbr -S 'la'='ls -FA --color=auto' > /dev/null
 abbr -S 'll'='ls -Fl --color=auto' > /dev/null
 abbr -S 'lla'='ls -FlA--color=auto' > /dev/null
