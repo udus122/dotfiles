@@ -31,6 +31,7 @@ brew "pipx"
 brew "bat"
 brew "git-delta"
 brew "kubectx"
+brew "lima"
 
 # zsh customise
 brew "zsh-completions"
