@@ -96,6 +96,9 @@ source "$(mise where gcloud)/completion.zsh.inc"
 # awscli
 complete -C "$(mise where awscli)/aws_completer" aws
 
+# lima
+source <(limactl completion zsh)
+
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
