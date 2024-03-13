@@ -41,5 +41,8 @@ complete -C "$(mise where awscli)/aws_completer" aws
 # lima
 source <(limactl completion zsh)
 
+# github cli
+gh completion -s zsh > "${fpath[1]}/_gh" && compinit
+
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
