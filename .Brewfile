@@ -3,6 +3,7 @@ tap "homebrew/cask-fonts"
 tap "olets/tap"
 
 # replace basic commands with GNU/Linux version
+brew "bash"
 brew "coreutils"
 brew "diffutils"
 brew "ed"
