@@ -40,7 +40,7 @@ fi
 # グローバルで設定されたGitのユーザー名が存在しなければ、ユーザーに名前を尋ねて設定する
 if [ -z "$(git config --global --get user.name)" ]; then
   echo "Git username is not set. Please enter your username: "
-  read user_name
+  read -r user_name
   git config --global user.name "$user_name"
   echo "Git username has been set to: $user_name"
 else
@@ -49,7 +49,7 @@ fi
 # グローバルで設定されたGitのメールアドレスが存在しなければ、ユーザーにメールアドレスを尋ねて設定する
 if [ -z "$(git config --global --get user.email)" ]; then
   echo "Git email is not set. Please enter your email: "
-  read user_email
+  read -r user_email
   git config --global user.email "$user_email"
   echo "Git email has been set to: $user_email"
 else
