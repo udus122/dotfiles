@@ -29,17 +29,17 @@ function git-fixup() {
 
   git commit --fixup "$( echo "$line" | awk '{print $1}' )" "$@"
 }
-
-function git-wrapper() {
-    if [[ $1 == 'fixup' ]]; then
-      shift 1
-      git-fixup
-    else
-      command git "$@"
-    fi
-}
-alias git='git-wrapper'
-
+# FIXME: gitの補完が効かなくなるため、一時的に無効化する
+# ref: https://masawada.hatenablog.jp/entry/2021/10/08/103000
+# function git-wrapper() {
+#     if [[ $1 == 'fixup' ]]; then
+#       shift 1
+#       git-fixup
+#     else
+#       command git "$@"
+#     fi
+# }
+# alias git='git-wrapper'
 
 function find-ghq () {
   # select local repository in ghq
