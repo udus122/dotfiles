@@ -3,4 +3,5 @@
     autostash = true
 [pull]
     autostash = true
+[push]
     autoSetupRemote = true
