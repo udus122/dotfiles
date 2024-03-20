@@ -18,7 +18,7 @@ config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = true
 
 -- leader
-config.leader = { key = 'a', mods = 'CTRL', timeout_milliseconds = 2000 }
+config.leader = { key = 'b', mods = 'CTRL', timeout_milliseconds = 2000 }
 
 -- key assignment
 config.keys = {
@@ -34,7 +34,7 @@ config.keys = {
     { key = 'k', mods = 'LEADER', action = wezterm.action.ActivatePaneDirection 'Up' },
     { key = 'l', mods = 'LEADER', action = wezterm.action.ActivatePaneDirection 'Right' },
     { key = '[', mods = 'LEADER', action = wezterm.action.ActivateCopyMode },
-    { key = 'a', mods = 'LEADER|CTRL', action = wezterm.action.SendKey { key = 'a', mods = 'CTRL' } },
+    { key = 'b', mods = 'LEADER|CTRL', action = wezterm.action.SendKey { key = 'b', mods = 'CTRL' } },
     { key = 'UpArrow', mods = 'SHIFT', action = wezterm.action.ScrollToPrompt(-1) },
     { key = 'DownArrow', mods = 'SHIFT', action = wezterm.action.ScrollToPrompt(1) },
 }
