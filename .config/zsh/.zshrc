@@ -1,3 +1,17 @@
+function source {
+  ensure_zcompiled $1
+  builtin source $1
+}
+
+function ensure_zcompiled {
+  local compiled="$1.zwc"
+  if [[ ! -r "$compiled" || "$1" -nt "$compiled" ]]; then
+    echo "Compiling $1"
+    zcompile $1
+  fi
+}
+ensure_zcompiled "${ZDOTDIR}/.zshrc"
+
 # PATHの重複を防ぐ
 typeset -U PATH
 
@@ -106,3 +120,5 @@ function __prompt_preexec() {
 }
 preexec_functions+=(__prompt_preexec)
 precmd_functions+=(__prompt_precmd)
+
+unfunction source
