@@ -1,0 +1,2 @@
+#compdef git-fixup
+#description select a commit and create a fixup commit for it

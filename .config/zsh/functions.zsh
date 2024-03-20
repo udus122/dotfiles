@@ -3,44 +3,6 @@ function calc() {
   awk "BEGIN {print $*}"
 }
 
-# git
-function git-fixup() {
-  FILTER=${FILTER:-fzf}
-  MAX_LOG_COUNT=${MAX_LOG_COUNT:-30}
-
-  if git diff --cached --quiet; then
-      commits="No staged changes. Use git add -p to add them."
-      ret=1
-  else
-      commits=$(git log --oneline -n "$MAX_LOG_COUNT")
-      ret=$?
-  fi
-
-  if [[ "$ret" != 0 ]]; then
-      headline=$(echo "$commits" | head -n1)
-      if [[ "$headline" = "No staged changes. Use git add -p to add them." ]]; then
-          echo "$headline" >&2
-      fi
-      return "$ret"
-  fi
-
-  line=$(echo "$commits" | $FILTER)
-  [[ "$?" = 0 && "$line" != "" ]] || return "$?"
-
-  git commit --fixup "$( echo "$line" | awk '{print $1}' )" "$@"
-}
-# FIXME: gitの補完が効かなくなるため、一時的に無効化する
-# ref: https://masawada.hatenablog.jp/entry/2021/10/08/103000
-# function git-wrapper() {
-#     if [[ $1 == 'fixup' ]]; then
-#       shift 1
-#       git-fixup
-#     else
-#       command git "$@"
-#     fi
-# }
-# alias git='git-wrapper'
-
 function find-ghq () {
   # select local repository in ghq
   declare -r REPO_NAME="$(ghq list | fzf )";
