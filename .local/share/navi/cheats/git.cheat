@@ -1,0 +1,5 @@
+% git
+# Git: Ignore local changes
+git update-index --skip-worktree <file>
+
+$ file: ls -a
