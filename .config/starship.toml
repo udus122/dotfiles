@@ -8,7 +8,6 @@ $git_commit\
 $git_state\
 $git_metrics\
 $git_status\
-$direnv\
 $package\
 $terraform\
 $fill\
@@ -39,9 +38,6 @@ $character\
 symbol = "󰸏 "
 force_display = true
 format = '[$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
-
-[direnv]
-disabled = false
 
 [directory]
 truncate_to_repo = false
