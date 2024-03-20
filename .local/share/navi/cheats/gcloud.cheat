@@ -1,0 +1,10 @@
+% gcloud, gcp
+
+# create configuration
+gcloud config configurations create <config_name>
+
+# set account in current configuration
+gcloud config set account <account>
+
+# set project in current configuration
+gcloud config set project <project_id>

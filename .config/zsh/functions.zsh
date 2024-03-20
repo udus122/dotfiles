@@ -47,7 +47,7 @@ function gx-complete() {
 }
 compdef gx-complete gx
 
-function create-gcloud-config() {
+function gcloud-config-create-set-project-account() {
   # 設定名を入力
   echo -n "Enter configuration name: "
   read config_name
