@@ -50,7 +50,7 @@ format = '[$symbol$context]($style) '
 
 [gcloud]
 symbol = " "
-format = '[$symbol$active\($project$region@$account$domain\)]($style)'
+format = '[$symbol$project@$region\($account@$domain\)]($style)'
 
 [git_metrics]
 disabled = false
