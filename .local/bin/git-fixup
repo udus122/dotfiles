@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+FILTER=${FILTER:-fzf}
+MAX_LOG_COUNT=${MAX_LOG_COUNT:-30}
+
+if git diff --cached --quiet; then
+    commits="No staged changes. Use git add -p to add them."
+    ret=1
+else
+    commits=$(git log --oneline -n "$MAX_LOG_COUNT")
+    ret=$?
+fi
+
+if [[ "$ret" != 0 ]]; then
+    headline=$(echo "$commits" | head -n1)
+    if [[ "$headline" = "No staged changes. Use git add -p to add them." ]]; then
+        echo "$headline" >&2
+    fi
+    exit "$ret"
+fi
+
+line=$(echo "$commits" | $FILTER)
+if [[ "$?" != 0 || "$line" == "" ]]; then
+    exit 1
+fi
+
+git commit --fixup "$( echo "$line" | awk '{print $1}' )"
