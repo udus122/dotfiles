@@ -16,13 +16,18 @@ function make_link () {
     dirpath=$(dirname "$dst")
     [[ ! -d "$dirpath" ]] && mkdir -p "$dirpath"
 
-    ln -fnsv $src $dst
+    ln -fnsv "$src" "$dst"
+    
+    # If the destination is under "$HOME/.local/bin", add execution permission
+    if [[ "$dst" == "$HOME/.local/bin"* ]]; then
+        chmod +x "$dst"
+    fi
 }
 
-find "${SCRIPT_DIR}" -type f -path '*/.*' | while read dotfile; do
+find "${SCRIPT_DIR}" -type f -path '*/.*' | while read -r dotfile; do
     [[ "$dotfile" == "${SCRIPT_DIR}/.git"* ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.github"* ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.DS_Store" ]] && continue
 
-    make_link "$dotfile" ${HOME}/${dotfile#$SCRIPT_DIR/}
+    make_link "$dotfile" "${HOME}/${dotfile#"$SCRIPT_DIR"/}"
 done

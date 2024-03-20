@@ -6,6 +6,11 @@ if type brew &>/dev/null; then
   source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 
+USER_COMPLETION_DIR="$XDG_DATA_HOME/zsh/completion"
+mkdir -p "$USER_COMPLETION_DIR"
+fpath=("$USER_COMPLETION_DIR" $fpath)
+
+
 zstyle ':completion:*:default' menu select=2  # 補完後、メニュー選択モードになり左右キーで移動が出来る
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'  # 補完で大文字にもマッチ
 
@@ -14,7 +19,7 @@ export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 # mise
-mise completion zsh > "${fpath[1]}/_mise" && compinit
+mise completion zsh > "${USER_COMPLETION_DIR}/_mise" && compinit
 
 # docker
 source <(docker completion zsh)
@@ -26,7 +31,7 @@ source <(kubectl completion zsh)
 source <(stern --completion=zsh)
 
 # kind
-kind completion zsh > "${fpath[1]}/_kind" && compinit
+kind completion zsh > "${USER_COMPLETION_DIR}/_kind" && compinit
 
 # terraform
 complete -C terraform terraform
@@ -42,7 +47,4 @@ complete -C "$(mise where awscli)/aws_completer" aws
 source <(limactl completion zsh)
 
 # github cli
-gh completion -s zsh > "${fpath[1]}/_gh" && compinit
-
-# fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+gh completion -s zsh > "${USER_COMPLETION_DIR}/_gh" && compinit
