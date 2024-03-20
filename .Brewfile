@@ -34,6 +34,7 @@ brew "bat"
 brew "git-delta"
 brew "kubectx"
 brew "lima"
+brew "navi"
 
 # zsh customise
 brew "zsh-completions"

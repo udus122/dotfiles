@@ -90,6 +90,10 @@ alias vim='nvim'
 source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh
 source ${ZDOTDIR}/abbreviations.zsh
 
+# cheatsheet(navi)
+# ref: https://github.com/denisidoro/navi
+eval "$(navi widget zsh)"
+
 # utility functions
 source ${ZDOTDIR}/functions.zsh
 
