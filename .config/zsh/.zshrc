@@ -16,6 +16,9 @@ fi
 
 export PATH="$HOME/.local/bin:$PATH"  # User-specific executable files
 
+# direnv
+eval "$(direnv hook zsh)"
+
 # mise
 export PATH="$HOME/.local/share/mise/shims:$PATH"
 eval "$(mise activate zsh)"
