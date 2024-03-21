@@ -15,9 +15,6 @@ ensure_zcompiled "${ZDOTDIR}/.zshrc"
 # PATHの重複を防ぐ
 typeset -U PATH
 
-# ref. https://qiita.com/P-man_Brown/items/1959e7ac8c51ed5d619e
-export PS4='+[%D{%H:%M:%S}]%1N:%i> '
-
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
