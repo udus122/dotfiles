@@ -1,10 +1,15 @@
 % gcloud, gcp
 
 # create configuration
-gcloud config configurations create <config_name>
+gcloud config configurations create <new_config_name>
 
 # set account in current configuration
 gcloud config set account <account>
 
 # set project in current configuration
 gcloud config set project <project_id>
+
+# switch active configuration
+gcloud config configurations activate <config_name>
+
+$ config_name: ls ~/.config/gcloud/configurations/ | sed 's/^config_//'
