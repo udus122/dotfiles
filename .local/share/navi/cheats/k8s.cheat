@@ -1,0 +1,9 @@
+% kubernetes, k8s
+
+# list context
+kubectl config get-contexts
+
+# switch context
+kubectl config use-context <context>
+
+$ context: kubectl config get-contexts -o name
