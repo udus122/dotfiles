@@ -1,2 +1,7 @@
 ; Cheatsheet syntax
 ; ref: https://github.com/denisidoro/navi/blob/master/docs/cheatsheet_syntax.md
+
+% direnv
+
+# crate .envrc from from default(home directory) configuration
+cat ~/.envrc > ./.envrc
