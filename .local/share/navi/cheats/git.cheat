@@ -1,5 +1,12 @@
 % git
-# Git: Ignore local changes
+
+# ignore local changes
 git update-index --skip-worktree <file>
 
 $ file: git ls-files
+
+# list registered remote repositories
+git remote -v
+
+# add remote repository
+git remote add <new_repo_name> <new_repo_url>
