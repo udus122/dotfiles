@@ -2,6 +2,7 @@
 
 abbr -S 'd'='docker' > /dev/null
 abbr -S 'g'='git' > /dev/null
+abbr -S 'gst'='git status' > /dev/null
 abbr -S 't'="tmux" > /dev/null
 abbr -S 'tf'="terraform" > /dev/null
 abbr -S 'k'='kubectl' > /dev/null
