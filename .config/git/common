@@ -1,7 +1,11 @@
+[init]
+    defaultBranch = main
+[merge]
+    autoStash = true
 [rebase]
-    autosquash = true
-    autostash = true
+    autoSquash = true
+    autoStash = true
 [pull]
-    autostash = true
+    rebase = true
 [push]
     autoSetupRemote = true
