@@ -20,7 +20,7 @@ abbr -S 'gco'='open "https://console.cloud.google.com/home/dashboard?project=$(g
 abbr -S 'l'='ls -F --color=auto' > /dev/null
 abbr -S 'la'='ls -FA --color=auto' > /dev/null
 abbr -S 'll'='ls -Fl --color=auto' > /dev/null
-abbr -S 'lla'='ls -FlA--color=auto' > /dev/null
+abbr -S 'lla'='ls -FlA --color=auto' > /dev/null
 abbr -S 'r'="mise run --" > /dev/null
 abbr -S 'x'="mise exec --" > /dev/null
 abbr -S 'reload'="exec -l $SHELL" > /dev/null
