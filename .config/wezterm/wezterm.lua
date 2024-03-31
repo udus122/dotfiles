@@ -4,6 +4,9 @@ local wezterm = require 'wezterm'
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
+-- exit_behavior
+config.window_close_confirmation = 'NeverPrompt'
+
 -- appearance
 config.color_scheme = 'MaterialDesignColors'
 config.window_background_opacity = 0.85
