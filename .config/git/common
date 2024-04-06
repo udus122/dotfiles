@@ -1,7 +1,7 @@
 [init]
     defaultBranch = main
 [core]
-    editor = "vscode --wait"
+    editor = "code --wait"
     pager = "less -FXn" # ref. https://zenn.dev/itouuuuuuuuu/articles/11ab0d2ee8b860
 [merge]
     autoStash = true
