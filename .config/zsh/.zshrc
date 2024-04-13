@@ -78,9 +78,9 @@ __cd_undo() { builtin popd; echo; __call_precmds; zle reset-prompt }
 zle -N __cd_undo
 bindkey '^[[1;2B' __cd_undo
 bindkey '^[[1;2D' __cd_undo
-# TODO: shift+leftでfzfして移動履歴を辿れるようにしたい
-bindkey '^[[1;2C' __cd_undo
-# -------------x--------------------------------------
+# shift+leftでfzf-cd-widgetを呼び出す
+bindkey '^[[1;2C' fzf-cd-widget
+# ---------------------------------------------------
 
 # direnv
 eval "$(direnv hook zsh)"
@@ -127,6 +127,7 @@ setopt pushd_ignore_dups
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 bindkey 'ç' fzf-cd-widget
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 
 # starship
 eval "$(starship init zsh)"
