@@ -47,9 +47,19 @@ bindkey -M viins '^P' up-line-or-history
 bindkey -M viins '^R' history-incremental-pattern-search-backward
 bindkey -M viins '^U' backward-kill-line
 bindkey -M viins '^W' backward-kill-word
-bindkey -M viins '^Y' yank
+# bindkey -M viins '^Y' yank
 bindkey -M vicmd 'gg' beginning-of-line
 bindkey -M vicmd 'G'  end-of-line
+
+# ^Yで現在位置から左のスペースまでをkillする
+# ref. https://mollifier.hatenablog.com/entry/20081214/1229229752
+function _kill-backward-blank-word() {
+    zle set-mark-command
+    zle vi-backward-blank-word
+    zle kill-region
+}
+zle -N _kill-backward-blank-word
+bindkey '^Y' _kill-backward-blank-word
 
 # ----------------------------------------------------
 # 親ディレクトリへ「cd ..」をShift + Upでキーバインド
