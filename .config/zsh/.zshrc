@@ -62,7 +62,7 @@ zle -N _kill-backward-blank-word
 bindkey '^Y' _kill-backward-blank-word
 
 # ----------------------------------------------------
-# 親ディレクトリへ「cd ..」をShift + Upでキーバインド
+# shift+arrowでディレクトリを便利に移動する
 # ref. https://qiita.com/sfuta/items/a72f7bd194a61353c9fe
 # hook関数precmd実行
 __call_precmds() {
@@ -70,15 +70,35 @@ __call_precmds() {
   for __pre_func in $precmd_functions; do $__pre_func; done
 }
 # shift+upで親ディレクトリへ
-__cd_up() { builtin pushd ..; echo; __call_precmds; zle reset-prompt }
+__cd_up() {
+  builtin pushd ..
+  __call_precmds
+  zle reset-prompt
+}
 zle -N __cd_up
 bindkey '^[[1;2A' __cd_up
-# shift+down or shift+rightで戻る
-__cd_undo() { builtin popd; echo; __call_precmds; zle reset-prompt }
+
+# shift+downで戻る
+__cd_undo() {
+  builtin popd
+  __call_precmds
+  zle reset-prompt
+}
 zle -N __cd_undo
 bindkey '^[[1;2B' __cd_undo
-bindkey '^[[1;2D' __cd_undo
-# shift+leftでfzf-cd-widgetを呼び出す
+
+# shift+leftで履歴から移動先のディレクトリを選択する
+__cd_hist_fzf() {
+  local target_dir=$(dirs -v | awk '{ print $2 }' | fzf)
+  cd $(realpath ${target_dir/#\~/$HOME})
+  __call_precmds
+  zle reset-prompt
+}
+zle -N __cd_hist_fzf
+bindkey '^[[1;2D' __cd_hist_fzf
+
+# shift+rightでfzf-cd-widgetを呼び出す
+# カレントディレクトリから選択して移動
 bindkey '^[[1;2C' fzf-cd-widget
 # ---------------------------------------------------
 
