@@ -38,6 +38,9 @@ limactl completion zsh > "${USER_COMPLETION_DIR}/_limactl"
 # github cli
 gh completion -s zsh > "${USER_COMPLETION_DIR}/_gh"
 
+# yq
+yq shell-completion zsh > "${USER_COMPLETION_DIR}/_yq"
+
 compinit
 
 # terraform

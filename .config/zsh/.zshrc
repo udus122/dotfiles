@@ -10,6 +10,7 @@ function ensure_zcompiled {
     zcompile $1
   fi
 }
+
 ensure_zcompiled "${ZDOTDIR}/.zshrc"
 
 # PATHの重複を防ぐ
