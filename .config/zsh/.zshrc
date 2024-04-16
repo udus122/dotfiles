@@ -56,6 +56,7 @@ HISTSIZE=10000  # メモリに保存される履歴の数
 SAVEHIST=100000  # ファイルに保存する履歴の数
 
 set -o ignoreeof  # do not logout with ctrl+d
+setopt no_flow_control  # Disable Ctrl+s to lock and Ctrl+q to unlock
 setopt share_history  # コマンド履歴ファイルを共有する
 setopt hist_ignore_all_dups  # historyに追加されるコマンド行が古いものと同じなら古いものを削除
 setopt hist_verify  # ヒストリを呼び出してから実行する間に一旦編集可能

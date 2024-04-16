@@ -89,7 +89,7 @@ bindkey '^[[1;2C' fzf-cd-widget
 
 # git関連
 
-# ctrl+g ctrl+sでブランチ切り替え
+# ctrl+g ctrl+wでブランチ切り替え
 # ref. https://zenn.dev/yamo/articles/5c90852c9c64ab
 __git_sw() {
   target_br=$(
@@ -106,3 +106,14 @@ __git_sw() {
 zle -N __git_sw
 bindkey -r '^g^w'
 bindkey '^g^w' __git_sw
+
+# ctrl+g ctrl+sでgit status
+__git_status() {
+  if [ "$(git rev-parse --is-inside-work-tree 2> /dev/null)" = 'true' ]; then
+    echo git status -sb # git statusを実行したっぽくみせかける
+    git status -sb
+  fi
+  zle accept-line
+}
+zle -N __git_status  # _git_status関数をgit_status widgetとして登録
+bindkey '^G^S' __git_status
