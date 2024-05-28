@@ -1,0 +1,26 @@
+{
+  "keyMappings": "# Insert your preferred key mappings here.\nmap m Marks.activateCreateMode swap\nmap ` Marks.activateGotoMode swap",
+  "settingsVersion": "2.1.2",
+  "exclusionRules": [
+    {
+      "passKeys": "",
+      "pattern": "https?://mail.google.com/*"
+    },
+    {
+      "passKeys": "/",
+      "pattern": "https?://github.com/*"
+    },
+    {
+      "passKeys": "/",
+      "pattern": "https?://console.cloud.google.com/*"
+    },
+    {
+      "passKeys": "gltwyibjk/?xonp.",
+      "pattern": "https?://calendar.google.com/*"
+    },
+    {
+      "passKeys": "zfx",
+      "pattern": "https?://app.gather.town/*"
+    }
+  ]
+}
