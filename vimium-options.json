@@ -2,26 +2,5 @@
   "keyMappings": "# Insert your preferred key mappings here.\nmap m Marks.activateCreateMode swap\nmap ` Marks.activateGotoMode swap\nmap h previousTab\nmap l nextTab\nmap J scrollPageDown\nmap K scrollPageUp",
   "settingsVersion": "2.1.2",
   "userDefinedLinkHintCss": "/** https://github.com/ysjn/vimium-simply-dark/blob/master/vimium-simply-dark.css */\n:root {\n  /** Customizable Palette */\n  --accent: hotpink;\n  --text: #fff;\n  --background: #444;\n\n  /** Calcurated Palette */\n  --text-secondary: color-mix(in srgb, var(--text) 60%, transparent);\n  --text-tertiary: color-mix(in srgb, var(--text) 35%, transparent);\n  --background-selected: color-mix(in srgb, var(--background), #000 20%);\n  --border-primary: var(--background-selected);\n  --box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);\n}\n\n@keyframes show {\n  0% {\n    transform: translateY(50px);\n    opacity: 0;\n  }\n\n  100% {\n    transform: translateY(0);\n    opacity: 1;\n  }\n}\n\n#vimiumHintMarkerContainer {\n  .internalVimiumHintMarker {\n    padding: 3px 4px;\n    background: var(--background);\n    border: none;\n    box-shadow: var(--box-shadow);\n  }\n\n  span {\n    color: var(--text);\n    text-shadow: none;\n  }\n\n  .matchingCharacter {\n    opacity: 0.4;\n\n    ~ span {\n      color: var(--accent);\n    }\n  }\n}\n\n#vomnibar {\n  background: var(--background);\n  border: none;\n  box-shadow: var(--box-shadow);\n  animation: show 200ms cubic-bezier(0, 0, 0.2, 1) forwards;\n\n  .vomnibarSearchArea {\n    padding: 10px 30px;\n    color: var(--text);\n    background: transparent;\n    border: none;\n  }\n\n  #vomnibarInput {\n    padding: 0;\n    color: var(--text);\n    background: transparent;\n    box-shadow: none;\n  }\n\n  ul {\n    margin: 0;\n    padding: 0;\n    background: transparent;\n    border-top: 1px solid var(--border-primary);\n  }\n\n  li {\n    padding: 10px;\n    border-bottom: 1px solid var(--border-primary);\n\n    .vomnibarTopHalf,\n    .vomnibarBottomHalf {\n      display: flex;\n      padding: 3px 0;\n    }\n\n    .vomnibarTitle,\n    .vomnibarSource {\n      color: var(--text-secondary);\n    }\n\n    .vomnibarUrl {\n      overflow: hidden;\n      color: var(--text-tertiary);\n      white-space: nowrap;\n      text-overflow: ellipsis;\n    }\n\n    .vomnibarMatch {\n      color: var(--accent);\n      font-weight: normal;\n    }\n\n    .vomnibarTitle .vomnibarMatch {\n      color: var(--accent);\n    }\n\n    &.vomnibarSelected {\n      background-color: var(--background-selected);\n      border-bottom: 1px solid transparent;\n    }\n  }\n}\n\ndiv.vimiumHUD {\n  background: var(--background);\n  border: none;\n  box-shadow: var(--box-shadow);\n\n  .hud-find {\n    display: flex;\n  }\n\n  span#hud-find-input {\n    position: relative;\n    width: 100%;\n    color: var(--text);\n\n    &::before {\n      position: sticky;\n      left: 0;\n      padding-right: 4px;\n      color: var(--text-secondary);\n      background: linear-gradient(\n        90deg,\n        var(--background) 0%,\n        var(--background) 50%,\n        transparent 100%\n      );\n    }\n  }\n\n  #hud-match-count {\n    flex-shrink: 0;\n    float: none;\n    padding-left: 4px;\n  }\n\n  .hud-find,\n  .vimiumHUDSearchArea {\n    background-color: transparent;\n    border: none;\n  }\n}",
-  "exclusionRules": [
-    {
-      "passKeys": "",
-      "pattern": "https?://mail.google.com/*"
-    },
-    {
-      "passKeys": "/",
-      "pattern": "https?://github.com/*"
-    },
-    {
-      "passKeys": "/",
-      "pattern": "https?://console.cloud.google.com/*"
-    },
-    {
-      "passKeys": "gltwyibjk/?xonp.",
-      "pattern": "https?://calendar.google.com/*"
-    },
-    {
-      "passKeys": "zfx",
-      "pattern": "https?://app.gather.town/*"
-    }
-  ]
+  "exclusionRules": []
 }
