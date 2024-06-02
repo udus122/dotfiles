@@ -8,6 +8,8 @@
 [rebase]
     autoSquash = true
     autoStash = true
+[fetch]
+    prune = true
 [pull]
     rebase = true
 [push]

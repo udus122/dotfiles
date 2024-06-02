@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ref. https://blog.foresta.me/posts/git_useful_command_collection/
+
+# スクリプトの説明と使用方法を表示
+# echo "This script deletes branches that have been merged to the current branch."
+# echo "Usage: ./delete_merged_branches.sh [--dry-run]"
+
+DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
+
+# dry-runオプションのチェック
+if [[ "${1:-}" == "--dry-run" ]]; then
+    echo "Dry-run mode enabled. The following branches would be deleted (if not dry-run):"
+    # dry-runが指定されていれば、削除対象のブランチを表示する
+    git branch --merged | ggrep -E -v "\*|${DEFAULT_BRANCH}"
+else
+    # 実際にマージ済みのブランチを削除する
+    git branch --merged | ggrep -E -v "\*|${DEFAULT_BRANCH}" | xargs git branch -D
+    echo "Merged branches have been deleted."
+fi
