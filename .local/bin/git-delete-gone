@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ref. https://blog.foresta.me/posts/git_useful_command_collection/
+
+# スクリプトの説明と使用方法を表示
+# echo "This script deletes local branches whose corresponding remote branches are gone."
+# echo "Usage: ./delete_remote_gone_branches.sh [--dry-run]"
+
+# dry-runオプションのチェック
+if [[ "${1:-}" == "--dry-run" ]]; then
+    echo "Dry-run mode enabled. The following local branches would be deleted (if not dry-run):"
+    # dry-runが指定されていれば、削除対象のブランチを表示する
+    git branch --format "%(refname:short) %(upstream:track)" | grep "\[gone\]" | awk '{print $1}'
+else
+    # 実際にリモート削除されたブランチを削除する
+    git branch --format "%(refname:short) %(upstream:track)" \
+    | grep "\[gone\]" \
+    | awk '{print $1}' \
+    | xargs -IXXX git branch -D XXX
+    echo "Local branches corresponding to gone remote branches have been deleted."
+fi
