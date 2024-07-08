@@ -68,18 +68,27 @@ function gcloud-config-create-set-project-account() {
   command gcloud config set project "${project_id}"
 }
 
+function kubectl-less () {
+    if [[ -t 1 ]]
+    then
+        command kubectl "$@" | less -F -X -n
+    else
+        command kubectl "$@"
+    fi
+}
+
 function safe-kubectl() {
     local current_context=$(command kubectl config current-context)
     if [[ $current_context == *"prd"* ]]; then
         echo -n "You're in a production context. If you want to continue, type y(es) and press Enter: "
         read REPLY
         if [[ $REPLY =~ ^([Yy]|[Yy]es)$ ]]; then
-            command kubectl "$@"
+            kubectl-less "$@"
         else
             echo "Aborted!"
         fi
     else
-        command kubectl "$@"
+        kubectl-less "$@"
     fi
 }
 compdef _kubectl safe-kubectl
