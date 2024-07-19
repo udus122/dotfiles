@@ -93,3 +93,27 @@ function safe-kubectl() {
 }
 compdef _kubectl safe-kubectl
 alias kubectl='safe-kubectl'
+
+create_branch_with_guide() {
+  selected_option=$(cat <<EOF | fzf
+new: 本番提供前の0 → 1の新規開発
+feature: 既存システムへの機能追加・仕様変更に伴う実装の変更
+update: 既存システムについて、仕様変更を伴わない実装の改善
+replace: 実装の変更を伴わない、既存パラメータや環境変数等の値の変更
+clean: 既存システムについて、実装の変更を伴わないコードの改善
+chore: 既存システムへの影響がない独立した対応
+verify: 技術検証
+hotfix: 変更障害（意図していなかった挙動の発生）に対する修正
+fix: 些細な変更障害に対する修正
+EOF
+  )
+
+  selected_branch=$(echo "$selected_option" | cut -d':' -f1)
+  echo -n "Enter the branch name: "
+  read name
+  branch_name="${selected_branch}/${name}"
+  git branch "${branch_name}"
+  git switch "${branch_name}"
+}
+ 
+alias gn='create_branch_with_guide'
