@@ -29,8 +29,9 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then
   # MacOS向けのコマンド
   echo "Running on MacOS"
-  # Disable Character Picker in VSCode for Smooth cursor movement in VSCode Neovim.
+  # Disable Character Picker in VSCode, Obsidian for Smooth cursor movement in VSCode Neovim.
   defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
+  defaults write md.obsidian ApplePressAndHoldEnabled -bool false
 elif [[ "$OSTYPE" == "linux"* ]]; then
   # Linux向けのコマンド
   echo "Running on Linux"
