@@ -84,6 +84,9 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 # starship
 eval "$(starship init zsh)"
 
+# sheldon
+eval "$(sheldon source)"
+
 # completion
 source "${ZDOTDIR}/completion.zsh"
 
