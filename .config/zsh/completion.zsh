@@ -41,6 +41,9 @@ gh completion -s zsh > "${USER_COMPLETION_DIR}/_gh"
 # yq
 yq shell-completion zsh > "${USER_COMPLETION_DIR}/_yq"
 
+# sheldon
+sheldon completions --shell zsh > "${USER_COMPLETION_DIR}/_sheldon"
+
 compinit
 
 # terraform
