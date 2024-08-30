@@ -76,11 +76,6 @@ setopt auto_cd
 setopt auto_pushd
 setopt pushd_ignore_dups
 
-# fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-bindkey 'ç' fzf-cd-widget
-export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
-
 # starship
 eval "$(starship init zsh)"
 

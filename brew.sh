@@ -8,5 +8,3 @@ if [ "$(uname)" != "Darwin" ] ; then
 fi
 
 brew bundle --global
-
-yes | "$(brew --prefix)"/opt/fzf/install --no-fish --no-bash > /dev/null
