@@ -7,3 +7,14 @@ kubectl config get-contexts
 kubectl config use-context <context>
 
 $ context: kubectl config get-contexts -o name
+
+# switch namespace
+kubectl config set-context --current --namespace=<namespace>
+
+$ namespace: kubectl get namespaces -o custom-columns=:metadata.name --no-headers
+
+# remove finalizers
+kubectl patch -p '{"metadata":{"finalizers":null}}' --type=merge -n <namespace> <resource-type> <resource-name>
+
+$ resource-type: kubectl api-resources -o name
+$ resource-name: kubectl get -n <namespace> <resource-type> -o custom-columns=:.metadata.name
