@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+script_dir="$(dirname "$0")"
+
 # Check operating system
 if [ "$(uname)" != "Darwin" ] ; then
   echo "Not macOS!"
@@ -8,3 +10,5 @@ if [ "$(uname)" != "Darwin" ] ; then
 fi
 
 brew bundle --global
+
+kubectl krew install < "$script_dir/krew.txt"
