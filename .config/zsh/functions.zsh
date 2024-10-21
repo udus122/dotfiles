@@ -92,7 +92,7 @@ function safe-kubectl() {
     fi
 }
 compdef _kubectl safe-kubectl
-alias kubectl='safe-kubectl'
+# alias kubectl='safe-kubectl'  # 2024-10-21: Fig(Amazon Q)を使いたいため使わない
 
 create_branch_with_guide() {
   selected_option=$(cat <<EOF | fzf
@@ -115,5 +115,5 @@ EOF
   git branch "${branch_name}"
   git switch "${branch_name}"
 }
- 
+
 alias gn='create_branch_with_guide'
