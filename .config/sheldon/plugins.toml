@@ -26,3 +26,7 @@ apply = ["defer"]
 
 [plugins.fzf-tab-completion.hooks]
 post = 'bindkey "^I" fzf_completion'
+
+[plugins.fzf-git]
+github = 'junegunn/fzf-git.sh'
+apply = ["defer"]
