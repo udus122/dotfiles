@@ -39,6 +39,7 @@ brew "stern"
 brew "lima"
 brew "navi"
 brew "git-secrets"
+brew "act"
 
 # zsh customise
 brew "zsh-completions"
