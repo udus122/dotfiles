@@ -1,5 +1,6 @@
 [tools]
-python = "3.11"
+python = "3.13"
+uv = "latest"
 node = "latest"
 java = "latest"
 deno = "latest"
@@ -12,7 +13,7 @@ argo-rollouts = "latest"
 terraform = "latest"
 awscli = "latest"
 gcloud = "latest"
-go = "1.23.2"
+go = "1.23"
 "npm:pnpm" = "latest"
 
 [settings]
