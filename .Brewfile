@@ -1,6 +1,7 @@
 # tap
 tap "homebrew/cask-fonts"
 tap "olets/tap"
+tap "supabase/tap"
 
 # replace basic commands with GNU/Linux version
 brew "bash"
@@ -40,8 +41,9 @@ brew "lima"
 brew "navi"
 brew "git-secrets"
 brew "act"
+brew "supabase/tap/supabase"
 
-# zsh customise
+# zsh customize
 brew "zsh-completions"
 brew "zsh-autosuggestions"
 brew "olets/tap/zsh-abbr"
