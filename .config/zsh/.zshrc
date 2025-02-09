@@ -53,6 +53,9 @@ export POETRY_CACHE_DIR="$XDG_CACHE_HOME/pypoetry"
 # less
 export LESS='-iMNRS'
 
+# グロブ拡張を有効にする
+setopt extended_glob
+
 # history
 HISTFILE="$ZDOTDIR/history"  # ヒストリファイルの保存先
 HISTSIZE=10000  # メモリに保存される履歴の数
@@ -66,10 +69,26 @@ setopt hist_verify  # ヒストリを呼び出してから実行する間に一�
 setopt hist_reduce_blanks  # 余分な空白は詰めて記録
 setopt hist_save_no_dups  # 古いコマンドと同じものは無視
 setopt hist_ignore_all_dups  # ヒストリに追加されるコマンド行が古いものと同じなら古いものを削除
+setopt hist_ignore_space  # ヒストリに追加されるコマンド行の先頭にスペースがあれば削除
 
-## 実行したプロセスの消費時間が3秒以上かかったら
+# 配列内のパターンをパイプ(|)で連結して1つの正規表現にする
+JOINED_IGNORE_REGEX="${(j:|:)IGNORE_PATTERNS}"
+zshaddhistory() {
+  local line=${1%%$'\n'}
+  local cmd=${line%% *}
+
+  # 以下の条件をすべて満たすものだけをヒストリに追加する
+  [[ ${#line}  -ge 5
+    && ${cmd}  !=  (l|l[sal])
+    && ${cmd}  !=  (c|cd)
+    && ${cmd}  !=  (m|man)
+    && ${line} !=  *"/Applications/Visual Studio Code.app"*  # VSCodeのデバッグコマンドを無視したい
+  ]]
+}
+
+## 実行したプロセスの消費時間が5秒以上かかったら
 ## 自動的に消費時間の統計情報を表示する。
-REPORTTIME=3
+REPORTTIME=5
 
 ## 「/」も単語区切りとみなす。
 WORDCHARS=${WORDCHARS:s,/,,}
