@@ -11,4 +11,4 @@ fi
 
 brew bundle --global
 
-kubectl krew install < "$script_dir/krew.txt"
+krew install < "$script_dir/krew.txt"
