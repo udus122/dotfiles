@@ -13,7 +13,7 @@ argo-rollouts = "latest"
 terraform = "latest"
 awscli = "latest"
 gcloud = "latest"
-go = "1.23"
+go = "1.24"
 "npm:pnpm" = "latest"
 
 [settings]
