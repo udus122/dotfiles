@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# set -euo pipefail
+
+function create-git-worktree-fzf() {
+    if [ -n "${1:-}" ]; then
+        branch="$1"
+    fi
+    if [ -z "${1:-}" ]; then
+        branch=$(git branch --all --format='%(refname:short)' | grep -v 'HEAD' | sort -u | fzf --prompt="Branch> " --print-query | tr -d '\n')
+        echo "Selected branch: $branch"
+        if [ -z "$branch" ]; then
+            echo "No branch name entered. Aborting."
+            return 1
+        fi
+    fi
+
+    REPO_ROOT=$(git rev-parse --show-toplevel)  # リポジトリのルートディレクトリの絶対パスを取得
+
+    WORKTREE_PATH="${REPO_ROOT}/git-worktrees/$branch"  # 新しい作業ツリーのパスを定義
+
+    echo "create new worktree: ${WORKTREE_PATH}"
+    if git show-ref --verify --quiet "refs/heads/$branch"; then
+        git worktree add "${WORKTREE_PATH}" "$branch"
+    else
+        git worktree add "${WORKTREE_PATH}" -b "$branch"
+    fi
+
+    cd "${WORKTREE_PATH}"
+
+    # プロジェクト固有の処理(npm installなど)
+    if [ -f "${WORKTREE_PATH}/setup.local.sh" ]; then
+        echo "Running setup.local.sh..."
+        bash "${WORKTREE_PATH}/setup.local.sh"
+    fi
+
+    echo "opening VSCode..."
+    code "${WORKTREE_PATH}"
+
+    cd -  # 元のディレクトリに戻る
+
+    echo "Worktree $branch setup complete."
+}
+
+create-git-worktree-fzf "$@"
