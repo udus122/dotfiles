@@ -1,14 +1,47 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run lint)",
-      "Bash(npm run test:*)",
-      "Bash(git:*)",
-      "Edit(docs/**)",
-      "Edit(//tmp/scratch.txt)"
+      "Bash(ls:*)",           // lsコマンドを許可
+      "Bash(cat:*)",          // catコマンドを許可
+      "Bash(echo:*)",         // echoコマンドを許可
+      "Bash(mkdir:*)",        // mkdirコマンドを許可
+      "Bash(cp:*)",           // cpコマンドを許可
+      "Bash(grep:*)",         // grepコマンドを許可
+      "Bash(find:*)",         // findコマンドを許可
+      "Bash(touch:*)",        // touchコマンドを許可
+      "Bash(jq:*)",          // jqコマンドを許可
+      "Bash(pwd:*)",          // pwdコマンドを許可
+      "Bash(cd:*)",           // cdコマンドを許可
+      "Bash(head:*)",         // headコマンドを許可
+      "Bash(tail:*)",         // tailコマンドを許可
+      "Bash(diff:*)",         // diffコマンドを許可
+      "Bash(sed:*)",          // sedコマンドを許可
+      "Bash(awk:*)",          // awkコマンドを許可
+      "Bash(wc:*)",           // wcコマンドを許可
+      "Bash(sort:*)",         // sortコマンドを許可
+      "Bash(uniq:*)",         // uniqコマンドを許可
+      "Bash(paste:*)",        // pasteコマンドを許可
+      "Bash(tr:*)",           // trコマンドを許可
+      "Bash(xargs:*)",        // xargsコマンドを許可
+      "Bash(tar:*)",          // tarコマンドを許可
+      "Bash(zip:*)",          // zipコマンドを許可
+      "Bash(unzip:*)",        // unzipコマンドを許可
+      "Bash(date:*)",         // dateコマンドを許可
+      "Bash(alias:*)",         // aliasコマンドを許可
+      "Bash(git:*)",            // gitコマンドを許可
+      "Read(**)",            // 全てのファイルの読み込みを許可
+      "Edit(docs/**)",          // ドキュメントの編集を許可
+      "Edit(//tmp/scratch.txt)", // 一時ファイルの編集を許可
+      "Bash(npm run lint)",     // lintコマンドを許可
+      "Bash(npm run test:*)"    // testコマンドを許可
     ],
     "deny": [
-      "Bash(curl:*)"
+      "Bash(curl:*)",        // curlをブロック
+      "Bash(git commit:*)",  // git commitをブロック
+      "Bash(git push:*)",    // git pushをブロック
+      "Bash(rm:*)",          // 予期せぬファイル削除を防ぐ
+      "Bash(sudo:*)",        // sudo系コマンドをブロック
+      "Read(.env.*)"         // 環境変数の読み込みを防ぐ
     ]
   },
   "env": {},
