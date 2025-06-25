@@ -7,10 +7,10 @@ function make_link () {
     src=$1
     dst=$2
 
-    # $dst がシンボリックリンクでない場合は終了
+    # $dst がシンボリックリンクでなく存在する場合はスキップ
     if [[ -e $dst && ! -L $dst ]]; then
-        echo "$dst is not a symbolic link"
-        return 1
+        echo "$dst already exists and is not a symbolic link. Skipping..."
+        return 0
     fi
     # ディレクトリが存在しない場合は作成
     dirpath=$(dirname "$dst")
