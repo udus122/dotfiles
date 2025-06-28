@@ -1,6 +1,7 @@
 ## Conversation Guidelines
 
-- 常に日本語で会話する
+- MUST: 常に日本語で会話する
+- MUST: 質問は1つずつ行う
 
 ## Development Philosophy
 

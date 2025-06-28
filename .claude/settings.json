@@ -33,7 +33,12 @@
       "Edit(docs/**)",          // ドキュメントの編集を許可
       "Edit(//tmp/scratch.txt)", // 一時ファイルの編集を許可
       "Bash(npm run lint)",     // lintコマンドを許可
-      "Bash(npm run test:*)"    // testコマンドを許可
+      "Bash(npm run test:*)",    // testコマンドを許可
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:design.digital.go.jp)",
+      "WebFetch(domain:zenn.dev)",
+      "WebFetch(domain:qiita.com)",
+      "WebFetch(domain:nextjs.org)"
     ],
     "deny": [
       "Bash(curl:*)",        // curlをブロック
