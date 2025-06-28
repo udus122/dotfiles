@@ -29,3 +29,4 @@ abbr -S 'r'="mise run --" > /dev/null
 abbr -S 'x'="mise exec --" > /dev/null
 abbr -S 'reload'="exec -l $SHELL" > /dev/null
 abbr -S 'login-docker-for-mac-vm'="docker run -it --rm --privileged --pid=host justincormack/nsenter1" > /dev/null  # https://gist.github.com/BretFisher/5e1a0c7bcca4c735e716abf62afad389
+abbr -S 'cc'='claude' > /dev/null
