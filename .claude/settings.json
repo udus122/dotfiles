@@ -1,4 +1,9 @@
 {
+  "defaultMode": "plan",
+  "includeCoAuthoredBy": false,
+  "env": {},
+  // cspell:ignore Notif
+  "preferredNotifChannel": "terminal_bell",
   "permissions": {
     "allow": [
       "Bash(ls:*)",           // lsコマンドを許可
@@ -9,7 +14,7 @@
       "Bash(grep:*)",         // grepコマンドを許可
       "Bash(find:*)",         // findコマンドを許可
       "Bash(touch:*)",        // touchコマンドを許可
-      "Bash(jq:*)",          // jqコマンドを許可
+      "Bash(jq:*)",           // jqコマンドを許可
       "Bash(pwd:*)",          // pwdコマンドを許可
       "Bash(cd:*)",           // cdコマンドを許可
       "Bash(head:*)",         // headコマンドを許可
@@ -27,9 +32,9 @@
       "Bash(zip:*)",          // zipコマンドを許可
       "Bash(unzip:*)",        // unzipコマンドを許可
       "Bash(date:*)",         // dateコマンドを許可
-      "Bash(alias:*)",         // aliasコマンドを許可
+      "Bash(alias:*)",        // aliasコマンドを許可
       "Bash(git:*)",            // gitコマンドを許可
-      "Read(**)",            // 全てのファイルの読み込みを許可
+      "Read(**)",             // 全てのファイルの読み込みを許可
       "Edit(docs/**)",          // ドキュメントの編集を許可
       "Edit(//tmp/scratch.txt)", // 一時ファイルの編集を許可
       "Bash(npm run lint)",     // lintコマンドを許可
@@ -48,8 +53,5 @@
       "Bash(sudo:*)",        // sudo系コマンドをブロック
       "Read(.env.*)"         // 環境変数の読み込みを防ぐ
     ]
-  },
-  "env": {},
-  // cspell:ignore Notif
-  "preferredNotifChannel": "terminal_bell"
+  }
 }
