@@ -3,6 +3,11 @@
 - MUST: 常に日本語で会話する
 - MUST: 質問は1つずつ行う
 
+## Notification
+
+Please execute the following when a task is completed.  
+`osascript -e 'display notification "${TASK_DESCRIPTION} is complete" with title "${REPOSITORY_NAME}"'`
+
 ## Development Philosophy
 
 ### Test-Driven Development (TDD)
@@ -15,19 +20,3 @@
 - その後、テストをパスさせる実装を進める
 - 実装中はテストを変更せず、コードを修正し続ける
 - すべてのテストが通過するまで繰り返す
-
-## Notification
-
-Please execute the following when a task is completed.
-
-### When implementation is completed
-
-`osascript -e 'display notification "{{...の実装を完了しました}}" with title "実装完了" sound name "Glass"'`
-
-### When Suggestion is completed
-
-`osascript -e 'display notification "{{...を提案しました}}" with title "提案" sound name "Funk"'`
-
-### When other tasks are completed
-
-`osascript -e 'display notification "{{...を完了しました}}" with title "...完了" sound name "Submarine"'`
