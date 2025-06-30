@@ -1,3 +1,8 @@
+---
+allowed_tools: Bash(gemini:*)
+description: "Use the Gemini CLI to perform review."
+---
+
 ## Gemini Review
 
 `gemini` is the Google Gemini CLI.
