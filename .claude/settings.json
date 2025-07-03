@@ -48,10 +48,10 @@
       "WebFetch(domain:design.digital.go.jp)"
     ],
     "deny": [
-      "Bash(curl:*)",        // curlをブロック
-      "Bash(git commit:*)",  // git commitをブロック
-      "Bash(git push:*)",    // git pushをブロック
-      "Bash(rm:*)",          // 予期せぬファイル削除を防ぐ
+      "Bash(rm -rf /)",      // ルートディレクトリの削除をブロック
+      "Bash(rm -rf ~)",      // ホームディレクトリの削除をブロック
+      "Bash(rm -rf /*)",     // 全てのファイルの削除をブロック
+      "Bash(rm -rf ~/*)",    // ホームディレクトリ内の全てのファイルの削除をブロック
       "Bash(sudo:*)",        // sudo系コマンドをブロック
       "Read(.env.*)"         // 環境変数の読み込みを防ぐ
     ]
