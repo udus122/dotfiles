@@ -41,6 +41,7 @@ brew "navi"
 brew "git-secrets"
 brew "act"
 brew "supabase/tap/supabase"
+brew "terminal-notifier"
 
 # zsh customize
 brew "zsh-completions"

@@ -1,6 +1,19 @@
 {
   "defaultMode": "plan",
   "includeCoAuthoredBy": false,
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title 'Claude Code' -subtitle '処理完了' -message 'すべてのタスクが終了しました' -sound default"
+          }
+        ]
+      }
+    ]
+  },
   "env": {},
   // cspell:ignore Notif
   "preferredNotifChannel": "terminal_bell",
