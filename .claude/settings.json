@@ -1,73 +1,72 @@
 {
-  "defaultMode": "plan",
-  "includeCoAuthoredBy": false,
+  "env": {},
   "hooks": {
-    "Notification": [
+    "Stop": [
       {
         "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "terminal-notifier -title 'Claude Code' -subtitle '処理完了' -message 'すべてのタスクが終了しました' -sound default"
+            "command": "osascript -e 'display notification \"タスクが完了しました\" with title \"Claude Code\" subtitle \"タスク完了\" sound name \"default\"'"
           }
         ]
       }
     ]
   },
-  "env": {},
-  // cspell:ignore Notif
-  "preferredNotifChannel": "terminal_bell",
   "permissions": {
+    "defaultMode": "plan",
     "allow": [
-      "Bash(ls:*)",              // lsコマンドを許可
-      "Bash(cat:*)",             // catコマンドを許可
-      "Bash(echo:*)",            // echoコマンドを許可
-      "Bash(mkdir:*)",           // mkdirコマンドを許可
-      "Bash(cp:*)",              // cpコマンドを許可
-      "Bash(grep:*)",            // grepコマンドを許可
-      "Bash(rg:*)",              // rgコマンドを許可
-      "Bash(find:*)",            // findコマンドを許可
-      "Bash(touch:*)",           // touchコマンドを許可
-      "Bash(jq:*)",              // jqコマンドを許可
-      "Bash(pwd:*)",             // pwdコマンドを許可
-      "Bash(cd:*)",              // cdコマンドを許可
-      "Bash(head:*)",            // headコマンドを許可
-      "Bash(tail:*)",            // tailコマンドを許可
-      "Bash(diff:*)",            // diffコマンドを許可
-      "Bash(sed:*)",             // sedコマンドを許可
-      "Bash(awk:*)",             // awkコマンドを許可
-      "Bash(wc:*)",              // wcコマンドを許可
-      "Bash(sort:*)",            // sortコマンドを許可
-      "Bash(uniq:*)",            // uniqコマンドを許可
-      "Bash(paste:*)",           // pasteコマンドを許可
-      "Bash(tr:*)",              // trコマンドを許可
-      "Bash(xargs:*)",           // xargsコマンドを許可
-      "Bash(tar:*)",             // tarコマンドを許可
-      "Bash(zip:*)",             // zipコマンドを許可
-      "Bash(unzip:*)",           // unzipコマンドを許可
-      "Bash(date:*)",            // dateコマンドを許可
-      "Bash(alias:*)",           // aliasコマンドを許可
-      "Bash(git:*)",             // gitコマンドを許可
-      "Read(**)",                // 全てのファイルの読み込みを許可
-      "Edit(docs/**)",           // ドキュメントの編集を許可
-      "Edit(//tmp/scratch.txt)", // 一時ファイルの編集を許可
-      "Bash(npm run lint)",      // lintコマンドを許可
-      "Bash(npm run test:*)",    // testコマンドを許可
-      "Bash(osascript -e 'display notification *)",  // 通知を許可
+      "Bash(ls:*)",              
+      "Bash(cat:*)",             
+      "Bash(echo:*)",            
+      "Bash(mkdir:*)",           
+      "Bash(cp:*)",              
+      "Bash(grep:*)",            
+      "Bash(rg:*)",              
+      "Bash(find:*)",            
+      "Bash(touch:*)",           
+      "Bash(jq:*)",              
+      "Bash(pwd:*)",             
+      "Bash(cd:*)",              
+      "Bash(head:*)",            
+      "Bash(tail:*)",            
+      "Bash(diff:*)",            
+      "Bash(sed:*)",             
+      "Bash(awk:*)",             
+      "Bash(wc:*)",              
+      "Bash(sort:*)",            
+      "Bash(uniq:*)",            
+      "Bash(paste:*)",           
+      "Bash(tr:*)",              
+      "Bash(xargs:*)",           
+      "Bash(tar:*)",             
+      "Bash(zip:*)",             
+      "Bash(unzip:*)",           
+      "Bash(date:*)",            
+      "Bash(alias:*)",           
+      "Bash(git:*)",             
+      "Read(**)",                
+      "Edit(docs/**)",           
+      "Edit(//tmp/scratch.txt)", 
+      "Bash(npm run lint)",      
+      "Bash(npm run test:*)",    
+      "Bash(osascript -e 'display notification *)",  
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:nextjs.org)",
+      "WebFetch(domain:ui.shadcn.com)",
       "WebFetch(domain:design.digital.go.jp)"
     ],
     "deny": [
-      "Bash(rm -rf /)",      // ルートディレクトリの削除をブロック
-      "Bash(rm -rf ~)",      // ホームディレクトリの削除をブロック
-      "Bash(rm -rf /*)",     // 全てのファイルの削除をブロック
-      "Bash(rm -rf ~/*)",    // ホームディレクトリ内の全てのファイルの削除をブロック
-      "Bash(sudo:*)",        // sudo系コマンドをブロック
-      "Read(.env.*)"         // 環境変数の読み込みを防ぐ
+      "Bash(rm -rf /)",      
+      "Bash(rm -rf ~)",      
+      "Bash(rm -rf /*)",     
+      "Bash(rm -rf ~/*)",    
+      "Bash(sudo:*)",        
+      "Read(.env.*)"         
     ]
-  }
+  },
+  "includeCoAuthoredBy": false
 }
