@@ -1,6 +1,79 @@
 {
   "env": {},
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(touch:*)",
+      "Bash(jq:*)",
+      "Bash(pwd:*)",
+      "Bash(cd:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(diff:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(paste:*)",
+      "Bash(tr:*)",
+      "Bash(xargs:*)",
+      "Bash(tar:*)",
+      "Bash(zip:*)",
+      "Bash(unzip:*)",
+      "Bash(date:*)",
+      "Bash(alias:*)",
+      "Bash(git:*)",
+      "Read(**)",
+      "Edit(docs/**)",
+      "Edit(//tmp/scratch.txt)",
+      "Bash(npm run lint)",
+      "Bash(npm run test:*)",
+      "Bash(osascript -e 'display notification *)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:zenn.dev)",
+      "WebFetch(domain:qiita.com)",
+      "WebFetch(domain:nextjs.org)",
+      "WebFetch(domain:ui.shadcn.com)",
+      "WebFetch(domain:design.digital.go.jp)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/*)",
+      "Bash(sudo:*)",
+      "Bash(git config *)",
+      "Bash(git reset:*)",
+      "Bash(git rebase:*)",
+      "Bash(gh repo delete:*)",
+      "Read(.env*)",
+      "Read(id_rsa)",
+      "Read(id_ed25519)"
+    ],
+    "defaultMode": "plan"
+  },
   "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Claude Codeが許可を求めています\" with title \"Claude Code\" subtitle \"確認待ち\" sound name \"Glass\"'"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",
@@ -13,60 +86,5 @@
       }
     ]
   },
-  "permissions": {
-    "defaultMode": "plan",
-    "allow": [
-      "Bash(ls:*)",              
-      "Bash(cat:*)",             
-      "Bash(echo:*)",            
-      "Bash(mkdir:*)",           
-      "Bash(cp:*)",              
-      "Bash(grep:*)",            
-      "Bash(rg:*)",              
-      "Bash(find:*)",            
-      "Bash(touch:*)",           
-      "Bash(jq:*)",              
-      "Bash(pwd:*)",             
-      "Bash(cd:*)",              
-      "Bash(head:*)",            
-      "Bash(tail:*)",            
-      "Bash(diff:*)",            
-      "Bash(sed:*)",             
-      "Bash(awk:*)",             
-      "Bash(wc:*)",              
-      "Bash(sort:*)",            
-      "Bash(uniq:*)",            
-      "Bash(paste:*)",           
-      "Bash(tr:*)",              
-      "Bash(xargs:*)",           
-      "Bash(tar:*)",             
-      "Bash(zip:*)",             
-      "Bash(unzip:*)",           
-      "Bash(date:*)",            
-      "Bash(alias:*)",           
-      "Bash(git:*)",             
-      "Read(**)",                
-      "Edit(docs/**)",           
-      "Edit(//tmp/scratch.txt)", 
-      "Bash(npm run lint)",      
-      "Bash(npm run test:*)",    
-      "Bash(osascript -e 'display notification *)",  
-      "WebFetch(domain:docs.anthropic.com)",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:qiita.com)",
-      "WebFetch(domain:nextjs.org)",
-      "WebFetch(domain:ui.shadcn.com)",
-      "WebFetch(domain:design.digital.go.jp)"
-    ],
-    "deny": [
-      "Bash(rm -rf /)",      
-      "Bash(rm -rf ~)",      
-      "Bash(rm -rf /*)",     
-      "Bash(rm -rf ~/*)",    
-      "Bash(sudo:*)",        
-      "Read(.env.*)"         
-    ]
-  },
-  "includeCoAuthoredBy": false
+  "model": "opus"
 }
