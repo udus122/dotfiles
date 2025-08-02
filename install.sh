@@ -12,3 +12,6 @@ fi
 brew bundle --global
 
 krew install < "$script_dir/krew.txt"
+
+# Install go tools
+go install github.com/syou6162/git-sequential-stage@latest
