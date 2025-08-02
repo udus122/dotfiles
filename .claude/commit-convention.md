@@ -11,7 +11,7 @@ Steps:
 7. Format as: `type(scope): description`
 8. Create the commit with the generated message
 
-Example title formats:
+Example formats:
 
 - `feat(auth): add OAuth2 login support`
 - `fix(api): resolve null pointer in user endpoint`
@@ -19,29 +19,3 @@ Example title formats:
 - `chore(deps): bump lodash to 4.17.21`
 
 Generate the most appropriate commit message based on the changes and commit automatically.
-
-Format
-
-Create a commit that includes **all conversation** between the user and yourself up to this point, following Conventional Commits format:
-
-```
-<type>[optional scope]: <description>
-
-[optional body]
-
-prompt: <user's input prompt>
-----
-<your response>
-----
-prompt: <user's input prompt>
-----
-<your response>
-
-[optional footer(s)]
-```
-
-- Breaking changes: Use ! after type/scope or add BREAKING CHANGE: footer
-- Common types: feat, fix, docs, style, refactor, test, chore, ci, build, perf
-- Scope examples: (api), (ui), (auth), (parser)
-- Description: Present tense, lowercase, under 50 chars, no period
-- Separate conversation exchanges with ----

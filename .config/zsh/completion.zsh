@@ -49,6 +49,13 @@ yq shell-completion zsh > "${USER_COMPLETION_DIR}/_yq"
 # sheldon
 sheldon completions --shell zsh > "${USER_COMPLETION_DIR}/_sheldon"
 
+# supabase
+supabase completion zsh > "${USER_COMPLETION_DIR}/_supabase"
+
+# wtp
+wtp completion zsh > "${USER_COMPLETION_DIR}/_wtp"
+
+
 compinit
 
 # terraform
@@ -60,9 +67,3 @@ complete -C "$(mise where awscli)/aws_completer" aws
 # gcloud
 builtin source "$(mise where gcloud)/path.zsh.inc"
 builtin source "$(mise where gcloud)/completion.zsh.inc"
-
-# supabase
-supabase completion zsh > "${USER_COMPLETION_DIR}/_supabase"
-
-# wtp
-wtp completion zsh > "${USER_COMPLETION_DIR}/_wtp"
