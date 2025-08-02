@@ -32,6 +32,7 @@
       "Bash(zip:*)",
       "Bash(unzip:*)",
       "Bash(date:*)",
+      "Bash(git add:*)",
       "Bash(git add -N:*)",
       "Bash(git diff:*)",
       "Bash(git commit:*)",
