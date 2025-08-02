@@ -34,6 +34,7 @@
       "Bash(date:*)",
       "Bash(git add -N:*)",
       "Bash(git diff:*)",
+      "Bash(git commit:*)",
       "Bash(git apply:*)",
       "Bash(filterdiff:*)",
       "Bash(git-sequential-stage:*)",
