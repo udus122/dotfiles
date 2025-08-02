@@ -63,3 +63,6 @@ builtin source "$(mise where gcloud)/completion.zsh.inc"
 
 # supabase
 supabase completion zsh > "${USER_COMPLETION_DIR}/_supabase"
+
+# wtp
+wtp completion zsh > "${USER_COMPLETION_DIR}/_wtp"
