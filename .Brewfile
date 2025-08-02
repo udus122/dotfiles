@@ -2,6 +2,7 @@
 tap "homebrew/cask-fonts"
 tap "olets/tap"
 tap "supabase/tap"
+tap "satococoa/tap"
 
 # replace basic commands with GNU/Linux version
 brew "bash"
@@ -43,6 +44,8 @@ brew "act"
 brew "supabase/tap/supabase"
 brew "ripgrep"
 brew "patchutils"
+# cspell:ignore satococoa
+brew "satococoa/tap/wtp"
 
 # zsh customize
 brew "zsh-completions"
