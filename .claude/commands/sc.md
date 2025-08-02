@@ -1,5 +1,5 @@
 ---
-description: 変更を意味ある単位に分割してコミット
+description: semantic-commit 変更を意味ある単位に分割してコミット
 ---
 
 # 意味のある最小の単位でcommitする
