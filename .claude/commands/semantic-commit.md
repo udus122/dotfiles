@@ -1,3 +1,7 @@
+---
+description: 変更を意味ある単位に分割してコミット
+---
+
 # 意味のある最小の単位でcommitする
 
 大きな変更を論理的な単位に分割してコミットします。LLMがgit diffを分析して意味のある最小単位を提案し、`git-sequential-stage`ツールによる自動化された逐次ステージングでコミットします。
@@ -10,27 +14,27 @@
 
 ## 概要
 
-このコマンドは、LLM Agentが大規模な変更を意味のある最小単位に分割してコミットするためのツールです。**専用ツール`git-sequential-stage`**により、1つのファイル内の異なる意味的変更も安全かつ確実に分割できます。
+このコマンドは、LLM Agentが大規模な変更を意味のある最小単位に分割してコミットするためのツールです。専用ツール`git-sequential-stage`により、1つのファイル内の異なる意味的変更も安全かつ確実に分割できます。
 
 ref. [LLM Agentに意味のある単位のコミットを強制させる](https://www.yasuhisay.info/entry/2025/07/12/131421)
 
 ### 主な特徴
 
-- **完璧な意味的分割**: ファイル内の異なる変更を確実に分離
-- **複数ファイルのサポート**: 複数ファイルにまたがる変更を一度に処理
-- **シンプルな実行**: 複雑なループロジックは`git-sequential-stage`が内部で処理
-- **堅牢性**: Go言語で実装された専用ツールによる安定動作
+- 完璧な意味的分割: ファイル内の異なる変更を確実に分離
+- 複数ファイルのサポート: 複数ファイルにまたがる変更を一度に処理
+- シンプルな実行: 複雑なループロジックは`git-sequential-stage`が内部で処理
+- 堅牢性: Go言語で実装された専用ツールによる安定動作
 
 ## 動作原理
 
 ### 基本フロー
 
-1. **リポジトリルートに移動**: `git rev-parse --show-toplevel`で確認後、移動
-2. **差分取得**: `git diff HEAD`でコンテキスト付きのhunkリストを取得
-3. **LLM分析**: hunk単位で意味的グループを決定
-4. **自動ステージング**: `git-sequential-stage`が選択したhunkを安全にステージング
-5. **コミット実行**: ステージング完了後、`git commit`を実行
-6. **繰り返し**: 残りの変更で継続
+1. リポジトリルートに移動: `git rev-parse --show-toplevel`で確認後、移動
+2. 差分取得: `git diff HEAD`でコンテキスト付きのhunkリストを取得
+3. LLM分析: hunk単位で意味的グループを決定
+4. 自動ステージング: `git-sequential-stage`が選択したhunkを安全にステージング
+5. コミット実行: ステージング完了後、`git commit`を実行
+6. 繰り返し: 残りの変更で継続
 
 ### 技術的詳細
 
@@ -88,11 +92,11 @@ git diff HEAD > .claude/tmp/current_changes.patch
 
 ### Step 2: LLM分析
 
-LLMが**hunk単位**で変更を分析し、最初のコミットに含めるhunkを決定：
+LLMがhunk単位で変更を分析し、最初のコミットに含めるhunkを決定：
 
-- **hunkの内容を読み取る**: 各hunkが何を変更しているか理解
-- **意味的グループ化**: 同じ目的の変更（バグ修正、リファクタリング等）をグループ化
-- **コミット計画**: どのhunkをどのコミットに含めるか決定
+- hunkの内容を読み取る: 各hunkが何を変更しているか理解
+- 意味的グループ化: 同じ目的の変更（バグ修正、リファクタリング等）をグループ化
+- コミット計画: どのhunkをどのコミットに含めるか決定
 
 必要に応じて、総hunk数を確認：
 ```bash
@@ -160,6 +164,82 @@ else
 fi
 ```
 
+## コミットメッセージフォーマット
+
+### Conventional Commitsとの統合
+
+この時点までのユーザーとあなたの間のすべての会話を含むコミットを作成し、Conventional Commitsフォーマットに従います:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+prompt: <user's input prompt>
+----
+<your response>
+----
+prompt: <user's input prompt>
+----
+<your response>
+
+[optional footer(s)]
+```
+
+### フォーマット詳細
+
+- type: 変更の種類を表す必須項目
+  - `feat`: 新機能
+  - `fix`: バグ修正
+  - `docs`: ドキュメントのみの変更
+  - `style`: コードの意味に影響しない変更（空白、フォーマット、セミコロンなど）
+  - `refactor`: バグ修正でも機能追加でもないコード変更
+  - `test`: テストの追加や既存テストの修正
+  - `chore`: ビルドプロセスやツールの変更
+  - `ci`: CIの設定やスクリプトの変更
+  - `build`: ビルドシステムや外部依存関係の変更
+  - `perf`: パフォーマンス改善のコード変更
+
+- scope: 変更の影響範囲を表すオプション項目
+  - 例: `(api)`, `(ui)`, `(auth)`, `(parser)`, `(core)`, `(utils)`
+
+- description: 変更内容の簡潔な説明（必須）
+  - 現在形、小文字、50文字以内、ピリオドなし
+  - 例: "add user authentication", "fix memory leak in parser"
+
+- body: 詳細な説明（オプション）
+  - 変更の理由や背景を説明
+  - 72文字で改行
+
+- 会話履歴: コミットに含まれる会話の全体像
+  - `prompt:` でユーザーの入力を記録
+  - `----` で区切って応答を記録
+  - 複数の会話ターンは順番に記録
+
+- footer: 追加情報（オプション）
+  - 破壊的変更: `BREAKING CHANGE:` を付ける
+  - Issue参照: `Closes #123`, `Fixes #456`
+
+### 実例
+
+```
+feat(commands): add conversation history to semantic commits
+
+semantic-commit.mdファイルに会話履歴を含むコミットメッセージフォーマットを追加。
+これによりClaudeCodeとユーザーのやり取りがコミットメッセージに記録される。
+
+prompt: @.claude/commands/sandbox/semantic-commit.md を改修して、ClaudeCodeとユーザーのやり取りをコミットメッセージに残すようにしたいです。
+----
+semantic-commit.mdファイルを確認し、commit.mdからの指示を追加する場所を特定します。
+[分析と実装の詳細]
+----
+prompt: [続きのユーザー入力]
+----
+[続きの応答]
+
+Closes #42
+```
+
 ## 環境要件
 
 ```bash
@@ -217,10 +297,10 @@ git-sequential-stage -patch=".claude/tmp/current_changes.patch" -hunk="tests/tes
 
 ## ベストプラクティス
 
-1. **事前確認**: `git status`で現在の状態を確認
-2. **hunk番号の正確な指定**: ファイル名:hunk番号の形式で指定（例: "file.go:1,3,5"）
-3. **意味的一貫性**: 同じ目的の変更は同じコミットに
-4. **Conventional Commits**: 適切なプレフィックスを使用
+1. 事前確認: `git status`で現在の状態を確認
+2. hunk番号の正確な指定: ファイル名:hunk番号の形式で指定（例: "file.go:1,3,5"）
+3. 意味的一貫性: 同じ目的の変更は同じコミットに
+4. Conventional Commits: 適切なプレフィックスを使用
    - `feat:` 新機能
    - `fix:` バグ修正
    - `refactor:` リファクタリング
@@ -276,9 +356,9 @@ filterdiff -i "path/to/file.go" .claude/tmp/current_changes.patch | grep -c '^@@
 
 ## 注意事項
 
-- **使用しないコマンド**: `git add`、`git checkout`、`git restore`、`git reset`、`git stash`
-- **対話的操作の回避**: `git add -p`などのインタラクティブなコマンドは使用しない
-- **hunk番号の確認**: 必ず最新の差分で各ファイルのhunk番号を確認してから指定
+- 使用しないコマンド: `git add`、`git checkout`、`git restore`、`git reset`、`git stash`
+- 対話的操作の回避: `git add -p`などのインタラクティブなコマンドは使用しない
+- hunk番号の確認: 必ず最新の差分で各ファイルのhunk番号を確認してから指定
 
 ## 背景と設計思想
 
@@ -286,9 +366,9 @@ filterdiff -i "path/to/file.go" .claude/tmp/current_changes.patch | grep -c '^@@
 
 `git-sequential-stage`ツールは、以下の複雑な処理を内部で自動化します：
 
-1. **パッチIDによる一意識別**: `git patch-id`を使用したhunkの確実な特定
-2. **逐次ステージング**: 各hunk適用時の行番号変化に対応
-3. **複数ファイルのサポート**: `filterdiff`を使った特定ファイルのhunk抽出
-4. **エラーハンドリング**: 様々なエッジケースに対する堅牢な処理
+1. パッチIDによる一意識別: `git patch-id`を使用したhunkの確実な特定
+2. 逐次ステージング: 各hunk適用時の行番号変化に対応
+3. 複数ファイルのサポート: `filterdiff`を使った特定ファイルのhunk抽出
+4. エラーハンドリング: 様々なエッジケースに対する堅牢な処理
 
-これにより、人間が`git add -p`で行う作業を、LLM Agentが**シンプルなコマンド実行だけで**実現できるようになりました。
+これにより、人間が`git add -p`で行う作業を、LLM Agentがシンプルなコマンド実行だけで実現できるようになりました。
