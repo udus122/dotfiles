@@ -1,4 +1,5 @@
 ---
+allowed-tools: Bash(git add:*), Bash(git branch:*), Bash(git diff:*), Bash(git status:*), Bash(git commit:*), Bash(git reset:*), Bash(gh pr:*)
 description: 大きな変更を意味のある最小単位に分割して、セマンティックなコミットメッセージと共に順次コミットするツール。git標準コマンドのみを使用し、Conventional Commits準拠でプロジェクト規約を自動検出します。
 ---
 ## Semantic Commit
