@@ -1,11 +1,11 @@
-## Conversation Guidelines
+## 会話のルール
 
 - MUST: 常に日本語で会話する
 - MUST: 質問は1つずつ行う
 
-## Development Philosophy
+## 開発方針
 
-### Test-Driven Development (TDD)
+### TDDの実践を心がける
 
 - 原則としてテスト駆動開発（TDD）で進める
 - 期待される入出力に基づき、まずテストを作成する
