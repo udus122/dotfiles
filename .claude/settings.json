@@ -44,7 +44,9 @@
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:nextjs.org)",
       "WebFetch(domain:ui.shadcn.com)",
-      "WebFetch(domain:design.digital.go.jp)"
+      "WebFetch(domain:design.digital.go.jp)",
+      "WebFetch(domain:developers.cloudflare.com)",
+      "WebFetch(domain:next-intl.dev)"
     ],
     "deny": [
       "Bash(sudo:*)",
