@@ -54,9 +54,7 @@ ref. [LLM Agentに意味のある単位のコミットを強制させる](https:
 git-sequential-stage -patch="path/to/changes.patch" -hunk="src/main.go:1,3,5"
 
 # 複数ファイルの場合（複数の-hunkフラグを指定）
-git-sequential-stage -patch="path/to/changes.patch" \
-  -hunk="src/main.go:1,3" \
-  -hunk="src/utils.go:2,4"
+git-sequential-stage -patch="path/to/changes.patch" -hunk="src/main.go:1,3" -hunk="src/utils.go:2,4"
 
 # 引数の説明：
 # -patch: パッチファイルのパス
@@ -132,9 +130,7 @@ COMMIT_MSG="fix: ゼロ除算エラーを修正
 git-sequential-stage -patch=".claude/tmp/current_changes.patch" -hunk="src/calculator.py:1,3,5"
 
 # 複数ファイルの場合
-git-sequential-stage -patch=".claude/tmp/current_changes.patch" \
-  -hunk="src/calculator.py:1,3,5" \
-  -hunk="src/utils.py:2"
+git-sequential-stage -patch=".claude/tmp/current_changes.patch" -hunk="src/calculator.py:1,3,5" -hunk="src/utils.py:2"
 
 # コミット実行
 git commit -m "$COMMIT_MSG"
@@ -287,9 +283,7 @@ git-sequential-stage -patch=".claude/tmp/current_changes.patch" -hunk="src/calcu
 git-sequential-stage -patch=".claude/tmp/current_changes.patch" -hunk="src/auth.py:1,3,5"
 
 コミット2: feat: JWT認証機能の実装
-git-sequential-stage -patch=".claude/tmp/current_changes.patch" \
-  -hunk="src/auth.py:2,4" \
-  -hunk="src/models.py:1,2"
+git-sequential-stage -patch=".claude/tmp/current_changes.patch" -hunk="src/auth.py:2,4" -hunk="src/models.py:1,2"
 
 コミット3: test: 認証機能のテスト追加
 git-sequential-stage -patch=".claude/tmp/current_changes.patch" -hunk="tests/test_auth.py:1,2,3"
