@@ -1,0 +1,11 @@
+model_reasoning_effort = "high"
+hide_agent_reasoning = true
+network_access = true
+
+notify = ["bash", "/Users/yudai.usuda/.codex/notify_macos.sh"]
+
+[tools]
+web_search = true
+
+[projects."/Users/yudai.usuda/ghq/github.com/st-tech/zozo-mlops-infra"]
+trust_level = "trusted"
