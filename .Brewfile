@@ -46,6 +46,7 @@ brew "ripgrep"
 brew "patchutils"
 # cspell:ignore satococoa
 brew "satococoa/tap/wtp"
+brew "codex"
 
 # zsh customize
 brew "zsh-completions"
