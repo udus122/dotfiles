@@ -1,5 +1,4 @@
 # tap
-tap "homebrew/cask-fonts"
 tap "olets/tap"
 tap "supabase/tap"
 tap "satococoa/tap"
