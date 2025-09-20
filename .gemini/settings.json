@@ -1,0 +1,35 @@
+{
+  "general": {
+    "vimMode": false,
+    "preferredEditor": "code"
+  },
+  "ui": {
+    "theme": "GitHub",
+    "hideBanner": true,
+    "hideTips": false
+  },
+  "ide": {
+    "enabled": true
+  },
+  "tools": {
+    "sandbox": "docker",
+    "discoveryCommand": "bin/get_tools",
+    "callCommand": "bin/call_tool",
+    "exclude": ["write_file"]
+  },
+  "mcpServers": {},
+  "telemetry": {
+    "enabled": false
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
+  },
+  "model": {},
+  "context": {
+    "fileName": ["AGENTS.md", "GEMINI.md"],
+    "loadFromIncludeDirectories": true
+  },
+  "advanced": {
+    "excludedEnvVars": ["DEBUG", "DEBUG_MODE", "NODE_ENV"]
+  }
+}

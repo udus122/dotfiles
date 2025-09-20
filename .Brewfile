@@ -49,6 +49,7 @@ brew "patchutils"
 # cspell:ignore satococoa
 brew "satococoa/tap/wtp"
 brew "codex"
+brew "gemini-cli"
 
 # zsh customize
 brew "zsh-completions"
@@ -78,7 +79,6 @@ cask "arc"
 cask "obsidian"
 cask "amazon-q"
 cask "notion"
-cask "claude"
 cask "chatgpt"
 cask "1password"
 
