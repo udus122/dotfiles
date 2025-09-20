@@ -4,6 +4,9 @@ tap "olets/tap"
 tap "supabase/tap"
 tap "satococoa/tap"
 
+# install AppStore applications via mas
+brew "mas"
+
 # replace basic commands with GNU/Linux version
 brew "bash"
 brew "coreutils"
@@ -59,12 +62,14 @@ brew "sheldon"
 cask "font-hack-nerd-font"
 
 # GUI applications
-cask "visual-studio-code"
 cask "karabiner-elements"
+cask "visual-studio-code"
 cask "google-japanese-ime"
+cask "azookey"
+cask "raycast"
+cask "logi-options+"
 cask "appcleaner"
 cask "1password-cli"
-cask "raycast"
 cask "wezterm"
 cask "session-manager-plugin"
 cask "docker"
@@ -75,4 +80,8 @@ cask "obsidian"
 cask "amazon-q"
 cask "notion"
 cask "claude"
+cask "chatgpt"
 cask "1password"
+
+# App Store applications
+mas "Endel: Focus, Sleep, Relax", id:1346247457
