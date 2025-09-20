@@ -26,16 +26,11 @@ else
   echo "Command line tools are already installed."
 fi
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  # MacOS向けのコマンド
-  echo "Running on MacOS"
-  # Disable Character Picker in VSCode, Obsidian for Smooth cursor movement in VSCode Neovim.
-  defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
-  defaults write md.obsidian ApplePressAndHoldEnabled -bool false
-elif [[ "$OSTYPE" == "linux"* ]]; then
-  # Linux向けのコマンド
-  echo "Running on Linux"
-fi
+# Disable Character Picker in VSCode, Obsidian for Smooth cursor movement in VSCode Neovim.
+defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
+defaults write md.obsidian ApplePressAndHoldEnabled -bool false
+echo "install Rosetta 2"
+sudo softwareupdate --install-rosetta
 
 # git configの設定
 # グローバルで設定されたGitのユーザー名が存在しなければ、ユーザーに名前を尋ねて設定する
