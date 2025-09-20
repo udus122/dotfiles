@@ -11,12 +11,7 @@
   "ide": {
     "enabled": true
   },
-  "tools": {
-    "sandbox": "docker",
-    "discoveryCommand": "bin/get_tools",
-    "callCommand": "bin/call_tool",
-    "exclude": ["write_file"]
-  },
+  "tools": {},
   "mcpServers": {},
   "telemetry": {
     "enabled": false
@@ -28,6 +23,11 @@
   "context": {
     "fileName": ["AGENTS.md", "GEMINI.md"],
     "loadFromIncludeDirectories": true
+  },
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
   },
   "advanced": {
     "excludedEnvVars": ["DEBUG", "DEBUG_MODE", "NODE_ENV"]
