@@ -82,6 +82,8 @@ cask "amazon-q"
 cask "notion"
 cask "chatgpt"
 cask "1password"
+cask "discord"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457
+mas "BetterSnapTool", id:417375580
