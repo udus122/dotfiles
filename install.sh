@@ -12,3 +12,6 @@ fi
 brew bundle --global
 
 krew install < "$script_dir/krew.txt"
+
+# install tools via mise
+(cd "${XDG_CONFIG_HOME}/mise" && mise install)
