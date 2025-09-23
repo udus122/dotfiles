@@ -113,7 +113,7 @@ alias vim='nvim'
 
 # abbreviations
 # zsh-abbr: https://github.com/olets/zsh-abbr
-source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh
+source $(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh > /dev/null 2>&1
 source ${ZDOTDIR}/abbreviations.zsh
 
 # cheatsheet(navi)
