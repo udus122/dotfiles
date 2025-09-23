@@ -50,6 +50,7 @@ brew "patchutils"
 brew "satococoa/tap/wtp"
 brew "codex"
 brew "gemini-cli"
+brew "kind"
 
 # zsh customize
 brew "zsh-completions"
