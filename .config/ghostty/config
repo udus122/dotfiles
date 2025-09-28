@@ -1,0 +1,10 @@
+# 背景は少し透過
+background-opacity = 0.70
+
+# カーソルはblockで点滅させない
+cursor-style = block
+cursor-style-blink = false
+
+font-size = 16
+
+macos-titlebar-style = transparent
