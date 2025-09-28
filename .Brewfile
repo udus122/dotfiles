@@ -71,7 +71,6 @@ cask "raycast"
 cask "logi-options+"
 cask "appcleaner"
 cask "1password-cli"
-cask "wezterm"
 cask "session-manager-plugin"
 cask "docker"
 cask "git-credential-manager"
@@ -81,9 +80,14 @@ cask "obsidian"
 cask "amazon-q"
 cask "notion"
 cask "chatgpt"
+cask "claude"
+cask "claude-code"
 cask "1password"
 cask "discord"
+cask "slack"
+cask "ghostty"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457
 mas "BetterSnapTool", id:417375580
+mas "LINE", id:539883307
