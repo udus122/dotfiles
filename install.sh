@@ -3,13 +3,8 @@ set -euo pipefail
 
 script_dir="$(dirname "$0")"
 
-# Check operating system
-if [ "$(uname)" != "Darwin" ] ; then
-  echo "Not macOS!"
-  exit 1
-fi
-
-brew bundle --global
+brew update
+brew bundle install --upgrade --global --cleanup
 
 krew install < "$script_dir/krew.txt"
 
