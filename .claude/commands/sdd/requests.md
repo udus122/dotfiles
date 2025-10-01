@@ -4,7 +4,7 @@ allowed-tools: Bash, Read, Write, Glob
 argument-hint: [request-description]
 ---
 
-# Request Analysis
+# Request Initialization
 
 ユーザーのリクエスト $ARGUMENTS から要求を整理し、新しいSpecを初期化する
 
