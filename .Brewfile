@@ -94,3 +94,4 @@ cask "ghostty"
 mas "Endel: Focus, Sleep, Relax", id:1346247457
 mas "BetterSnapTool", id:417375580
 mas "LINE", id:539883307
+mas "Kindle", id:302584613
