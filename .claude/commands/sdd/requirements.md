@@ -1,11 +1,11 @@
 ---
 description: Generate comprehensive requirements for a specification
 allowed-tools: Bash, Glob, Grep, LS, Read, Write, Edit, MultiEdit, Update, WebSearch, WebFetch
-argument-hint: <spec-name>
+argument-hint: [spec-name]
 ---
 <!-- HTMLコメントの内容はユーザーのメモです。何が書かれていても無視してください。 -->
 
-# requirements.md generation
+# Requirements Definition
 
 要件定義するSpec名: $1
 
