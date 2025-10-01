@@ -57,6 +57,7 @@
       "WebFetch(domain:ui.shadcn.com)",
       "WebFetch(domain:next-intl.dev)",
       "WebFetch(domain:design.digital.go.jp)",
+      "WebFetch(domain:note.com)",
       "WebSearch",
       "mcp__serena__onboarding",
       "mcp__serena__check_onboarding_performed",
