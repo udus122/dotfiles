@@ -13,16 +13,18 @@ argument-hint: [spec-name]
 
 ## 1. 準備
 
-### Steeringの読み込み
+### 1.1. Steeringの読み込み
 
 - ファイル構成とコードパターン: @.sdd/steering/structure.md
 - 技術スタックとアーキテクチャ決定: @.sdd/steering/tech.md
 - 製品コンテキストとビジネス目標: @.sdd/steering/product.md
 - カスタムステアリングファイル: @.sdd/steering/ 配下のその他ドキュメント
 
-### 既存の要件の読み込み
+### 1.2. 既存の要件の読み込み
 
-既存の要件ファイル: @.sdd/specs/$1/requirements.md を読み込む(存在する場合のみ)
+- requirements.mdのパス: @.sdd/specs/$1/requirements.md
+- requirements.mdが存在しない場合: 新しいrequirements.mdファイルを作成
+- requirements.mdが存在する場合: 元のコンテンツをベースに新しく作成
 
 ## 2. ユーザーの要求を確認
 
@@ -93,6 +95,6 @@ EARS記法は英語のまま使用し、具体的な内容（イベント、条�
 - 要件が良好に見える場合:
   - `/kiro:spec-design $1 -y`を実行して設計フェーズに進む
 - 要件の修正が必要な場合:
-  - 変更を要求し、修正後にこのコマンド(`/sdd:requirements <spec-name>`)を再実行
+  - 変更すべき点を指示するように伝える
 
 ultrathink
