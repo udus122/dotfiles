@@ -18,21 +18,22 @@ Spec $1 のどのように実装するかに関するDesign Doc作成する
 - 要件ファイルのパス: @.sdd/specs/$1/requirements.md
   - `-y`付きで呼び出された場合（$2 == "-y"）、 フロントマターの`status`を`status: approved`に設定
 - 要件が不足または未承認(`status != approved`)の場合、アクション可能なメッセージ出力して停止
+  - 「最初に`/sdd:requirements`を実行するか、`-y`フラグを使用して自動承認してください」
 
-## 2 準備
+## 2 コンテキストの準備
 
 ### 2.1 Steeringの読み込み
 
-- ファイル構成とコードパターン: @.sdd/steering/structure.md
-- 技術スタックとアーキテクチャ決定: @.sdd/steering/tech.md
 - 製品コンテキストとビジネス目標: @.sdd/steering/product.md
+- 技術スタックとアーキテクチャ決定: @.sdd/steering/tech.md
+- ファイル構成とコードパターン: @.sdd/steering/structure.md
 - カスタムステアリングファイル: @.sdd/steering/ 配下のその他ドキュメント
 
 ### 2.2 既存のDesign Docの存在確認
 
 - design.mdのパス: @.sdd/specs/$1/design.md
-- design.mdが存在しない場合: 新しいdesign.mdファイルを作成
-- design.mdが存在する場合: 元のコンテンツをベースに新しく作成
+  - design.mdが存在する場合: 元のコンテンツをベースに新しく作成
+  - design.mdが存在しない場合: 新しいdesign.mdファイルを作成
 
 ## 3 設計準備: 現状把握と分析
 
@@ -68,7 +69,7 @@ Spec $1 のどのように実装するかに関するDesign Doc作成する
 - トレードオフを明記: 設計上の選択肢と、なぜその選択をしたのか（利点・欠点・代替案）を記述。検討した代替案は積極的に記載すること
 - ビジュアル重視: 簡略化したMermaid図を積極活用
 
-### 次のステップ
+## 次のステップ
 
 design.md作成後、ユーザーが設計をレビュー:
 - 承認できる場合: `/sdd:tasks $1 -y` で計画フェーズへ進む
