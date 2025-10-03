@@ -58,6 +58,8 @@ wtp completion zsh > "${USER_COMPLETION_DIR}/_wtp"
 # codex
 codex completion zsh > "${USER_COMPLETION_DIR}/_codex"
 
+op completion zsh > "${USER_COMPLETION_DIR}/_op"
+
 compinit
 
 # terraform
