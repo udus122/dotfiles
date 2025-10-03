@@ -54,6 +54,7 @@ brew "satococoa/tap/wtp"
 brew "codex"
 brew "gemini-cli"
 brew "kind"
+brew "ollama"
 
 # zsh customize
 brew "zsh-completions"
@@ -89,6 +90,7 @@ cask "1password"
 cask "discord"
 cask "slack"
 cask "ghostty"
+cask "lm-studio"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457
