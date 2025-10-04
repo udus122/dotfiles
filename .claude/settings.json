@@ -1,7 +1,7 @@
 {
   "env": {},
-  "model": "opus",
   "includeCoAuthoredBy": false,
+  "spinnerTipsEnabled": false,
   "permissions": {
     "defaultMode": "default",
     "allow": [
@@ -44,7 +44,6 @@
       "Edit(//tmp/scratch.txt)",
       "Bash(npm run lint)",
       "Bash(npm run test:*)",
-      "Bash(osascript -e 'display notification *)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:gist.github.com)",
@@ -81,10 +80,10 @@
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/*)",
       "Bash(gh repo delete:*)",
-      "Bash(git commit --no-verify*)",
-      "Bash(git commit -n*)",
-      "Bash(git push --force*)",
-      "Bash(git push --force-with-lease*)",
+      "Bash(git commit --no-verify:*)",
+      "Bash(git commit -n:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push --force-with-lease:*)",
       "Read(.env*)",
       "Read(id_rsa)",
       "Read(id_ed25519)",
