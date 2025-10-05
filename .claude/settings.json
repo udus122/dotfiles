@@ -1,9 +1,7 @@
 {
   "env": {},
   "includeCoAuthoredBy": false,
-  "spinnerTipsEnabled": false,
   "permissions": {
-    "defaultMode": "default",
     "allow": [
       "Bash(ls:*)",
       "Bash(cat:*)",
@@ -36,6 +34,7 @@
       "Bash(git add -N:*)",
       "Bash(git diff:*)",
       "Bash(git commit:*)",
+      "Bash(git log:*)",
       "Bash(git apply:*)",
       "Bash(git rev-parse:*)",
       "Bash(gh gist view:*)",
@@ -95,7 +94,8 @@
       "Bash(psql:*)",
       "Bash(mysql:*)",
       "Bash(mongod:*)"
-    ]
+    ],
+    "defaultMode": "default"
   },
   "hooks": {
     "Notification": [
@@ -120,5 +120,6 @@
         ]
       }
     ]
-  }
+  },
+  "spinnerTipsEnabled": false
 }
