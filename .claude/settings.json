@@ -104,7 +104,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"Claude Codeが許可を求めています\" with title \"Claude Code\" subtitle \"確認待ち\" sound name \"Glass\"'"
+            "command": "terminal-notifier -title 'Needs Review - Claude Code' -activate 'com.microsoft.VSCode'"
           }
         ]
       }
@@ -115,7 +115,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"タスクが完了しました\" with title \"Claude Code\" subtitle \"タスク完了\" sound name \"default\"'"
+            "command": "terminal-notifier -title 'Done Tasks - Claude Code' -activate 'com.microsoft.VSCode'"
           }
         ]
       }

@@ -62,6 +62,7 @@ brew "zsh-autosuggestions"
 brew "olets/tap/zsh-abbr"
 brew "starship"
 brew "sheldon"
+brew "terminal-notifier"
 
 # fonts
 cask "font-hack-nerd-font"
