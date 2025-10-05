@@ -90,6 +90,7 @@ cask "discord"
 cask "slack"
 cask "ghostty"
 cask "lm-studio"
+cask "alt-tab"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457
