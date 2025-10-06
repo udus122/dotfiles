@@ -65,7 +65,10 @@ brew "sheldon"
 brew "terminal-notifier"
 
 # fonts
-cask "font-hack-nerd-font"
+cask "font-udev-gothic"
+cask "font-udev-gothic-nf"
+cask "font-plemol-jp"
+cask "font-plemol-jp-nf"
 
 # GUI applications
 cask "karabiner-elements"
