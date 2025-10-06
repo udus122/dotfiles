@@ -1,10 +1,13 @@
-# 背景は少し透過
-background-opacity = 0.70
+# font
+font-family = "UDEV Gothic JPDOC"
+font-size = 16
 
 # カーソルはblockで点滅させない
 cursor-style = block
 cursor-style-blink = false
 
-font-size = 16
+# 背景は少し透過
+background-opacity = 0.70
 
+# macOSのタイトルバーを透明にする
 macos-titlebar-style = transparent
