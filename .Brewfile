@@ -69,6 +69,7 @@ cask "font-udev-gothic"
 cask "font-udev-gothic-nf"
 cask "font-plemol-jp"
 cask "font-plemol-jp-nf"
+cask "font-biz-udgothic"
 
 # GUI applications
 cask "karabiner-elements"
