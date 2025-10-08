@@ -58,7 +58,11 @@ wtp completion zsh > "${USER_COMPLETION_DIR}/_wtp"
 # codex
 codex completion zsh > "${USER_COMPLETION_DIR}/_codex"
 
+# one password cli
 op completion zsh > "${USER_COMPLETION_DIR}/_op"
+
+# deno
+deno completions zsh > "${USER_COMPLETION_DIR}/_deno"
 
 compinit
 
