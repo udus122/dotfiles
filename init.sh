@@ -32,6 +32,9 @@ defaults write md.obsidian ApplePressAndHoldEnabled -bool false
 echo "install Rosetta 2"
 sudo softwareupdate --install-rosetta
 
+# AppleShowAllFilesを有効化
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
 # git configの設定
 # グローバルで設定されたGitのユーザー名が存在しなければ、ユーザーに名前を尋ねて設定する
 if [ -z "$(git config --global --get user.name)" ]; then
