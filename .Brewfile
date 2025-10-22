@@ -54,7 +54,6 @@ brew "satococoa/tap/wtp"
 brew "codex"
 brew "gemini-cli"
 brew "kind"
-brew "ollama"
 
 # zsh customize
 brew "zsh-completions"
