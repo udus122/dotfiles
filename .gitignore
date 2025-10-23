@@ -1,1 +1,7 @@
 !.local/
+# Backup files
+**/*.bck*
+
+# Karabiner-Elements
+.config/karabiner/assets
+.config/karabiner/automatic_backups

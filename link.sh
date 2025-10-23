@@ -28,6 +28,11 @@ find "${SCRIPT_DIR}" -type f -path '*/.*' | while read -r dotfile; do
     [[ "$dotfile" == "${SCRIPT_DIR}/.git"* ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.github"* ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.DS_Store" ]] && continue
+    [[ "$dotfile" == "${SCRIPT_DIR}/.config/karabiner" ]] && continue
 
     make_link "$dotfile" "${HOME}/${dotfile#"$SCRIPT_DIR"/}"
 done
+
+# Karabiner-Elements はディレクトリごとシンボリックリンクを作成する（個別に作成すると上書きされる）
+# https://karabiner-elements.pqrs.org/docs/manual/misc/configuration-file-path/
+ln -s "$HOME/dotfiles/.config/karabiner" ~/.config
