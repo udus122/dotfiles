@@ -64,6 +64,9 @@ op completion zsh > "${USER_COMPLETION_DIR}/_op"
 # deno
 deno completions zsh > "${USER_COMPLETION_DIR}/_deno"
 
+# uv
+uv generate-shell-completion zsh > "${USER_COMPLETION_DIR}/_uv"
+
 compinit
 
 # terraform
