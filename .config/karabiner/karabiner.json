@@ -1,520 +1,1293 @@
 {
-  "global": {
-    "ask_for_confirmation_before_quitting": true,
-    "check_for_updates_on_startup": true,
-    "show_in_menu_bar": true,
-    "show_profile_name_in_menu_bar": false,
-    "unsafe_ui": false
-  },
-  "profiles": [
-    {
-      "complex_modifications": {
-        "parameters": {
-          "basic.simultaneous_threshold_milliseconds": 50,
-          "basic.to_delayed_action_delay_milliseconds": 500,
-          "basic.to_if_alone_timeout_milliseconds": 1000,
-          "basic.to_if_held_down_threshold_milliseconds": 500,
-          "mouse_motion_to_scroll.speed": 100
-        },
-        "rules": [
-          {
-            "description": "Change right_command+hjkl to arrow keys without HHKB",
-            "manipulators": [
-              {
-                "from": {
-                  "key_code": "h",
-                  "modifiers": {
-                    "mandatory": [
-                      "right_command"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "left_arrow"
-                  }
-                ],
-                "type": "basic",
-                "conditions": [
-                  {
-                      "type": "device_if",
-                      "identifiers": [
-                          {
-                              "vendor_id": "1278",
-                              "product_id": "33"
-                          }
-                      ],
-                      "is_exclude": true
-                  }
-              ]
-              },
-              {
-                "from": {
-                  "key_code": "j",
-                  "modifiers": {
-                    "mandatory": [
-                      "right_command"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "down_arrow"
-                  }
-                ],
-                "type": "basic",
-                "conditions": [
-                  {
-                      "type": "device_if",
-                      "identifiers": [
-                          {
-                              "vendor_id": "1278",
-                              "product_id": "33"
-                          }
-                      ],
-                      "is_exclude": true
-                  }
-              ]
-              },
-              {
-                "from": {
-                  "key_code": "k",
-                  "modifiers": {
-                    "mandatory": [
-                      "right_command"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "up_arrow"
-                  }
-                ],
-                "type": "basic",
-                "conditions": [
-                  {
-                      "type": "device_if",
-                      "identifiers": [
-                          {
-                              "vendor_id": "1278",
-                              "product_id": "33"
-                          }
-                      ],
-                      "is_exclude": true
-                  }
-              ]
-              },
-              {
-                "from": {
-                  "key_code": "l",
-                  "modifiers": {
-                    "mandatory": [
-                      "right_command"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "right_arrow"
-                  }
-                ],
-                "type": "basic",
-                "conditions": [
-                  {
-                      "type": "device_if",
-                      "identifiers": [
-                          {
-                              "vendor_id": "1278",
-                              "product_id": "33"
-                          }
-                      ],
-                      "is_exclude": true
-                  }
-              ]
-              }
-            ]
-          },
-          {
-            "description": "コマンドキーを単体で押したときに、英数・かなキーを送信する。（左コマンドキーは英数、右コマンドキーはかな） (rev 3)",
-            "manipulators": [
-              {
-                "from": {
-                  "key_code": "left_command",
-                  "modifiers": {
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "parameters": {
-                  "basic.to_if_held_down_threshold_milliseconds": 100
-                },
-                "to": [
-                  {
-                    "key_code": "left_command",
-                    "lazy": true
-                  }
-                ],
-                "to_if_alone": [
-                  {
-                    "key_code": "japanese_eisuu"
-                  }
-                ],
-                "to_if_held_down": [
-                  {
-                    "key_code": "left_command"
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "from": {
-                  "key_code": "right_command",
-                  "modifiers": {
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "parameters": {
-                  "basic.to_if_held_down_threshold_milliseconds": 100
-                },
-                "to": [
-                  {
-                    "key_code": "right_command",
-                    "lazy": true
-                  }
-                ],
-                "to_if_alone": [
-                  {
-                    "key_code": "japanese_kana"
-                  }
-                ],
-                "to_if_held_down": [
-                  {
-                    "key_code": "right_command"
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "escキーを押したときに、英数キーも送信する（vim用）",
-            "manipulators": [
-              {
-                "from": {
-                  "key_code": "escape"
-                },
-                "to": [
-                  {
-                    "key_code": "escape"
-                  },
-                  {
-                    "key_code": "japanese_eisuu"
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "Exchange semicolon and colon",
-            "manipulators": [
-              {
-                "from": {
-                  "key_code": "semicolon",
-                  "modifiers": {
-                    "optional": [
-                      "caps_lock"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "semicolon",
-                    "modifiers": [
-                      "left_shift"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "from": {
-                  "key_code": "semicolon",
-                  "modifiers": {
-                    "mandatory": [
-                      "shift"
-                    ],
-                    "optional": [
-                      "caps_lock"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "semicolon"
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          }
-        ]
-      },
-      "devices": [
+    "global": { "show_additional_menu_items": true },
+    "profiles": [
         {
-          "disable_built_in_keyboard_if_exists": false,
-          "fn_function_keys": [],
-          "identifiers": {
-            "is_keyboard": true,
-            "is_pointing_device": false,
-            "product_id": 834,
-            "vendor_id": 1452
-          },
-          "ignore": false,
-          "manipulate_caps_lock_led": true,
-          "simple_modifications": [],
-          "treat_as_built_in_keyboard": false
+            "complex_modifications": {
+                "rules": [
+                    {
+                        "description": "Use Shift+Enter for newline, Command+Enter for sending in Discord",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.hnc\\.Discord$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "return_or_enter" },
+                                "to": [
+                                    {
+                                        "key_code": "return_or_enter",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.hnc\\.Discord$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [{ "key_code": "return_or_enter" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Use Shift+Enter for newline, Command+Enter for sending in ClaudeCodeDesktop",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.anthropic\\.claudefordesktop$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "return_or_enter" },
+                                "to": [
+                                    {
+                                        "key_code": "return_or_enter",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.anthropic\\.claudefordesktop$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [{ "key_code": "return_or_enter" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Use Shift+Enter for newline, Command+Enter for sending in ChatGPT",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.openai\\.chat$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "return_or_enter" },
+                                "to": [
+                                    {
+                                        "key_code": "return_or_enter",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.openai\\.chat$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [{ "key_code": "return_or_enter" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Disable single Command+H, enable Command+H+H for hide",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "cmd_h_pressed_once",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Command+H+H - Execute minimize on second H",
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "h",
+                                        "modifiers": ["left_command"]
+                                    },
+                                    {
+                                        "set_variable": {
+                                            "name": "cmd_m_pressed_once",
+                                            "value": 0
+                                        }
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "description": "Command+H+H - Set flag on first Command+H",
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "parameters": { "to_delayed_action_delay_milliseconds": 800 },
+                                "to": [
+                                    {
+                                        "set_variable": {
+                                            "name": "cmd_h_pressed_once",
+                                            "value": 1
+                                        }
+                                    }
+                                ],
+                                "to_delayed_action": {
+                                    "to_if_invoked": [
+                                        {
+                                            "set_variable": {
+                                                "name": "cmd_h_pressed_once",
+                                                "value": 0
+                                            }
+                                        }
+                                    ]
+                                },
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Disable single Command+M, enable Command+M+M for minimize",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "cmd_m_pressed_once",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Command+M+M - Execute minimize on second M",
+                                "from": {
+                                    "key_code": "m",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "m",
+                                        "modifiers": ["left_command"]
+                                    },
+                                    {
+                                        "set_variable": {
+                                            "name": "cmd_m_pressed_once",
+                                            "value": 0
+                                        }
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "description": "Command+M+M - Set flag on first Command+M",
+                                "from": {
+                                    "key_code": "m",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "parameters": { "to_delayed_action_delay_milliseconds": 800 },
+                                "to": [
+                                    {
+                                        "set_variable": {
+                                            "name": "cmd_m_pressed_once",
+                                            "value": 1
+                                        }
+                                    }
+                                ],
+                                "to_delayed_action": {
+                                    "to_if_invoked": [
+                                        {
+                                            "set_variable": {
+                                                "name": "cmd_m_pressed_once",
+                                                "value": 0
+                                            }
+                                        }
+                                    ]
+                                },
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Simple modifications",
+                        "manipulators": [
+                            {
+                                "from": { "key_code": "caps_lock" },
+                                "to": [{ "key_code": "left_control" }],
+                                "type": "basic"
+                            },
+                            {
+                                "from": { "key_code": "delete_forward" },
+                                "to": [{ "key_code": "escape" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Copy to ⌘c",
+                        "manipulators": [
+                            {
+                                "from": { "key_code": "copy" },
+                                "to": [
+                                    {
+                                        "key_code": "c",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Paste to ⌘v",
+                        "manipulators": [
+                            {
+                                "from": { "key_code": "paste" },
+                                "to": [
+                                    {
+                                        "key_code": "v",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Quit application by holding command-q",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "q",
+                                    "modifiers": {
+                                        "mandatory": ["command"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to_if_held_down": [
+                                    {
+                                        "key_code": "q",
+                                        "modifiers": ["left_command"],
+                                        "repeat": false
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Change right_command+hjkl to arrow keys without HHKB",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "product_id": 33,
+                                                "vendor_id": 1278
+                                            }
+                                        ],
+                                        "type": "device_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": {
+                                        "mandatory": ["right_command"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [{ "key_code": "left_arrow" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "product_id": 33,
+                                                "vendor_id": 1278
+                                            }
+                                        ],
+                                        "type": "device_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "j",
+                                    "modifiers": {
+                                        "mandatory": ["right_command"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [{ "key_code": "down_arrow" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "product_id": 33,
+                                                "vendor_id": 1278
+                                            }
+                                        ],
+                                        "type": "device_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "k",
+                                    "modifiers": {
+                                        "mandatory": ["right_command"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [{ "key_code": "up_arrow" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "product_id": 33,
+                                                "vendor_id": 1278
+                                            }
+                                        ],
+                                        "type": "device_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "l",
+                                    "modifiers": {
+                                        "mandatory": ["right_command"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [{ "key_code": "right_arrow" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "コマンドキー（左右どちらでも）を単体で押したときに、英数・かなをトグルで切り替える。 (rev 2)",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [{ "language": "ja" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "left_command",
+                                        "lazy": true
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_eisuu" }],
+                                "to_if_held_down": [{ "key_code": "left_command" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [{ "language": "en" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "left_command",
+                                        "lazy": true
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_kana" }],
+                                "to_if_held_down": [{ "key_code": "left_command" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [{ "language": "ja" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "right_command",
+                                        "lazy": true
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_eisuu" }],
+                                "to_if_held_down": [{ "key_code": "right_command" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [{ "language": "en" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "right_command",
+                                        "lazy": true
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_kana" }],
+                                "to_if_held_down": [{ "key_code": "right_command" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Cmd単体で英数・かな送信（左:英数/右:かな）",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": { "mandatory": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "left_command",
+                                        "lazy": true,
+                                        "modifiers": []
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_eisuu" }],
+                                "to_if_held_down": [{ "key_code": "left_command" }],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": { "mandatory": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "right_command",
+                                        "lazy": true,
+                                        "modifiers": []
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_kana" }],
+                                "to_if_held_down": [{ "key_code": "right_command" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "escキーを押したときに、英数キーも送信する(vim用)",
+                        "manipulators": [
+                            {
+                                "from": { "key_code": "escape" },
+                                "to": [
+                                    { "key_code": "escape" },
+                                    { "key_code": "japanese_eisuu" }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Exchange semicolon and colon",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "semicolon",
+                                    "modifiers": { "optional": ["caps_lock"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "semicolon",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "semicolon",
+                                    "modifiers": {
+                                        "mandatory": ["shift"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [{ "key_code": "semicolon" }],
+                                "type": "basic"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "devices": [
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": true,
+                        "product_id": 45913,
+                        "vendor_id": 1133
+                    },
+                    "ignore": false
+                }
+            ],
+            "name": "Default",
+            "selected": true,
+            "simple_modifications": [
+                {
+                    "from": { "key_code": "caps_lock" },
+                    "to": [{ "key_code": "left_control" }]
+                },
+                {
+                    "from": { "key_code": "delete_forward" },
+                    "to": [{ "key_code": "escape" }]
+                }
+            ],
+            "virtual_hid_keyboard": {
+                "country_code": 0,
+                "keyboard_type_v2": "ansi"
+            }
         },
         {
-          "disable_built_in_keyboard_if_exists": false,
-          "fn_function_keys": [],
-          "identifiers": {
-            "is_keyboard": false,
-            "is_pointing_device": true,
-            "product_id": 834,
-            "vendor_id": 1452
-          },
-          "ignore": true,
-          "manipulate_caps_lock_led": false,
-          "simple_modifications": [],
-          "treat_as_built_in_keyboard": false
-        },
-        {
-          "disable_built_in_keyboard_if_exists": false,
-          "fn_function_keys": [],
-          "identifiers": {
-            "is_keyboard": false,
-            "is_pointing_device": true,
-            "product_id": 45085,
-            "vendor_id": 1133
-          },
-          "ignore": true,
-          "manipulate_caps_lock_led": false,
-          "simple_modifications": [],
-          "treat_as_built_in_keyboard": false
-        },
-        {
-          "disable_built_in_keyboard_if_exists": false,
-          "fn_function_keys": [],
-          "identifiers": {
-            "is_keyboard": true,
-            "is_pointing_device": false,
-            "product_id": 33,
-            "vendor_id": 1278
-          },
-          "ignore": false,
-          "manipulate_caps_lock_led": true,
-          "simple_modifications": [],
-          "treat_as_built_in_keyboard": false
-        },
-        {
-          "disable_built_in_keyboard_if_exists": false,
-          "fn_function_keys": [],
-          "identifiers": {
-            "is_keyboard": false,
-            "is_pointing_device": true,
-            "product_id": 613,
-            "vendor_id": 76
-          },
-          "ignore": true,
-          "manipulate_caps_lock_led": false,
-          "simple_modifications": [],
-          "treat_as_built_in_keyboard": false
-        },
-        {
-          "disable_built_in_keyboard_if_exists": false,
-          "fn_function_keys": [],
-          "identifiers": {
-            "is_keyboard": true,
-            "is_pointing_device": true,
-            "product_id": 45913,
-            "vendor_id": 1133
-          },
-          "ignore": false,
-          "manipulate_caps_lock_led": true,
-          "simple_modifications": [],
-          "treat_as_built_in_keyboard": false
+            "complex_modifications": {
+                "rules": [
+                    {
+                        "description": "Use Shift+Enter for newline, Command+Enter for sending in Discord",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.hnc\\.Discord$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "return_or_enter" },
+                                "to": [
+                                    {
+                                        "key_code": "return_or_enter",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.hnc\\.Discord$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [{ "key_code": "return_or_enter" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Use Shift+Enter for newline, Command+Enter for sending in ClaudeCodeDesktop",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.anthropic\\.claudefordesktop$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "return_or_enter" },
+                                "to": [
+                                    {
+                                        "key_code": "return_or_enter",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.anthropic\\.claudefordesktop$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [{ "key_code": "return_or_enter" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Use Shift+Enter for newline, Command+Enter for sending in ChatGPT",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.openai\\.chat$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": { "key_code": "return_or_enter" },
+                                "to": [
+                                    {
+                                        "key_code": "return_or_enter",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.openai\\.chat$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [{ "key_code": "return_or_enter" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Disable single Command+H, enable Command+H+H for hide",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "cmd_h_pressed_once",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Command+H+H - Execute minimize on second H",
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "h",
+                                        "modifiers": ["left_command"]
+                                    },
+                                    {
+                                        "set_variable": {
+                                            "name": "cmd_m_pressed_once",
+                                            "value": 0
+                                        }
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "description": "Command+H+H - Set flag on first Command+H",
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "parameters": { "to_delayed_action_delay_milliseconds": 800 },
+                                "to": [
+                                    {
+                                        "set_variable": {
+                                            "name": "cmd_h_pressed_once",
+                                            "value": 1
+                                        }
+                                    }
+                                ],
+                                "to_delayed_action": {
+                                    "to_if_invoked": [
+                                        {
+                                            "set_variable": {
+                                                "name": "cmd_h_pressed_once",
+                                                "value": 0
+                                            }
+                                        }
+                                    ]
+                                },
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Disable single Command+M, enable Command+M+M for minimize",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "cmd_m_pressed_once",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Command+M+M - Execute minimize on second M",
+                                "from": {
+                                    "key_code": "m",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "m",
+                                        "modifiers": ["left_command"]
+                                    },
+                                    {
+                                        "set_variable": {
+                                            "name": "cmd_m_pressed_once",
+                                            "value": 0
+                                        }
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "description": "Command+M+M - Set flag on first Command+M",
+                                "from": {
+                                    "key_code": "m",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "parameters": { "to_delayed_action_delay_milliseconds": 800 },
+                                "to": [
+                                    {
+                                        "set_variable": {
+                                            "name": "cmd_m_pressed_once",
+                                            "value": 1
+                                        }
+                                    }
+                                ],
+                                "to_delayed_action": {
+                                    "to_if_invoked": [
+                                        {
+                                            "set_variable": {
+                                                "name": "cmd_m_pressed_once",
+                                                "value": 0
+                                            }
+                                        }
+                                    ]
+                                },
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Simple modifications",
+                        "manipulators": [
+                            {
+                                "from": { "key_code": "caps_lock" },
+                                "to": [{ "key_code": "left_control" }],
+                                "type": "basic"
+                            },
+                            {
+                                "from": { "key_code": "delete_forward" },
+                                "to": [{ "key_code": "escape" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Copy to ⌘c",
+                        "manipulators": [
+                            {
+                                "from": { "key_code": "copy" },
+                                "to": [
+                                    {
+                                        "key_code": "c",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Paste to ⌘v",
+                        "manipulators": [
+                            {
+                                "from": { "key_code": "paste" },
+                                "to": [
+                                    {
+                                        "key_code": "v",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Quit application by holding command-q",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "q",
+                                    "modifiers": {
+                                        "mandatory": ["command"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to_if_held_down": [
+                                    {
+                                        "key_code": "q",
+                                        "modifiers": ["left_command"],
+                                        "repeat": false
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Change right_command+hjkl to arrow keys without HHKB",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "product_id": 33,
+                                                "vendor_id": 1278
+                                            }
+                                        ],
+                                        "type": "device_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": {
+                                        "mandatory": ["right_command"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [{ "key_code": "left_arrow" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "product_id": 33,
+                                                "vendor_id": 1278
+                                            }
+                                        ],
+                                        "type": "device_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "j",
+                                    "modifiers": {
+                                        "mandatory": ["right_command"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [{ "key_code": "down_arrow" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "product_id": 33,
+                                                "vendor_id": 1278
+                                            }
+                                        ],
+                                        "type": "device_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "k",
+                                    "modifiers": {
+                                        "mandatory": ["right_command"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [{ "key_code": "up_arrow" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "product_id": 33,
+                                                "vendor_id": 1278
+                                            }
+                                        ],
+                                        "type": "device_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "l",
+                                    "modifiers": {
+                                        "mandatory": ["right_command"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [{ "key_code": "right_arrow" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "コマンドキー（左右どちらでも）を単体で押したときに、英数・かなをトグルで切り替える。 (rev 2)",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [{ "language": "ja" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "left_command",
+                                        "lazy": true
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_eisuu" }],
+                                "to_if_held_down": [{ "key_code": "left_command" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [{ "language": "en" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "left_command",
+                                        "lazy": true
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_kana" }],
+                                "to_if_held_down": [{ "key_code": "left_command" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [{ "language": "ja" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "right_command",
+                                        "lazy": true
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_eisuu" }],
+                                "to_if_held_down": [{ "key_code": "right_command" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "input_sources": [{ "language": "en" }],
+                                        "type": "input_source_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "right_command",
+                                        "lazy": true
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_kana" }],
+                                "to_if_held_down": [{ "key_code": "right_command" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Cmd単体で英数・かな送信（左:英数/右:かな）",
+                        "enabled": false,
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": { "mandatory": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "left_command",
+                                        "lazy": true,
+                                        "modifiers": []
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_eisuu" }],
+                                "to_if_held_down": [{ "key_code": "left_command" }],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "right_command",
+                                    "modifiers": { "mandatory": ["any"] }
+                                },
+                                "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
+                                "to": [
+                                    {
+                                        "key_code": "right_command",
+                                        "lazy": true,
+                                        "modifiers": []
+                                    }
+                                ],
+                                "to_if_alone": [{ "key_code": "japanese_kana" }],
+                                "to_if_held_down": [{ "key_code": "right_command" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "escキーを押したときに、英数キーも送信する(vim用)",
+                        "manipulators": [
+                            {
+                                "from": { "key_code": "escape" },
+                                "to": [
+                                    { "key_code": "escape" },
+                                    { "key_code": "japanese_eisuu" }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Exchange semicolon and colon",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "semicolon",
+                                    "modifiers": { "optional": ["caps_lock"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "semicolon",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "semicolon",
+                                    "modifiers": {
+                                        "mandatory": ["shift"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [{ "key_code": "semicolon" }],
+                                "type": "basic"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "name": "大西配列",
+            "simple_modifications": [
+                {
+                    "from": { "key_code": "a" },
+                    "to": [{ "key_code": "e" }]
+                },
+                {
+                    "from": { "key_code": "b" },
+                    "to": [{ "key_code": "semicolon" }]
+                },
+                {
+                    "from": { "key_code": "comma" },
+                    "to": [{ "key_code": "m" }]
+                },
+                {
+                    "from": { "key_code": "d" },
+                    "to": [{ "key_code": "a" }]
+                },
+                {
+                    "from": { "key_code": "e" },
+                    "to": [{ "key_code": "u" }]
+                },
+                {
+                    "from": { "key_code": "f" },
+                    "to": [{ "key_code": "o" }]
+                },
+                {
+                    "from": { "key_code": "g" },
+                    "to": [{ "key_code": "hyphen" }]
+                },
+                {
+                    "from": { "key_code": "h" },
+                    "to": [{ "key_code": "k" }]
+                },
+                {
+                    "from": { "key_code": "hyphen" },
+                    "to": [{ "key_code": "slash" }]
+                },
+                {
+                    "from": { "key_code": "i" },
+                    "to": [{ "key_code": "r" }]
+                },
+                {
+                    "from": { "key_code": "j" },
+                    "to": [{ "key_code": "t" }]
+                },
+                {
+                    "from": { "key_code": "k" },
+                    "to": [{ "key_code": "n" }]
+                },
+                {
+                    "from": { "key_code": "l" },
+                    "to": [{ "key_code": "s" }]
+                },
+                {
+                    "from": { "key_code": "m" },
+                    "to": [{ "key_code": "d" }]
+                },
+                {
+                    "from": { "key_code": "n" },
+                    "to": [{ "key_code": "g" }]
+                },
+                {
+                    "from": { "key_code": "o" },
+                    "to": [{ "key_code": "y" }]
+                },
+                {
+                    "from": { "key_code": "period" },
+                    "to": [{ "key_code": "j" }]
+                },
+                {
+                    "from": { "key_code": "r" },
+                    "to": [{ "key_code": "comma" }]
+                },
+                {
+                    "from": { "key_code": "s" },
+                    "to": [{ "key_code": "i" }]
+                },
+                {
+                    "from": { "key_code": "semicolon" },
+                    "to": [{ "key_code": "h" }]
+                },
+                {
+                    "from": { "key_code": "slash" },
+                    "to": [{ "key_code": "b" }]
+                },
+                {
+                    "from": { "key_code": "t" },
+                    "to": [{ "key_code": "period" }]
+                },
+                {
+                    "from": { "key_code": "u" },
+                    "to": [{ "key_code": "w" }]
+                },
+                {
+                    "from": { "key_code": "w" },
+                    "to": [{ "key_code": "l" }]
+                },
+                {
+                    "from": { "key_code": "y" },
+                    "to": [{ "key_code": "f" }]
+                }
+            ],
+            "virtual_hid_keyboard": {
+                "country_code": 0,
+                "keyboard_type_v2": "ansi"
+            }
         }
-      ],
-      "fn_function_keys": [
-        {
-          "from": {
-            "key_code": "f1"
-          },
-          "to": [
-            {
-              "consumer_key_code": "display_brightness_decrement"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f2"
-          },
-          "to": [
-            {
-              "consumer_key_code": "display_brightness_increment"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f3"
-          },
-          "to": [
-            {
-              "apple_vendor_keyboard_key_code": "mission_control"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f4"
-          },
-          "to": [
-            {
-              "apple_vendor_keyboard_key_code": "spotlight"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f5"
-          },
-          "to": [
-            {
-              "consumer_key_code": "dictation"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f6"
-          },
-          "to": [
-            {
-              "key_code": "f6"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f7"
-          },
-          "to": [
-            {
-              "consumer_key_code": "rewind"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f8"
-          },
-          "to": [
-            {
-              "consumer_key_code": "play_or_pause"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f9"
-          },
-          "to": [
-            {
-              "consumer_key_code": "fast_forward"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f10"
-          },
-          "to": [
-            {
-              "consumer_key_code": "mute"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f11"
-          },
-          "to": [
-            {
-              "consumer_key_code": "volume_decrement"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "f12"
-          },
-          "to": [
-            {
-              "consumer_key_code": "volume_increment"
-            }
-          ]
-        }
-      ],
-      "name": "Default profile",
-      "parameters": {
-        "delay_milliseconds_before_open_device": 1000
-      },
-      "selected": true,
-      "simple_modifications": [
-        {
-          "from": {
-            "key_code": "caps_lock"
-          },
-          "to": [
-            {
-              "key_code": "left_control"
-            }
-          ]
-        },
-        {
-          "from": {
-            "key_code": "delete_forward"
-          },
-          "to": [
-            {
-              "key_code": "escape"
-            }
-          ]
-        }
-      ],
-      "virtual_hid_keyboard": {
-        "country_code": 0,
-        "indicate_sticky_modifier_keys_state": true,
-        "mouse_key_xy_scale": 100
-      }
-    }
-  ]
+    ]
 }
