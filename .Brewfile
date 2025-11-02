@@ -49,8 +49,6 @@ brew "act"
 brew "supabase/tap/supabase"
 brew "ripgrep"
 brew "patchutils"
-# cspell:ignore satococoa
-brew "satococoa/tap/wtp"
 brew "codex"
 brew "gemini-cli"
 brew "kind"
@@ -97,6 +95,9 @@ cask "slack"
 cask "ghostty"
 cask "lm-studio"
 cask "alt-tab"
+cask "expo-orbit"
+cask "zulu"
+cask "android-studio"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457
