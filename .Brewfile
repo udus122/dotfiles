@@ -54,6 +54,8 @@ brew "satococoa/tap/wtp"
 brew "codex"
 brew "gemini-cli"
 brew "kind"
+brew "watchman"
+brew "ffmpeg"
 
 # zsh customize
 brew "zsh-completions"
