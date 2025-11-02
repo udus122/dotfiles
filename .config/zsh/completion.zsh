@@ -52,9 +52,6 @@ sheldon completions --shell zsh > "${USER_COMPLETION_DIR}/_sheldon"
 # supabase
 supabase completion zsh > "${USER_COMPLETION_DIR}/_supabase"
 
-# wtp
-wtp completion zsh > "${USER_COMPLETION_DIR}/_wtp"
-
 # codex
 codex completion zsh > "${USER_COMPLETION_DIR}/_codex"
 
