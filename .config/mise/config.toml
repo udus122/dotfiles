@@ -2,7 +2,6 @@
 python = "3.13"
 uv = "latest"
 node = "latest"
-java = "latest"
 deno = "latest"
 kubectl = "latest"
 krew = "latest"

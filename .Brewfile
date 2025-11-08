@@ -54,6 +54,7 @@ brew "gemini-cli"
 brew "kind"
 brew "watchman"
 brew "ffmpeg"
+brew "imagemagick"
 
 # zsh customize
 brew "zsh-completions"
@@ -98,6 +99,7 @@ cask "alt-tab"
 cask "expo-orbit"
 cask "zulu"
 cask "android-studio"
+cask "figma"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457
