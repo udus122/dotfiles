@@ -97,7 +97,7 @@ cask "ghostty"
 cask "lm-studio"
 cask "alt-tab"
 cask "expo-orbit"
-cask "zulu"
+cask "zulu@17"
 cask "android-studio"
 cask "figma"
 
