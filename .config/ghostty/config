@@ -7,7 +7,7 @@ cursor-style = block
 cursor-style-blink = false
 
 # 背景は少し透過
-background-opacity = 0.70
+background-opacity = 0.95
 
 # macOSのタイトルバーを透明にする
 macos-titlebar-style = transparent
