@@ -55,6 +55,7 @@ brew "kind"
 brew "watchman"
 brew "ffmpeg"
 brew "imagemagick"
+brew "biome"
 
 # zsh customize
 brew "zsh-completions"
