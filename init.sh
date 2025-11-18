@@ -54,10 +54,11 @@ if [ -z "$(git config --global --get user.email)" ]; then
 else
   echo "Git email is already set. Skipping..."
 fi
-git config --global --unset-all include.path >/dev/null 2>&1  # include.pathを一度リセット
-# 環境共通の設定を追加する
+echo "Configuring Git includes..."
+git config --global -az-unset-all include.path >/dev/null 2>&1  # include.pathを一度リセット
+echo "Adding common Git configuration..."
 git config --global --add include.path "$XDG_CONFIG_HOME/git/common"
-# aliasを追加する
+echo "Adding alias Git configuration..."
 git config --global --add include.path "$XDG_CONFIG_HOME/git/alias"
-# deltaの設定を追加する
+echo "Adding delta Git configuration..."
 git config --global --add include.path "$XDG_CONFIG_HOME/delta/config"

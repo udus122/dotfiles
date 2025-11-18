@@ -30,6 +30,7 @@
       "Bash(zip:*)",
       "Bash(unzip:*)",
       "Bash(date:*)",
+      "Bash(lsof:*)",
       "Bash(tree:*)",
       "Bash(git add:*)",
       "Bash(git add -N:*)",

@@ -26,3 +26,5 @@
     allowed = AKIAIOSFODNN7EXAMPLE
     allowed = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
     allowed = process.env.API_PRIVATE_KEY
+[ghq]
+    root = /Users/usuda.yudai/ws
