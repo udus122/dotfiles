@@ -48,8 +48,8 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:gist.github.com)",
-			"WebFetch(domain:raw.githubusercontent.com)",
-			"WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:developers.google.com)",
       "WebFetch(domain:developers.cloudflare.com)",
       "WebFetch(domain:supabase.com)",
@@ -80,6 +80,7 @@
       "mcp__serena__get_symbols_overview",
       "mcp__serena__replace_symbol_body",
       "mcp__serena__initial_instructions",
+      "mcp__serena__think_about_whether_you_are_done",
       "mcp__ide__getDiagnostics",
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_install"
@@ -145,5 +146,5 @@
     ]
   },
   "spinnerTipsEnabled": false,
-  "alwaysThinkingEnabled": false
+  "alwaysThinkingEnabled": true
 }
