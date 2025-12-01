@@ -45,6 +45,7 @@
       "Edit(//tmp/scratch.txt)",
       "Bash(npm run lint)",
       "Bash(npm run test:*)",
+      "WebFetch(domain:www.anthropic.com)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:gist.github.com)",
