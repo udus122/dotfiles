@@ -67,6 +67,7 @@
       "WebFetch(domain:www.nativewind.dev)",
       "WebFetch(domain:kirillzyusko.github.io)",
       "WebFetch(domain:reactnativereusables.com)",
+      "WebFetch(domain:styledictionary.com)",
       "WebSearch",
       "mcp__serena__onboarding",
       "mcp__serena__check_onboarding_performed",
@@ -82,6 +83,7 @@
       "mcp__serena__replace_symbol_body",
       "mcp__serena__initial_instructions",
       "mcp__serena__think_about_whether_you_are_done",
+      "mcp__serena__list_memories",
       "mcp__ide__getDiagnostics",
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_install"
