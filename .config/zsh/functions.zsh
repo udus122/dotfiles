@@ -94,4 +94,5 @@ function safe-kubectl() {
 compdef _kubectl safe-kubectl
 # alias kubectl='safe-kubectl'  # 2024-10-21: Fig(Amazon Q)を使いたいため使わない
 
+# https://github.com/ghostty-org/ghostty/discussions/4254#discussioncomment-11709346
 alias ghostty='open -a ghostty --args --title=ghostty-from-terminal --working-directory="$(pwd)"'
