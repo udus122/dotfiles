@@ -56,6 +56,7 @@ brew "watchman"
 brew "ffmpeg"
 brew "imagemagick"
 brew "biome"
+brew "tursodatabase/tap/turso"
 
 # zsh customize
 brew "zsh-completions"
