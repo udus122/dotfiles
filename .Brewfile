@@ -2,6 +2,7 @@
 tap "olets/tap"
 tap "supabase/tap"
 tap "satococoa/tap"
+tap "songmu/tap"
 
 # install AppStore applications via mas
 brew "mas"
@@ -57,6 +58,9 @@ brew "ffmpeg"
 brew "imagemagick"
 brew "biome"
 brew "tursodatabase/tap/turso"
+brew "qrencode"
+brew "songmu/tap/laminate"
+
 
 # zsh customize
 brew "zsh-completions"
