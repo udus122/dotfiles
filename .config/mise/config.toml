@@ -13,6 +13,9 @@ awscli = "latest"
 gcloud = "latest"
 go = "1.24"
 "npm:pnpm" = "latest"
+"npm:@mermaid-js/mermaid-cli" = "latest"
+rust = "1.91.1"
+"cargo:silicon" = "0.5.1"
 
 [settings]
 experimental = true
