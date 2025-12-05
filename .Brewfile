@@ -58,6 +58,7 @@ brew "ffmpeg"
 brew "imagemagick"
 brew "biome"
 brew "tursodatabase/tap/turso"
+brew "deck"
 brew "qrencode"
 brew "songmu/tap/laminate"
 
