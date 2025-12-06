@@ -1,3 +1,21 @@
 breaks: true
 folderID: 1ifoOiF8f-cRYtwxnZwh1Ond5WgnL2u0n
 basePresentationID: 1mgCMw9_uZMUDhuQav6BtuEUdTPZvYhuvYWTDOP3Sg1E
+
+defaults:
+  # First page should always use title layout
+  - if: page == 1
+    layout: cover
+  # Pages with one title, one subtitle, and one body use title-subtitle-body layout
+  - if: titles.size() == 1 && subtitles.size() == 1 && bodies.size() == 1
+    # Pages with exactly one title element that is an H2 heading use section layout
+    layout: title-subtitle-body
+  # Pages with only one title and one H2 heading use section layout
+  - if: titles.size() == 1 && headings[2].size() == 1
+    layout: section
+  # Skip pages with TODO in speaker notes
+  - if: speakerNote.contains("TODO")
+    skip: true
+  # Default layout for all other pages
+  - if: "true"
+    layout: title-body
