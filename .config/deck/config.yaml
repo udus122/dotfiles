@@ -11,7 +11,7 @@ defaults:
     # Pages with exactly one title element that is an H2 heading use section layout
     layout: title-subtitle-body
   # Pages with only one title and one H2 heading use section layout
-  - if: titles.size() == 1 && headings[2].size() == 1
+  - if: titles.size() == 1 && headings[2].size() == 1 && subtitles.size() == 0 && bodies.size() == 0
     layout: section
   # Skip pages with TODO in speaker notes
   - if: speakerNote.contains("TODO")
