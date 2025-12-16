@@ -108,6 +108,9 @@ cask "zulu@17"
 cask "android-studio"
 cask "figma"
 cask "microsoft-teams"
+cask "microsoft-powerpoint"
+cask "microsoft-excel"
+cask "microsoft-word"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457
