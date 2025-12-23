@@ -38,6 +38,7 @@
       "Bash(git commit:*)",
       "Bash(git log:*)",
       "Bash(git apply:*)",
+      "Bash(git reset:*)",
       "Bash(git rev-parse:*)",
       "Bash(gh gist view:*)",
       "Read(**)",
@@ -45,6 +46,7 @@
       "Edit(//tmp/scratch.txt)",
       "Bash(npm run lint)",
       "Bash(npm run test:*)",
+      "Bash(pnpm dlx shadcn@latest add:*)",
       "WebFetch(domain:www.anthropic.com)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)",
@@ -68,6 +70,8 @@
       "WebFetch(domain:kirillzyusko.github.io)",
       "WebFetch(domain:reactnativereusables.com)",
       "WebFetch(domain:styledictionary.com)",
+      "WebFetch(domain:conform.guide)",
+      "WebFetch(domain:undraw.co)",
       "WebSearch",
       "mcp__serena__onboarding",
       "mcp__serena__check_onboarding_performed",
@@ -88,7 +92,12 @@
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_take_screenshot",
       "mcp__playwright__browser_click",
-      "mcp__playwright__browser_install"
+      "mcp__playwright__browser_install",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_resize",
+      "mcp__shadcn__get_project_registries"
     ],
     "deny": [
       "Bash(sudo:*)",
