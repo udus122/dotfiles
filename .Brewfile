@@ -3,6 +3,7 @@ tap "olets/tap"
 tap "supabase/tap"
 tap "satococoa/tap"
 tap "songmu/tap"
+tap "snowflakedb/snowflake-cli"
 
 # install AppStore applications via mas
 brew "mas"
@@ -61,6 +62,7 @@ brew "tursodatabase/tap/turso"
 brew "deck"
 brew "qrencode"
 brew "songmu/tap/laminate"
+brew "snowflake-cli"
 
 
 # zsh customize
