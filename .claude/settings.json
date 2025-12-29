@@ -53,6 +53,8 @@
       "WebFetch(domain:gist.github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:vite.dev)",
+      "WebFetch(domain:hono.dev)",
       "WebFetch(domain:developers.google.com)",
       "WebFetch(domain:developers.cloudflare.com)",
       "WebFetch(domain:supabase.com)",
@@ -72,6 +74,11 @@
       "WebFetch(domain:styledictionary.com)",
       "WebFetch(domain:conform.guide)",
       "WebFetch(domain:undraw.co)",
+      "WebFetch(domain:songmu.jp)",
+      "WebFetch(domain:blog.stin.ink)",
+      "WebFetch(domain:tai-kun.dev)",
+      "WebFetch(domain:bun.com)",
+      "WebFetch(domain:siwl.dev)",
       "WebSearch",
       "mcp__serena__onboarding",
       "mcp__serena__check_onboarding_performed",
@@ -97,6 +104,7 @@
       "mcp__playwright__browser_click",
       "mcp__playwright__browser_snapshot",
       "mcp__playwright__browser_resize",
+      "mcp__playwright__browser_close",
       "mcp__shadcn__get_project_registries"
     ],
     "deny": [
