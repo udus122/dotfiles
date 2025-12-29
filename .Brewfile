@@ -63,7 +63,7 @@ brew "deck"
 brew "qrencode"
 brew "songmu/tap/laminate"
 brew "snowflake-cli"
-
+brew "oven-sh/bun/bun"
 
 # zsh customize
 brew "zsh-completions"
