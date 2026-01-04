@@ -2,6 +2,10 @@
 
 abbr -S 'd'='docker' > /dev/null 2>&1
 abbr -S 'g'='git' > /dev/null 2>&1
+abbr -S 'ga'='git add' > /dev/null 2>&1
+abbr -S 'gco'='git commit' > /dev/null 2>&1
+abbr -S 'gcom'='git commit -m' > /dev/null 2>&1
+abbr -S 'gsw'='git switch' > /dev/null 2>&1
 abbr -S 'gst'='git status' > /dev/null 2>&1
 abbr -S 't'="tmux" > /dev/null 2>&1
 abbr -S 'tf'="terraform" > /dev/null 2>&1
