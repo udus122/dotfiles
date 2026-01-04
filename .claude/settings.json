@@ -3,6 +3,7 @@
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
+      "Skill(semantic-commit)",
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(echo:*)",
@@ -59,6 +60,8 @@
       "WebFetch(domain:react.dev)",
       "WebFetch(domain:tailwindcss.com)",
       "WebFetch(domain:typescriptlang.org)",
+      "WebFetch(domain:publish.twitter.com)",
+      "WebFetch(domain:jsr.io)",
       "WebFetch(domain:developers.google.com)",
       "WebFetch(domain:developers.cloudflare.com)",
       "WebFetch(domain:supabase.com)",
@@ -84,6 +87,9 @@
       "WebFetch(domain:bun.com)",
       "WebFetch(domain:oxc.rs)",
       "WebFetch(domain:siwl.dev)",
+      "WebFetch(domain:techblog.insightedge.jp)",
+      "WebFetch(domain:mizunosame.blogspot.com)",
+      "WebFetch(domain:flo8s.com)",
       "WebSearch",
       "mcp__serena__onboarding",
       "mcp__serena__check_onboarding_performed",
@@ -110,6 +116,8 @@
       "mcp__playwright__browser_snapshot",
       "mcp__playwright__browser_resize",
       "mcp__playwright__browser_close",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_wait_for",
       "mcp__shadcn__get_project_registries"
     ],
     "deny": [
@@ -128,7 +136,6 @@
       "Read(id_ed25519)",
       "Read(**/*token*)",
       "Read(**/*key*)",
-      "Bash(curl:*)",
       "Bash(wget:*)",
       "Bash(nc:*)",
       "Bash(psql:*)",
