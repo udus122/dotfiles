@@ -7,6 +7,9 @@
     "navi",
     "olets",
     "reactnativereusables",
-    "tursodatabase"
+    "shellenv",
+    "tursodatabase",
+    "zcompile",
+    "zcompiled"
   ]
 }
