@@ -22,6 +22,8 @@ typeset -U PATH
 
 # homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
+# https://github.com/Homebrew/brew/issues/19939
+# export HOMEBREW_FORBIDDEN_FORMULAE="node python python3 pip npm pnpm yarn claude"
 
 # linux compatible commands. ref: https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
 if type brew &> /dev/null; then
