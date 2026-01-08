@@ -1,6 +1,6 @@
 {
+  "alwaysThinkingEnabled": true,
   "env": {},
-  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Skill(semantic-commit)",
@@ -179,6 +179,6 @@
       }
     ]
   },
-  "spinnerTipsEnabled": false,
-  "alwaysThinkingEnabled": true
+  "includeCoAuthoredBy": false,
+  "spinnerTipsEnabled": false
 }
