@@ -1,6 +1,6 @@
 {
-  "alwaysThinkingEnabled": true,
   "env": {},
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Skill(semantic-commit)",
@@ -111,8 +111,6 @@
       "mcp__playwright__browser_take_screenshot",
       "mcp__playwright__browser_click",
       "mcp__playwright__browser_install",
-      "mcp__playwright__browser_take_screenshot",
-      "mcp__playwright__browser_click",
       "mcp__playwright__browser_snapshot",
       "mcp__playwright__browser_resize",
       "mcp__playwright__browser_close",
@@ -142,6 +140,7 @@
       "Bash(mysql:*)",
       "Bash(mongod:*)"
     ],
+    "ask": [],
     "defaultMode": "default"
   },
   "hooks": {
@@ -179,6 +178,7 @@
       }
     ]
   },
-  "includeCoAuthoredBy": false,
-  "spinnerTipsEnabled": false
+  "spinnerTipsEnabled": false,
+  "alwaysThinkingEnabled": true,
+  "language": "Japanese"
 }
