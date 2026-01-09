@@ -65,6 +65,9 @@ brew "qrencode"
 brew "songmu/tap/laminate"
 brew "snowflake-cli"
 brew "oven-sh/bun/bun"
+brew "lazygit"
+brew "atuin"
+brew "carapace"
 
 # zsh customize
 brew "zsh-completions"
