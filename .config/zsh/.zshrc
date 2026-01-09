@@ -1,21 +1,17 @@
+# function source {
+#   ensure_zcompiled $1
+#   builtin source $1
+# }
 
-# Kiro CLI pre block. Keep at the top of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh"
+# function ensure_zcompiled {
+#   local compiled="$1.zwc"
+#   if [[ ! -r "$compiled" || "$1" -nt "$compiled" ]]; then
+#     echo "Compiling $1"
+#     zcompile $1
+#   fi
+# }
 
-function source {
-  ensure_zcompiled $1
-  builtin source $1
-}
-
-function ensure_zcompiled {
-  local compiled="$1.zwc"
-  if [[ ! -r "$compiled" || "$1" -nt "$compiled" ]]; then
-    echo "Compiling $1"
-    zcompile $1
-  fi
-}
-
-ensure_zcompiled "${ZDOTDIR}/.zshrc"
+# ensure_zcompiled "${ZDOTDIR}/.zshrc"
 
 # PATHの重複を防ぐ
 typeset -U PATH
@@ -115,7 +111,17 @@ eval "$(starship init zsh)"
 eval "$(sheldon source)"
 
 # completion
-source "${ZDOTDIR}/completion.zsh"
+# source "${ZDOTDIR}/completion.zsh"
+## carapace(command completion)
+autoload -Uz compinit && compinit
+autoload -U bashcompinit && bashcompinit
+export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense' # optional
+zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
+source <(carapace _carapace)
+zstyle ':completion:*:git:*' group-order 'main commands' 'alias commands' 'external commands'
+
+## atuin(history completion)
+eval "$(atuin init zsh --disable-up-arrow)"
 
 # aliases
 alias vi='nvim'
@@ -174,8 +180,4 @@ function __prompt_preexec() {
 preexec_functions+=(__prompt_preexec)
 precmd_functions+=(__prompt_precmd)
 
-unfunction source
-
-
-# Kiro CLI post block. Keep at the bottom of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
+# unfunction source
