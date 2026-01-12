@@ -62,7 +62,7 @@ function gcloud-config-create-set-project-account() {
 
   # gcloud configurationを作成
   command gcloud config configurations create "${config_name}"
-  
+
   # accountとproject IDを設定
   command gcloud config set account "${account}"
   command gcloud config set project "${project_id}"
@@ -95,4 +95,4 @@ compdef _kubectl safe-kubectl
 # alias kubectl='safe-kubectl'  # 2024-10-21: Fig(Amazon Q)を使いたいため使わない
 
 # https://github.com/ghostty-org/ghostty/discussions/4254#discussioncomment-11709346
-alias ghostty='open -a ghostty --args --title=ghostty-from-terminal --working-directory="$(pwd)"'
+alias gho='open -a "Ghostty" .'
