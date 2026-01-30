@@ -68,6 +68,7 @@ brew "oven-sh/bun/bun"
 brew "lazygit"
 brew "atuin"
 brew "carapace"
+brew "awscli"
 
 # zsh customize
 brew "zsh-completions"
