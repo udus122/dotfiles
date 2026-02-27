@@ -89,12 +89,14 @@
       "WebFetch(domain:opennext.js.org)",
       "WebFetch(domain:siwl.dev)",
       "WebFetch(domain:duckdb.org)",
+      "WebFetch(domain:blobs.duckdb.org)",
       "WebFetch(domain:ducklake.select)",
       "WebFetch(domain:motherduck.com)",
       "WebFetch(domain:medium.com)",
       "WebFetch(domain:techblog.insightedge.jp)",
       "WebFetch(domain:mizunosame.blogspot.com)",
       "WebFetch(domain:flo8s.com)",
+      "WebFetch(domain:www.digital.go.jp)",
       "WebSearch",
       "mcp__serena__onboarding",
       "mcp__serena__check_onboarding_performed",
@@ -112,15 +114,6 @@
       "mcp__serena__think_about_whether_you_are_done",
       "mcp__serena__list_memories",
       "mcp__ide__getDiagnostics",
-      "mcp__playwright__browser_navigate",
-      "mcp__playwright__browser_take_screenshot",
-      "mcp__playwright__browser_click",
-      "mcp__playwright__browser_install",
-      "mcp__playwright__browser_snapshot",
-      "mcp__playwright__browser_resize",
-      "mcp__playwright__browser_close",
-      "mcp__playwright__browser_evaluate",
-      "mcp__playwright__browser_wait_for",
       "mcp__shadcn__get_project_registries"
     ],
     "deny": [
@@ -183,7 +176,8 @@
       }
     ]
   },
+  "language": "Japanese",
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
-  "language": "Japanese"
+  "skipDangerousModePermissionPrompt": true
 }
