@@ -69,6 +69,7 @@ brew "lazygit"
 brew "atuin"
 brew "carapace"
 brew "awscli"
+brew "playwright-cli"
 
 # zsh customize
 brew "zsh-completions"
