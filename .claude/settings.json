@@ -48,6 +48,7 @@
       "Bash(gh pr view:*)",
       "Bash(gh search issues:*)",
       "Bash(gh gist view:*)",
+      "Bash(gh --help:*)",
       "Bash(playwright-cli:*)",
       "Read(**)",
       "Edit(docs/**)",
@@ -128,6 +129,9 @@
       "WebFetch(domain:talk.observablehq.com)",
       "WebFetch(domain:x.com)",
       "WebFetch(domain:listen.style)",
+      "WebFetch(domain:marsidev.github.io)",
+      "WebFetch(domain:react-turnstile.vercel.app)",
+      "WebFetch(domain:docs.page)",
       "WebSearch",
       "mcp__ide__getDiagnostics",
       "mcp__shadcn__get_project_registries"
@@ -141,8 +145,8 @@
       "Bash(gh repo delete:*)",
       "Bash(gh issue create:*)",
       "Bash(gh pr create:*)",
-      "Bash(gh pr merge:*)",
       "Bash(gh pr close:*)",
+      "Bash(gh pr merge:*)",
       "Bash(gh release create:*)",
       "Bash(git commit --no-verify:*)",
       "Bash(git commit -n:*)",
@@ -199,9 +203,12 @@
       }
     ]
   },
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true
+  },
   "language": "Japanese",
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
   "skipDangerousModePermissionPrompt": true,
-  "enabledPlugins": {}
+  "effortLevel": "high"
 }
