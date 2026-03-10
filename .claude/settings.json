@@ -132,6 +132,8 @@
       "WebFetch(domain:marsidev.github.io)",
       "WebFetch(domain:react-turnstile.vercel.app)",
       "WebFetch(domain:docs.page)",
+      "WebFetch(domain:suzuki-shunsuke.github.io)",
+      "WebFetch(domain:registry.terraform.io)",
       "WebSearch",
       "mcp__ide__getDiagnostics",
       "mcp__shadcn__get_project_registries"
