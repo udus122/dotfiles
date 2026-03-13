@@ -49,6 +49,7 @@
       "Bash(gh search issues:*)",
       "Bash(gh gist view:*)",
       "Bash(gh --help:*)",
+      "Bash(ghro:*)",
       "Bash(playwright-cli:*)",
       "Read(**)",
       "Edit(docs/**)",
@@ -61,6 +62,7 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:gist.github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:vite.dev)",
       "WebFetch(domain:hono.dev)",
@@ -122,6 +124,7 @@
       "WebFetch(domain:api.e-stat.go.jp)",
       "WebFetch(domain:www.e-stat.go.jp)",
       "WebFetch(domain:www.stat.go.jp)",
+      "WebFetch(domain:www.reinfolib.mlit.go.jp)",
       "WebFetch(domain:deepwiki.com)",
       "WebFetch(domain:data.oxon-data.work)",
       "WebFetch(domain:geoshape.ex.nii.ac.jp)",
@@ -211,6 +214,7 @@
   "language": "Japanese",
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
-  "effortLevel": "high"
+  "voiceEnabled": true
 }
