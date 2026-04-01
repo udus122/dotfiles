@@ -135,6 +135,8 @@
       "WebFetch(domain:marsidev.github.io)",
       "WebFetch(domain:react-turnstile.vercel.app)",
       "WebFetch(domain:docs.page)",
+      "WebFetch(domain:blog.shibayu36.org)",
+      "WebFetch(domain:biz.moneyforward.com)",
       "WebFetch(domain:suzuki-shunsuke.github.io)",
       "WebFetch(domain:registry.terraform.io)",
       "WebSearch",
@@ -216,5 +218,9 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "sh /Users/usuda.yudai/.claude/statusline-command.sh"
+  }
 }
