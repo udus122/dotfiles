@@ -110,6 +110,7 @@
       "WebFetch(domain:pypi.org)",
       "WebFetch(domain:docs.getdbt.com)",
       "WebFetch(domain:dlthub.com)",
+      "WebFetch(domain:docs.dagster.io)",
       "WebFetch(domain:duckui.com)",
       "WebFetch(domain:observablehq.com)",
       "WebFetch(domain:flo8s.com)",
@@ -139,7 +140,12 @@
       "WebFetch(domain:biz.moneyforward.com)",
       "WebFetch(domain:suzuki-shunsuke.github.io)",
       "WebFetch(domain:registry.terraform.io)",
+      "WebFetch(domain:docs.crawl4ai.com)",
+      "WebFetch(domain:schemaspy.readthedocs.io)",
       "WebSearch",
+      "Bash(git init:*)",
+      "Bash(brew info:*)",
+      "Bash(launchctl list:*)",
       "mcp__ide__getDiagnostics",
       "mcp__shadcn__get_project_registries"
     ],
@@ -210,17 +216,25 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "sh /Users/usuda.yudai/.claude/statusline-command.sh"
+  },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "dagster": {
+      "source": {
+        "source": "github",
+        "repo": "dagster-io/skills"
+      }
+    }
   },
   "language": "Japanese",
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true,
   "voiceEnabled": true,
-  "statusLine": {
-    "type": "command",
-    "command": "sh /Users/usuda.yudai/.claude/statusline-command.sh"
-  }
+  "skipDangerousModePermissionPrompt": true
 }
