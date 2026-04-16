@@ -11,5 +11,14 @@
     "tursodatabase",
     "zcompile",
     "zcompiled"
-  ]
+  ],
+  "workbench.editorAssociations": {
+    "*.copilotmd": "vscode.markdown.preview.editor",
+    "*.ipynb": "jupyter-notebook",
+    "git-rebase-todo": "gitlens.rebase",
+    "*.parquet": "duckdb.dataFileViewer",
+    "*.csv": "duckdb.dataFileViewer",
+    "*.tsv": "duckdb.dataFileViewer",
+    "*.xlsx": "duckdb.dataFileViewer"
+  }
 }
