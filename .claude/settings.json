@@ -179,7 +179,7 @@
       "Bash(mongod:*)"
     ],
     "ask": [],
-    "defaultMode": "default"
+    "defaultMode": "auto"
   },
   "hooks": {
     "Notification": [
@@ -235,6 +235,10 @@
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark-daltonized",
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "inputNeededNotifEnabled": true
 }

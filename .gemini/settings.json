@@ -21,7 +21,10 @@
   },
   "model": {},
   "context": {
-    "fileName": ["AGENTS.md", "GEMINI.md"],
+    "fileName": [
+      "AGENTS.md",
+      "GEMINI.md"
+    ],
     "loadFromIncludeDirectories": true
   },
   "security": {
@@ -30,6 +33,10 @@
     }
   },
   "advanced": {
-    "excludedEnvVars": ["DEBUG", "DEBUG_MODE", "NODE_ENV"]
+    "excludedEnvVars": [
+      "DEBUG",
+      "DEBUG_MODE",
+      "NODE_ENV"
+    ]
   }
 }
