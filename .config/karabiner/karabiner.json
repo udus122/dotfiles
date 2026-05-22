@@ -307,6 +307,7 @@
                     },
                     {
                         "description": "Simple modifications",
+                        "enabled": false,
                         "manipulators": [
                             {
                                 "from": { "key_code": "caps_lock" },

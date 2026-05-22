@@ -117,11 +117,14 @@ cask "expo-orbit"
 cask "zulu@17"
 cask "android-studio"
 cask "figma"
-cask "microsoft-teams"
 cask "zoom"
+cask "microsoft-teams"
 cask "microsoft-powerpoint"
 cask "microsoft-excel"
 cask "microsoft-word"
+cask "google-gemini"
+cask "antigravity"
+# cask "tourbox-console"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457
