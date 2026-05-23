@@ -42,6 +42,7 @@ brew "qemu"
 brew "colima", start_service: true
 brew "docker"
 brew "docker-compose"
+brew "docker-buildx"
 brew "kubectl"
 brew "kubectx"
 brew "kubie"
