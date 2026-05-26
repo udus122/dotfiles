@@ -163,7 +163,6 @@
       "Bash(gh release create:*)",
       "Bash(git commit --no-verify:*)",
       "Bash(git commit -n:*)",
-      "Bash(git push:*)",
       "Bash(git branch -D:*)",
       "Bash(git reset --hard:*)",
       "Bash(git checkout .:*)",
@@ -182,6 +181,18 @@
     "defaultMode": "auto"
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/check-git-push.sh",
+            "if": "Bash(git push:*)"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "",
