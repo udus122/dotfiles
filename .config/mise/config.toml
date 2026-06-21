@@ -14,6 +14,7 @@ gcloud = "latest"
 go = "1.24"
 "npm:pnpm" = "latest"
 "npm:@mermaid-js/mermaid-cli" = "latest"
+"npm:defuddle" = "latest"
 rust = "1.91.1"
 
 [settings]
