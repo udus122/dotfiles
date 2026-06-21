@@ -191,6 +191,15 @@
             "if": "Bash(git push:*)"
           }
         ]
+      },
+      {
+        "matcher": "WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/webfetch-to-defuddle.sh"
+          }
+        ]
       }
     ],
     "Notification": [
