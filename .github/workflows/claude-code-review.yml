@@ -1,8 +1,13 @@
 name: Claude Code Review
 
+# 一時的に無効化: 組織で OAuth 認証が許可されておらず、claude-code-action が
+# "API Error: 403 OAuth authentication is currently not allowed for this organization"
+# で失敗するため。認証を解消 (anthropic_api_key への切替 or 組織で OAuth 許可) 後、
+# 下記 pull_request トリガーを復帰する。
 on:
-  pull_request:
-    types: [opened, synchronize]
+  workflow_dispatch:
+  # pull_request:
+  #   types: [opened, synchronize]
     # Optional: Only run on specific file changes
     # paths:
     #   - "src/**/*.ts"
