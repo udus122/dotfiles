@@ -126,6 +126,7 @@ cask "microsoft-word"
 cask "google-gemini"
 cask "antigravity"
 # cask "tourbox-console"
+cask "superwhisper"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457

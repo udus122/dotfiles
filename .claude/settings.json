@@ -156,8 +156,6 @@
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/*)",
       "Bash(gh repo delete:*)",
-      "Bash(gh issue create:*)",
-      "Bash(gh pr create:*)",
       "Bash(gh pr close:*)",
       "Bash(gh pr merge:*)",
       "Bash(gh release create:*)",
@@ -257,8 +255,9 @@
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark-daltonized",
+  "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "inputNeededNotifEnabled": true
+  "skipWorkflowUsageWarning": true
 }
