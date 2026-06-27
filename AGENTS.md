@@ -15,7 +15,7 @@ make init       # 初期設定（init.sh: Homebrew、Xcode CLI、Git設定など
 make install    # パッケージインストール（install.sh: brew bundle、krew、mise、Claude Code）
 ```
 
-Brewfileの更新後は `brew bundle install --upgrade --global --cleanup` で反映。
+Brewfileの更新後は `brew bundle install --upgrade --global && brew bundle cleanup --global --force` で反映。
 
 ## アーキテクチャ
 
