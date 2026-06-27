@@ -4,7 +4,8 @@ set -euo pipefail
 script_dir="$(dirname "$0")"
 
 brew update
-brew bundle install --upgrade --global --cleanup
+brew bundle install --upgrade --global
+brew bundle cleanup --global --force
 
 ( # Install krew
   cd "$(mktemp -d)" &&
