@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/usuda.yudai/dotfiles/.codex/hooks/webfetch-to-defuddle.sh'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE_PATH=$(jq -r '.tool_input.file_path') && ([ \"$(tail -c1 \"$FILE_PATH\" | wc -l)\" -eq 0 ] && echo >> \"$FILE_PATH\" || true)"
+          }
+        ]
+      }
+    ]
+  }
+}
