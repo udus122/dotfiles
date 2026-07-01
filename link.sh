@@ -24,7 +24,7 @@ function make_link () {
     fi
 }
 
-find "${SCRIPT_DIR}" -type f -path '*/.*' | while read -r dotfile; do
+find "${SCRIPT_DIR}" \( -type f -o -type l \) -path '*/.*' | while read -r dotfile; do
     [[ "$dotfile" == "${SCRIPT_DIR}/.git"* ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.github"* ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.DS_Store" ]] && continue
