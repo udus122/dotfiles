@@ -27,6 +27,15 @@ if [[ "$cmd" =~ (^|[[:space:]])\+[A-Za-z0-9/_.-]+ ]]; then
   deny "force push refspec (+) は禁止"
 fi
 
+# 個人ナレッジベース (~/knowledge) は main 直 push を許可 (force push 禁止は上で判定済み)
+# git -C <path> push にも対応するため、-C 指定があればそのパスで判定する
+push_dir=$(echo "$cmd" | sed -nE 's/^.*-C[[:space:]]+([^[:space:]]+).*$/\1/p')
+push_dir="${push_dir/#\~/$HOME}"
+toplevel=$(git -C "${push_dir:-.}" rev-parse --show-toplevel 2>/dev/null || echo "")
+if [[ "$toplevel" == "$HOME/knowledge" ]]; then
+  exit 0
+fi
+
 # 明示的に main/master を引数で指定しているケース
 # git push origin main / git push origin HEAD:main / git push origin refs/heads/main など
 if [[ "$cmd" =~ (^|[[:space:]:/])(main|master)([[:space:]:]|$) ]]; then
