@@ -61,3 +61,8 @@ Brewfileの更新後は `brew bundle install --upgrade --global && brew bundle c
 - `link.sh` は既存の非シンボリックリンクファイルをスキップする（上書き防止）
 - 設定ファイルの追加後は `make link` でシンボリックリンクを作成
 - `CLAUDE.md` は `AGENTS.md` へのシンボリックリンク。編集時は `AGENTS.md` を直接編集すること
+
+## コミット・PRの方針
+
+- このリポジトリでは `main` への直接コミットを基本とする
+- PRの作成は明示的に指示されたときのみ行う
