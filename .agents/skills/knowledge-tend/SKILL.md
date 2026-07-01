@@ -29,37 +29,20 @@ git -C ~/knowledge log origin/main..HEAD --oneline
 
 エージェントが index.md / log.md の更新を忘れていても、ここで整合を回復する。
 
-- index.md 再生成: 全 .md の frontmatter(title/description)を走査し、index.md の列挙(OKF §6 形式)と突き合わせて過不足を修正する
-- log.md バックフィル: `git -C ~/knowledge log --since` と log.md を突き合わせ、記録漏れの変更(ファイル作成・大きな更新)を OKF §7 形式で追記する
-- frontmatter が欠落・不完全なファイル(index.md と log.md 以外は type 必須)を検出し、修正する
+- index.md 再生成: `notes/` `books/` の frontmatter(title/description)を走査し、index.md の列挙(OKF §6 形式)と突き合わせて過不足を修正する(daily/ の日次ディレクトリは個別列挙しない)
+- log.md バックフィル: `git -C ~/knowledge log --since` と log.md を突き合わせ、記録漏れの変更(notes/ books/ の作成・大きな更新、構造変更)を OKF §7 形式で追記する(daily 配下は記録対象外)
+- frontmatter が欠落・不完全な .md(index.md と log.md 以外は type 必須。バイナリは対象外)を検出し、修正する
 - Markdown リンク切れ(存在しない相対パス)を検出し、修正を提案する
-- `inbox/` に滞留しているファイルがあれば、整理(適切なディレクトリへの移動と整形)を提案する
+- 数日以上前の未整理 capture(daily/*/ 内の type: capture)があれば、notes/ 等への昇格または削除を提案する
+- daily/ 直下にフラットな .md があれば、`daily/YYYY-MM-DD/journal.md` 形式への移行を提案する
 
 ## 4. 今日のダイジェスト
 
-当日の `daily/YYYY-MM-DD.md` が未作成なら、以下のスケルトンを生成して書き込む(既存なら不足セクションのみ提案):
+当日の `daily/YYYY-MM-DD/journal.md` が未作成なら、AGENTS.md のテンプレートに従って生成し、「## 朝のダイジェスト」に以下を書き込む(既存なら不足分のみ提案):
 
-```markdown
----
-type: daily
-title: YYYY-MM-DD
-description: (1行要約は1日の終わりに記入)
-tags: [daily]
-created: YYYY-MM-DD
----
-
-## 朝のダイジェスト
-
-- 昨日の振り返り: (直近の daily から要点を抽出)
-- 未整理の inbox: (件数とファイル名)
-- 今日やること候補: (直近の daily・notes の未完了事項から抽出)
-
-## 作業ログ
-
-## メモ
-
-## 振り返り
-```
+- 昨日の振り返り: (直近の journal から要点を抽出)
+- 未整理の capture: (件数とファイル名)
+- 今日やること候補: (直近の journal・notes の未完了事項から抽出)
 
 生成したダイジェストの要点はセッションにも提示する(ユーザーは開いたセッションで確認する運用)。
 

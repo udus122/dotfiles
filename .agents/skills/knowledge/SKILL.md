@@ -16,12 +16,12 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 
 1. `~/knowledge/AGENTS.md` を読み、規約を確認する
 2. 内容の種別を判定する
-   - その日の出来事・振り返り・作業の要約 → `daily/YYYY-MM-DD.md`(既存があれば追記)
+   - その日の出来事・振り返り・作業の要約 → `daily/YYYY-MM-DD/journal.md`(既存があれば追記)
    - 学び・技術トピック・調査成果 → `notes/kebab-case.md`
    - 読書メモ → `books/kebab-case.md`
-   - 判断に迷う生データ → `inbox/` に置いて後で整理
+   - 判断に迷う生データ → 当日の `daily/YYYY-MM-DD/` に置く(type: capture)
 3. frontmatter を付与して保存する
-4. ファイルを作成・大きく更新したら `index.md` と `log.md` も更新する(規約参照)
+4. `notes/` `books/` のファイルを作成・大きく更新したら `index.md` と `log.md` も更新する(daily 配下は対象外。規約参照)
 5. 確かなことだけを書く。推測やセッション出力の丸写しはしない
 
 ## 参照 (query)
@@ -34,6 +34,6 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 
 他リポジトリでの調査・作業で意味のある成果が出たとき:
 
-1. 当日の `daily/YYYY-MM-DD.md` の「## 作業ログ」に要約を追記する(何をやったか・結果・成果物へのリンク)
+1. 当日の `daily/YYYY-MM-DD/journal.md` の「## 作業ログ」に要約を追記する(何をやったか・結果・成果物へのリンク)
 2. 再利用できる知識(調査結果・設計判断・ハマりどころ)は `notes/` にファイルとして切り出し、daily からリンクする
 3. 保存後は `git -C ~/knowledge` で add/commit/push しておく(main 直 push 可)
