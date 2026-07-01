@@ -206,18 +206,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "terminal-notifier -title 'Needs Review - Claude Code' -activate 'com.microsoft.VSCode'"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "terminal-notifier -title 'Done Tasks - Claude Code' -activate 'com.microsoft.VSCode'"
+            "command": "terminal-notifier -title 'Needs Review - Claude Code'"
           }
         ]
       }
