@@ -45,5 +45,5 @@ OK例:
 - 個人の知識ベースが `~/knowledge` にある
 - `~/knowledge` はホームベース。専用セッションを `~/knowledge` で起動して作業を発進するのが基本(規約は `~/knowledge/AGENTS.md`)
 - どのワークスペースで作業していても、得られた学び・決定・有用な参照は `~/knowledge` に記録することを常に意識する
-- 再利用できる知識は `notes/` へ、作業の要約は当日の `daily/YYYY-MM-DD/journal.md` の「## 作業ログ」へ
+- 作業の要約は当日の `daily/YYYY-MM-DD/journal.md` の「## 作業ログ」へ。`notes/` への反映は AGENTS.md の昇格基準に従う(デフォルトは journal のみ)
 - ナレッジベースを参照するときは `~/knowledge/index.md` を起点に辿る

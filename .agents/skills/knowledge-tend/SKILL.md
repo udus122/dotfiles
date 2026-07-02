@@ -34,6 +34,7 @@ git -C ~/knowledge log origin/main..HEAD --oneline
 - frontmatter が欠落・不完全な .md(index.md と log.md 以外は type 必須。バイナリは対象外)を検出し、修正する
 - Markdown リンク切れ(存在しない相対パス)を検出し、修正を提案する
 - 数日以上前の未整理 capture(daily/*/ 内の type: capture)があれば、notes/ 等への昇格または削除を提案する
+- 被リンク(index.md 以外からのリンク)がなく長期間更新されていない notes/ のノートを検出し、廃止(journal への統合または削除)を提案する
 - daily/ 直下にフラットな .md があれば、`daily/YYYY-MM-DD/journal.md` 形式への移行を提案する
 
 ## 4. 今日のダイジェスト
