@@ -485,7 +485,7 @@
                             {
                                 "from": {
                                     "key_code": "left_command",
-                                    "modifiers": { "mandatory": ["any"] }
+                                    "modifiers": { "optional": ["caps_lock"] }
                                 },
                                 "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
                                 "to": [
@@ -502,7 +502,7 @@
                             {
                                 "from": {
                                     "key_code": "right_command",
-                                    "modifiers": { "mandatory": ["any"] }
+                                    "modifiers": { "optional": ["caps_lock"] }
                                 },
                                 "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
                                 "to": [
@@ -1166,7 +1166,7 @@
                             {
                                 "from": {
                                     "key_code": "left_command",
-                                    "modifiers": { "mandatory": ["any"] }
+                                    "modifiers": { "optional": ["caps_lock"] }
                                 },
                                 "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
                                 "to": [
@@ -1183,7 +1183,7 @@
                             {
                                 "from": {
                                     "key_code": "right_command",
-                                    "modifiers": { "mandatory": ["any"] }
+                                    "modifiers": { "optional": ["caps_lock"] }
                                 },
                                 "parameters": { "basic.to_if_held_down_threshold_milliseconds": 100 },
                                 "to": [
