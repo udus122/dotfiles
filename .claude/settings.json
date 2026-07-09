@@ -170,7 +170,12 @@
       "Read(id_rsa)",
       "Read(id_ed25519)",
       "Read(**/*token*)",
-      "Read(**/*key*)",
+      "Read(**/*.key)",
+      "Read(**/*.pem)",
+      "Read(**/*_key*)",
+      "Read(**/*-key*)",
+      "Read(**/*apikey*)",
+      "Read(**/*keyfile*)",
       "Bash(wget:*)",
       "Bash(nc:*)",
       "Bash(psql:*)",
@@ -208,7 +213,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "terminal-notifier -title 'Needs Review - Claude Code'"
+            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
           }
         ]
       }
@@ -230,13 +235,20 @@
     "command": "sh /Users/usuda.yudai/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true
+    "pyright-lsp@claude-plugins-official": true,
+    "codex@openai-codex": true
   },
   "extraKnownMarketplaces": {
     "dagster": {
       "source": {
         "source": "github",
         "repo": "dagster-io/skills"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
       }
     }
   },
@@ -245,10 +257,10 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
   "theme": "dark-daltonized",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true,
-  "skipWorkflowUsageWarning": true
+  "voiceEnabled": true
 }
