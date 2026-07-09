@@ -6,3 +6,7 @@ export XDG_STATE_HOME="$HOME/.local/state"  # /var/lib
 
 # zsh
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME}/zsh"
+
+# editor
+export EDITOR="zed --wait"
+export VISUAL="$EDITOR"
