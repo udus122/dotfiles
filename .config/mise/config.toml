@@ -16,7 +16,6 @@ go = "1.24"
 "npm:@mermaid-js/mermaid-cli" = "latest"
 "npm:defuddle" = "latest"
 rust = "1.91.1"
-"npm:codex" = "latest"
 
 [settings]
 experimental = true
