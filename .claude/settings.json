@@ -115,17 +115,12 @@
       "WebFetch(domain:docs.dagster.io)",
       "WebFetch(domain:duckui.com)",
       "WebFetch(domain:observablehq.com)",
-      "WebFetch(domain:flo8s.com)",
-      "WebFetch(domain:queria.io)",
-      "WebFetch(domain:data.queria.io)",
       "WebFetch(domain:docs.snowflake.com)",
       "WebFetch(domain:docs.databricks.com)",
       "WebFetch(domain:www.digital.go.jp)",
       "WebFetch(domain:nlftp.mlit.go.jp)",
       "WebFetch(domain:www.e-stat.go.jp)",
-      "WebFetch(domain:dlthub.com)",
       "WebFetch(domain:api.e-stat.go.jp)",
-      "WebFetch(domain:www.e-stat.go.jp)",
       "WebFetch(domain:www.stat.go.jp)",
       "WebFetch(domain:www.reinfolib.mlit.go.jp)",
       "WebFetch(domain:deepwiki.com)",
@@ -149,7 +144,34 @@
       "Bash(brew info:*)",
       "Bash(launchctl list:*)",
       "mcp__ide__getDiagnostics",
-      "mcp__shadcn__get_project_registries"
+      "mcp__shadcn__get_project_registries",
+      "Skill(ops-cycle)",
+      "Bash(~/.claude/skills/ops-cycle/scripts/:*)",
+      "Bash(git status:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git switch:*)",
+      "Bash(git pull:*)",
+      "Bash(git push:*)",
+      "Bash(git worktree:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git remote:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh issue edit:*)",
+      "Bash(gh issue comment:*)",
+      "Bash(gh issue close:*)",
+      "Bash(gh label list:*)",
+      "Bash(gh label create:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh repo view:*)",
+      "Bash(uvx:*)",
+      "Bash(readlink:*)",
+      "Bash(realpath:*)",
+      "Bash(dirname:*)",
+      "Bash(basename:*)",
+      "Bash(printf:*)",
+      "Bash(mktemp:*)",
+      "Bash(rmdir:*)"
     ],
     "deny": [
       "Bash(sudo:*)",
@@ -184,6 +206,17 @@
     ],
     "ask": [],
     "defaultMode": "auto"
+  },
+  "skillOverrides": {
+    "cloudflare": "off",
+    "durable-objects": "off",
+    "web-perf": "off",
+    "workers-best-practices": "off",
+    "wrangler": "off",
+    "agents-sdk": "off",
+    "cloudflare-email-service": "off",
+    "sandbox-sdk": "off",
+    "knowledge-tend": "off"
   },
   "hooks": {
     "PreToolUse": [
@@ -227,15 +260,38 @@
             "command": "FILE_PATH=$(jq -r '.tool_input.file_path') && ([ \"$(tail -c1 \"$FILE_PATH\" | wc -l)\" -eq 0 ] && echo >> \"$FILE_PATH\" || true)"
           }
         ]
+      },
+      {
+        "matcher": "Read|Grep|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/ops-log-knowledge-ref.sh",
+            "async": true,
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "InstructionsLoaded": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/ops-log-instructions.sh",
+            "async": true,
+            "timeout": 5000
+          }
+        ]
       }
     ]
   },
   "statusLine": {
     "type": "command",
-    "command": "sh /Users/usuda.yudai/.claude/statusline-command.sh"
+    "command": "sh ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true,
     "codex@openai-codex": true
   },
   "extraKnownMarketplaces": {
