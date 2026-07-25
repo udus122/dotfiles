@@ -1,0 +1,22 @@
+name: public-safe
+
+# このリポジトリは公開されている。非公開にすべき情報が紛れ込んでいないかを
+# 目視ではなく機械的に点検する。
+#
+# CI では非公開層（対象ワークスペースの実体）を参照できないため、
+# それ無しでも成立する構造検査だけを実行する。
+# 禁止語による内容検査はローカルと月次ルーティンが行う。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  structural:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: 構造検査
+        run: ./tools/check-public-safe.sh --structural-only
