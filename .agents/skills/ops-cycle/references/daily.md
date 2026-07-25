@@ -148,18 +148,25 @@ Issue の起票と消化の履歴を残す。複数リポジトリに分散す�
 `repo` 列を持たせて横断集計できる形にする。
 
 ```bash
-OWNERS=$($S/repos.sh "$PWD" --issuable | cut -f3 | cut -d/ -f1 | sort -u)
-for owner in $OWNERS; do
-  gh search issues 'label:from-nightly' --owner "$owner" --limit 200 \
-    --json repository,number,title,state,createdAt,closedAt,url,labels
-done | jq -c '.[] | {
-  ts: (now | todate), repo: .repository.nameWithOwner, number, title, state,
-  created_at: .createdAt, closed_at: .closedAt, url,
-  labels: [.labels[].name]
-}' | while IFS= read -r line; do
+REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
+REPOS="$REPOS $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
+for repo in $(printf '%s\n' $REPOS | sort -u); do
+  gh issue list -R "$repo" --state all --label from-nightly --limit 200 \
+    --json number,title,state,createdAt,closedAt,url,labels 2>/dev/null \
+  | jq -c --arg repo "$repo" --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '.[] | {
+      ts: $ts, repo: $repo, number, title, state,
+      created_at: .createdAt, closed_at: .closedAt, url,
+      labels: [.labels[].name]
+    }'
+done | while IFS= read -r line; do
   printf '%s' "$line" | $S/metrics.sh append issues
 done
 ```
+
+`gh search issues` は使わない。インデックスの反映に遅れがあり、
+**この実行で作ったばかりの Issue を取りこぼす**（起票直後の計測が最も重要なのに、
+そこが欠ける）。`gh issue list` はリポジトリごとに1回ずつ呼ぶぶん回数は増えるが、
+結果が権威的で遅延がない。
 
 同じ Issue が何度も追記されるのは想定内。集計時に `repo` と `number` で
 最新の行を採ればよい。
