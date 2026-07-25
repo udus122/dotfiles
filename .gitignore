@@ -2,6 +2,10 @@
 # Backup files
 **/*.bck*
 
+# 自己改善サイクルの目印。非公開層の一部なので追跡しない
+# （このリポジトリ単体を clone した状態では存在しないのが正しい）
+.claude-ops/
+
 # Karabiner-Elements
 .config/karabiner/assets
 .config/karabiner/automatic_backups
