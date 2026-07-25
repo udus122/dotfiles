@@ -32,7 +32,7 @@ allowed-tools: Bash, Read, Grep, Glob
 2. 無ければ `git log` の直近のコミット群から実際に使われている型とスコープの傾向を読み取る
 3. それも無ければ Conventional Commits 標準
 
-破壊的変更は `!` を付けるか `BREAKING CHANGE:` フッターを書く。リポジトリが semantic-release 系を使っている場合、型の選択がそのままバージョンを決めるので慎重に（例: fdl は `major_on_zero=false` なので `!` 付きでもマイナー止まり）。
+破壊的変更は `!` を付けるか `BREAKING CHANGE:` フッターを書く。リポジトリが semantic-release 系を使っている場合、型の選択がそのままバージョンを決めるので慎重に。設定次第で挙動が変わる（例: `major_on_zero = false` なら 0.x のうちは `!` 付きでもマイナー止まり）ので、リリース設定を確認してから型を選ぶ。
 
 ## メッセージの言語
 
