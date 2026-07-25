@@ -63,8 +63,16 @@ repo_meta() {
   printf '%s' "$meta" | jq -r '[.nameWithOwner, .visibility, .issues] | @tsv'
 }
 
+# 起票してよい所有者か。一覧は非公開層が持つ（自分の名前空間の一覧は公開しない）。
+# 一覧が空のときは誰にも起票しない側に倒す。他人のリポジトリに書き込む事故を防ぐため。
+owners_allow=$(ops_cfg_list '.issue_owners_allow')
+owner_allowed() {
+  [ -n "$owners_allow" ] || return 1
+  printf '%s\n' "$owners_allow" | grep -qxF "$1"
+}
+
 emit() {
-  local entry="$1" real="$2" url slug meta
+  local entry="$1" real="$2" url slug meta canonical
   url=$(git -C "$real" remote get-url origin 2>/dev/null) || return 0
   [ -n "$url" ] || return 0
   slug=$(slug_from_url "$url")
@@ -72,6 +80,9 @@ emit() {
   if [ "$issuable_only" = "--issuable" ]; then
     case "$meta" in *"	no-issues") return 0 ;; esac
     case "$meta" in *"	unknown	"*) return 0 ;; esac
+    # リネームや transfer で所有者が変わることがあるので、正規化後の所有者で見る
+    canonical=${meta%%	*}
+    owner_allowed "${canonical%%/*}" || return 0
   fi
   printf '%s\t%s\t%s\n' "$entry" "$real" "$meta"
 }
