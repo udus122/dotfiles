@@ -59,9 +59,17 @@ $S/workspaces.sh          # 目印を持つワークスペース
 判断待ちが溜まったまま夜間実行が空回りするのを防ぐ。
 
 ```bash
-$S/repos.sh "$PWD" --issuable          # 起票先の候補
-gh search issues 'label:needs-decision state:open' --owner <owner> --json repository,number,title
+REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
+REPOS="$REPOS $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
+for repo in $(printf '%s\n' $REPOS | sort -u); do
+  gh issue list -R "$repo" --state open --label needs-decision \
+    --json number,title --jq ".[] | \"$repo#\(.number)\t\(.title)\""
+done
 ```
+
+`gh search issues` は使わない。結果が権威的でないうえ（計測の収集と同じ理由）、
+**クエリ文字列内の `state:` / `is:` が修飾子として解釈されず**、
+`'label:needs-decision state:open'` は常に0件を返す。安全弁が一度も作動しなくなる。
 
 `config.json` の `needs_decision_threshold`（既定 5）以上あるときは、
 **起票も消化もせず**、何が滞留しているかを報告して終了する。
