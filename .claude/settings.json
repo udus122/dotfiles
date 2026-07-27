@@ -308,6 +308,7 @@
       }
     }
   },
+  "model": "opus",
   "language": "Japanese",
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
