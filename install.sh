@@ -24,3 +24,8 @@ kubectl krew install < "$script_dir/krew.txt"
 
 # Native Install Claude Code
 curl -fsSL https://claude.ai/install.sh | bash
+
+# Register MCP servers for Claude Code (user scope)
+if ! claude mcp get claude-design > /dev/null 2>&1; then
+  claude mcp add --scope user --transport http claude-design https://api.anthropic.com/v1/design/mcp
+fi
