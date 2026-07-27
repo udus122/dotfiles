@@ -113,6 +113,19 @@ gh issue list -R "$KNOWLEDGE_REPO" --state open --label from-nightly --json numb
 
 ## 5. 知見の草案の去就を決める
 
+`drains_knowledge_spool` を持つワークスペースは、**判断に入る前にスプールを浚う。**
+
+```bash
+$S/spool.sh drain "$PWD"
+git -C "$PWD" add journals
+git -C "$PWD" commit -m "docs(weekly): 日次が取りこぼした草案を回収する"
+git -C "$PWD" push
+```
+
+日次の回収は取りこぼしうる（`references/daily.md` の手順4）。ここで浚わないと、
+残った草案は去就が決まらないまま次の週まで持ち越される。回収するものが
+無ければ何もしない。
+
 日次が置いた `type: capture` の草案を、既存の概念と突き合わせる。
 
 - 既存の概念に統合できる → その概念を更新し、草案は削除する
