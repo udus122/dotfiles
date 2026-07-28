@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # セッション記録を、読める大きさに絞って取り出す。
 #
-# 一次入力は ~/.claude/history.jsonl（1行 = ユーザ発話1件、project 付き）。
-# 生のトランスクリプトは1本が数 MB あるため全読みはせず、
-# history で当たりを付けたセッションだけ部分抽出する。
+# 一次入力は ~/.claude/projects/ のトランスクリプト。1本が数 MB あるため
+# 全読みはせず、mtime で期間外のファイルを落としてから jq で発話行だけを抜く。
+#
+# 以前は ~/.claude/history.jsonl を一次入力にしていたが、更新が止まっても
+# 「その期間に発話が無かった」と区別が付かず、日次が無言で空回りした。
+# トランスクリプトは cwd と timestamp を持つので、同じ絞り込みが単独で成立する。
 #
 #   sessions.sh prompts <workspace> [since_epoch_ms]   ユーザ発話 (JSONL)
 #   sessions.sh ids     <workspace> [since_epoch_ms]   セッション ID
@@ -15,7 +18,6 @@ set -uo pipefail
 ops_ready || exit 0
 ops_dirs
 
-HISTORY="$HOME/.claude/history.jsonl"
 PROJECTS="$HOME/.claude/projects"
 
 cmd="${1:?usage: sessions.sh <prompts|ids|replies|since|mark> ...}"
@@ -25,17 +27,63 @@ case "$cmd" in
   prompts|ids)
     workspace=$(cd "${1:?workspace required}" && pwd -P)
     since="${2:-0}"
-    [ -r "$HISTORY" ] || exit 0
-    out=$(jq -c --arg ws "$workspace" --argjson since "$since" '
-      select(.project != null)
-      | select(.project == $ws or (.project | startswith($ws + "/")))
-      | select((.timestamp // 0) >= $since)
-      | {ts: .timestamp, sessionId: (.sessionId // null), prompt: .display}
-    ' "$HISTORY" 2>/dev/null)
+    [ -d "$PROJECTS" ] || exit 0
+
+    # 期間外のファイルは読まない。since より後の発話を含むなら mtime も
+    # since より後になる。余裕を1時間取って取りこぼしを防ぐ。
+    if [ "$since" -gt 0 ]; then
+      mins=$(( ( $(date +%s) * 1000 - since ) / 60000 + 60 ))
+      [ "$mins" -lt 1 ] && mins=1
+      files=$(find "$PROJECTS" -name '*.jsonl' -type f -mmin "-$mins" 2>/dev/null)
+    else
+      files=$(find "$PROJECTS" -name '*.jsonl' -type f 2>/dev/null)
+    fi
+    [ -n "$files" ] || exit 0
+
+    # 人間が打った発話だけを残す。ツール結果、サブエージェント (isSidechain)、
+    # 差し込みの system-reminder / スラッシュコマンドの展開は落とす。
+    #
+    # トランスクリプトでは、ハーネスが流し込む文字列も user 行として現れる。
+    # スケジュールタスクの本文もここに入るため、落とさないと夜間ルーティンが
+    # 自分自身の指示書を「その日のユーザ発話」として読み込む。
+    out=$(printf '%s\n' "$files" | while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      # 無人実行のセッションは丸ごと飛ばす。人間はそこに居ないので、
+      # user 行はすべてハーネスが流し込んだものになる。先頭の発話が
+      # スケジュールタスクの札で始まっていれば、それが無人実行の目印。
+      first=$(jq -r '
+        select(.type == "user")
+        | (.message.content
+           | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("")) end)
+        | select(length > 0)
+      ' "$f" 2>/dev/null | head -1)
+      case "$first" in '<scheduled-task'*) continue ;; esac
+      jq -c --arg ws "$workspace" --argjson since "$since" '
+        select(.type == "user")
+        | select(.isMeta != true and .isSidechain != true)
+        | select((.userType // "external") == "external")
+        | select(.cwd != null and (.cwd == $ws or (.cwd | startswith($ws + "/"))))
+        | . as $e
+        | ((.timestamp // "")
+           | if . == "" then 0
+             else (sub("\\.[0-9]+Z$"; "Z") | fromdateiso8601 * 1000) end) as $ts
+        | select($ts >= $since)
+        | (if ($e.message.content | type) == "string" then [$e.message.content]
+           else [$e.message.content[]? | select(.type == "text") | .text] end)
+        | map(select(type == "string"))
+        | map(select(test("<system-reminder>|<command-name>|tool_use_id") | not))
+        | map(select(test("^(<scheduled-task|<task-notification>|<local-command|\\[Request interrupted|Caveat:)") | not))
+        | join("\n")
+        | select(length > 0)
+        | {ts: $ts, sessionId: $e.sessionId, prompt: .}
+      ' "$f" 2>/dev/null
+    done)
+    [ -n "$out" ] || exit 0
+
     if [ "$cmd" = "ids" ]; then
       printf '%s\n' "$out" | jq -r 'select(.sessionId != null) | .sessionId' | sort -u
     else
-      printf '%s\n' "$out"
+      printf '%s\n' "$out" | jq -s -c 'sort_by(.ts) | .[]'
     fi
     ;;
 
