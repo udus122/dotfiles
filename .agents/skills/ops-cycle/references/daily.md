@@ -73,6 +73,23 @@ EOF
 - **重複排除はしない。** 同じ内容が複数回積まれるのは意図した動作
 - 公開リポジトリには個人的な文言を残さない（`references/routing.md`）
 
+### 手がかりに書くファイルパスの確かめ方
+
+**ローカルの作業ツリーを読んで手がかりを書かないこと。** 起票は作業場所を決める前の
+段階なので、何もしないとリンク先のリポジトリをそのまま読むことになる。
+そこが古い作業ブランチのままだと、現在の main には存在しないファイルを
+手がかりとして書いてしまう。翌朝それを見た人間は、無いファイルを探すところから始まる。
+
+パスに言及するときは `origin/main` 側の内容で確かめる。
+
+```bash
+git -C "$REPO_PATH" fetch -q origin
+git -C "$REPO_PATH" cat-file -e "origin/main:<path>" \
+  && git -C "$REPO_PATH" show "origin/main:<path>"
+```
+
+main に存在しないなら、その観測はローカルの古い木を見て生まれたもの。起票しない。
+
 ## 4. 知見を草案にする
 
 確定させず、未確定のまま置く。去就は週次が決める。
@@ -130,14 +147,19 @@ git -C "$PWD" push
 
 ### 作業場所の決め方
 
+**ローカルの作業ツリーは読まない。必ず `origin/main` から worktree を切る。**
+
 ```bash
-git -C "$REPO_PATH" status --porcelain      # 空なら clean
+git -C "$REPO_PATH" fetch -q origin
+git -C "$REPO_PATH" worktree add -b "<branch>" \
+  "$CLAUDE_OPS_HOME/worktrees/<repo>-<slug>" origin/main
 ```
 
-- clean なら、そのリポジトリで直接ブランチを切る。終わったら元のブランチに戻す
-- dirty なら、作業中の変更を壊さないよう worktree を切る。
-  置き場はリポジトリの外にする（`$CLAUDE_OPS_HOME/worktrees/<repo>-<slug>`）。
-  PR を出したら worktree を片付ける
+置き場はリポジトリの外にする。PR を出したら `git worktree remove` で片付ける。
+
+clean かどうかで分岐しないこと。**clean であることと main に追いついていることは別。**
+作業ブランチのまま何十コミットも遅れた木は clean に見える。そこを読むと、
+すでに削除されたファイルが存在するように見え、消化ではその前提の上に PR を作ってしまう。
 
 ワークスペース側の worktree 隔離機能は当てにしないこと。
 構成要素がシンボリックリンクのワークスペースでは、リンク先まで隔離されない。
