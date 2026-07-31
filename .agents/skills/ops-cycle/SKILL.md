@@ -79,6 +79,10 @@ done
 `~/.claude/skills/ops-cycle/references/$layer.md` を読んで、そのとおりに実行する。
 起票先の決め方は全層共通で `references/routing.md` にある。
 
+**起票は最後の手段にする。** いま解決できるものは起票せず、その場で PR まで作る。
+起票に回すのは、判断が要るもの・`feature` 相当・1回の実行で閉じないものだけ。
+判定の基準は `references/daily.md` の `3. 起票する` にある。
+
 ### 4. 計測の収集
 
 Issue の起票と消化の履歴を集める（daily のみ。詳細は `references/daily.md`）。
@@ -90,6 +94,7 @@ Issue の起票と消化の履歴を集める（daily のみ。詳細は `refere
 ```
 対象: <ワークスペース> / <層>
 起票: ops N件 / improve N件 / feature N件
+直接解決: PR N件（起票せず解決したもの）
 消化: PR N件（<リポジトリ>#<番号> ...）
 草案: N件
 判断待ち: N件（新規 N件）
