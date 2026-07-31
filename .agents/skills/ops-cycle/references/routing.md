@@ -69,9 +69,7 @@ $S/repos.sh "$PWD" --issuable
 | `improve` | 改善系。リファクタリング、ドキュメント改善、テスト追加、PR レビュー、セキュリティ観点の洗い出し | する |
 | `feature` | 新規機能開発 | **しない。起票のみ** |
 | `from-nightly` | このルーティンが作ったもの（計測の収集に使う） | — |
-| `needs-decision` | 人間の判断待ち（安全弁のカウント対象） | しない |
-| `blocked-external` | 判断ではなく外部要因で止まっている | しない |
-| `stale-decision` | 判断待ちのまま失効した | しない |
+| `needs-decision` | 人間の判断待ち | しない |
 | `cluster` | 週次が作る名寄せ用の親 Issue | しない |
 | `clustered` | 名寄せ済み | — |
 
@@ -86,11 +84,9 @@ gh label create from-nightly  -R "$REPO" -c 'EDEDED' -d '夜間ルーティン�
 gh label create needs-decision -R "$REPO" -c 'D93F0B' -d '人間の判断待ち' --force
 ```
 
-`blocked-external` と `stale-decision` は `decisions.sh labels <repo>` が用意する。
-
-`needs-decision` と、それ以外の2つの使い分けは `references/deferral.md` にある。
-**選択肢の分岐が無いものに `needs-decision` を付けないこと。** 人間が考えても
-件数が減らず、安全弁が下りたまま戻らなくなる。
+**選択肢の分岐が無いものに `needs-decision` を付けないこと。** 実行するだけの
+作業や、自分で決めて進められることを判断待ちに混ぜると、人間がいくら考えても
+件数が減らない。判定の基準は `references/deferral.md` にある。
 
 ## 重複排除はしない
 
