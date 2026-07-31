@@ -165,6 +165,8 @@
       "Bash(gh pr create:*)",
       "Bash(gh repo view:*)",
       "Bash(uvx:*)",
+      "Bash(XDG_CONFIG_HOME=\"$HOME/.queria-personas/free\" uvx queria:*)",
+      "Bash(QUERIA_TOKEN=\"\" uvx queria:*)",
       "Bash(readlink:*)",
       "Bash(realpath:*)",
       "Bash(dirname:*)",
@@ -180,7 +182,6 @@
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/*)",
       "Bash(gh repo delete:*)",
-      "Bash(gh pr close:*)",
       "Bash(gh pr merge:*)",
       "Bash(gh release create:*)",
       "Bash(git commit --no-verify:*)",
@@ -227,6 +228,10 @@
             "type": "command",
             "command": "~/.claude/hooks/check-git-push.sh",
             "if": "Bash(git push:*)"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/check-gh-pr-close.sh"
           }
         ]
       },
