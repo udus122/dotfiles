@@ -57,7 +57,9 @@ case "$cmd" in
            | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("")) end)
         | select(length > 0)
       ' "$f" 2>/dev/null | head -1)
-      case "$first" in '<scheduled-task'*) continue ;; esac
+      # ここで case を使わないこと。bash 3.2 は $( ) の中の `;;` を外側の
+      # case 節の終わりと読むため、この節が cmd に関係なく実行されてしまう。
+      [ "${first#<scheduled-task}" != "$first" ] && continue
       jq -c --arg ws "$workspace" --argjson since "$since" '
         select(.type == "user")
         | select(.isMeta != true and .isSidechain != true)
