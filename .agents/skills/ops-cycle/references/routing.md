@@ -84,6 +84,10 @@ gh label create from-nightly  -R "$REPO" -c 'EDEDED' -d '夜間ルーティン�
 gh label create needs-decision -R "$REPO" -c 'D93F0B' -d '人間の判断待ち' --force
 ```
 
+**選択肢の分岐が無いものに `needs-decision` を付けないこと。** 実行するだけの
+作業や、自分で決めて進められることを判断待ちに混ぜると、人間がいくら考えても
+件数が減らない。判定の基準は `references/deferral.md` にある。
+
 ## 重複排除はしない
 
 同じ内容が複数回積まれることは意図的に許容する。頻度を週次が優先度の根拠として
