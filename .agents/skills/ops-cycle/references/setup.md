@@ -16,7 +16,7 @@
   "scan_depth": 2,
   "knowledge_root": "~/<知識ベースのディレクトリ>",
   "knowledge_repo": "<owner>/<repo>",
-  "needs_decision_threshold": 5,
+  "issue_owners_allow": ["<自分の所有者名>"],
   "redaction_extra": [],
   "redaction_allow": ["<公開してよい名前>"]
 }
@@ -27,7 +27,7 @@
 | `scan_roots` / `scan_depth` | ワークスペースを探す範囲。目印の有無だけで判別するので、一覧は持たない |
 | `knowledge_root` | 知識ベースの場所。参照の計測と草案の回収に使う |
 | `knowledge_repo` | どのリポジトリにも属さない横断的な項目の起票先 |
-| `needs_decision_threshold` | 判断待ちがこの数に達したら、消化を続けずに報告して終了する |
+| `issue_owners_allow` | 起票とクローズを許す所有者。ここに無い所有者には書き込まない |
 | `redaction_extra` | 公開点検の禁止語に足すもの。実体から導出できない語だけ書く |
 | `redaction_allow` | 公開してよい名前。自分の名前空間や一般に流通している固有名詞 |
 
