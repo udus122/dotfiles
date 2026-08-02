@@ -152,7 +152,8 @@ case "$cmd" in
     if [ -n "$head" ] && git -C "$dir" rev-parse --quiet --verify "$head^{commit}" >/dev/null 2>&1; then
       ahead=$(git -C "$dir" rev-list --count "$head..HEAD" 2>/dev/null || echo "")
       if [ -n "$ahead" ]; then
-        printf '記録後のコミット: %s\n' "$ahead"
+        # 標準出力は記録の JSON だけに保つ。補足は標準エラーへ
+        printf '記録後のコミット: %s\n' "$ahead" >&2
       fi
     fi
     ;;
