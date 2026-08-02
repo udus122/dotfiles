@@ -18,7 +18,7 @@ color: red
 
 ## 手順
 
-`Skill` ツールで `security-review` を実行する。このスキルは現在のブランチと origin の既定ブランチの差分を対象にするので、`origin` リモートが要る。
+`Skill` ツールで `security-review` を実行する。このスキルは現在のブランチと `origin/HEAD` の差分を対象にする。`origin/HEAD` が未設定だと起動に失敗するので、その場合は `git remote set-head origin -a` で設定してから実行する。
 
 スキルが使えない場合は、比較元との差分を対象に下の観点で自分で見る。
 
