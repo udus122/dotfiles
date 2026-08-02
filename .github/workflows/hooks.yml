@@ -1,6 +1,6 @@
 name: hooks
 
-# push ガードは、誤検知すると正当な操作を止め、見落とすと安全弁として機能しない。
+# ガードは、誤検知すると正当な操作を止め、見落とすと安全弁として機能しない。
 # どちらの向きの退行も気付きにくいので、代表的なコマンドの表で機械的に点検する。
 
 on:
@@ -16,3 +16,10 @@ jobs:
       - uses: actions/checkout@v5
       - name: push ガードの判定表
         run: ./tools/test-check-git-push.sh
+
+  check-pr-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: PR レビューゲートの判定表
+        run: ./tools/test-check-pr-review.sh
