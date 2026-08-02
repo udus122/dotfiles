@@ -165,8 +165,6 @@
       "Bash(gh pr create:*)",
       "Bash(gh repo view:*)",
       "Bash(uvx:*)",
-      "Bash(XDG_CONFIG_HOME=\"$HOME/.queria-personas/free\" uvx queria:*)",
-      "Bash(QUERIA_TOKEN=\"\" uvx queria:*)",
       "Bash(readlink:*)",
       "Bash(realpath:*)",
       "Bash(dirname:*)",
