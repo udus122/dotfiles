@@ -62,7 +62,7 @@ CLAUDE.md や AGENTS.md に「main への直接コミット」「PR は明示的
 
 ## 制約
 
-- `git push --force` はしない
+- 共有ブランチ（main / develop / staging / production / release など）への force push はしない。自分の作業ブランチの履歴を整えるための force push は可で、その場合は `--force-with-lease` を使う
 - CI を弱める変更（テスト削除 / lint スキップ / 閾値変更）はしない
 - マージはしない。人間が行う
 - plan ファイルの削除は PR 作成（または最終コミット）が成功したあとに行う
