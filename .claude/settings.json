@@ -155,6 +155,7 @@
       "Bash(git push:*)",
       "Bash(git worktree:*)",
       "Bash(git ls-files:*)",
+      "Bash(claude-review-gate:*)",
       "Bash(git remote:*)",
       "Bash(gh issue create:*)",
       "Bash(gh issue edit:*)",
@@ -232,6 +233,19 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/check-gh-pr-close.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/check-pr-review.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*__create_pull_request",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/check-pr-review.sh"
           }
         ]
       },
