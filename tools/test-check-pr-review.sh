@@ -16,6 +16,7 @@ set -uo pipefail
 
 REPO=$(cd "$(dirname "$0")/.." && pwd -P)
 HOOK="$REPO/.claude/hooks/check-pr-review.sh"
+RECORD_HOOK="$REPO/.claude/hooks/record-code-review.sh"
 GATE="$REPO/.local/bin/claude-review-gate"
 
 tmp=$(mktemp -d)
@@ -264,6 +265,43 @@ expect_ok "check は記録があれば 0 を返す" \
 
 expect_ok "show は記録を読める" \
   bash "$GATE" show --dir "$onmain"
+
+# =================================== レビュー結果の自動記録 (SubagentStop)
+
+# フックは PATH 上の claude-review-gate を使う
+run_record_hook() {  # run_record_hook <cwd> <agent_type> <message>
+  jq -n --arg cwd "$1" --arg agent "$2" --arg msg "$3" \
+    '{hook_event_name: "SubagentStop", cwd: $cwd, agent_type: $agent, last_assistant_message: $msg}' \
+    | PATH="$REPO/.local/bin:$PATH" bash "$RECORD_HOOK" >/dev/null 2>&1
+}
+
+make_repo "$tmp/repo-hook" hook/x
+hookrepo="$tmp/repo-hook"
+
+run_record_hook "$hookrepo" Explore 'これはレビューではないエージェントの出力です'
+expect_fail "レビュー以外のエージェントでは記録しない" \
+  bash "$GATE" check --dir "$hookrepo"
+
+run_record_hook "$hookrepo" code-reviewer ''
+expect_fail "応答が空なら記録しない" \
+  bash "$GATE" check --dir "$hookrepo"
+
+run_record_hook "$hookrepo" code-reviewer 'レビューしました。指摘は次の3件です。詳細は本文のとおり。'
+expect_ok "code-reviewer の終了で記録が作られる" \
+  bash "$GATE" check --dir "$hookrepo"
+
+check allow "自動記録された後は PR 作成が通る" \
+  "$(bash_json "$hookrepo" 'gh pr create --base main')"
+
+run_record_hook "$hookrepo" security-reviewer 'セキュリティ観点では指摘なしでした。認証まわりを確認済みです。'
+first=$(bash "$GATE" show --dir "$hookrepo" 2>/dev/null | jq -r '.summary' | head -n 1)
+case "$first" in
+  *code-reviewer*) pass=$((pass + 1)) ;;
+  *)
+    printf 'NG   %s\n       実際: %s\n' "2体目の記録が1体目を上書きしない" "$first"
+    fail=$((fail + 1))
+    ;;
+esac
 
 printf '\n判定: %s (成功 %d / 失敗 %d)\n' \
   "$([ "$fail" -eq 0 ] && echo 合格 || echo 不合格)" "$pass" "$fail"
