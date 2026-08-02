@@ -27,6 +27,7 @@ make_repo() {  # make_repo <dir> <branch>
 }
 make_repo "$tmp/repo-on-main" main
 make_repo "$tmp/repo-on-feat" feat-x
+make_repo "$tmp/repo-on-stg" stg
 
 pass=0
 fail=0
@@ -57,6 +58,7 @@ check() {  # check <allow|deny> <cwd> <desc> <cmd>
 
 feat="$tmp/repo-on-feat"
 onmain="$tmp/repo-on-main"
+onstg="$tmp/repo-on-stg"
 
 # ---------------------------------------------------------------- 通すもの
 
@@ -81,22 +83,61 @@ EOF
 check allow "$feat" "refspec 形式の feature ブランチ" \
   'git push origin HEAD:refs/heads/feat/x'
 
-# ---------------------------------------------------------------- 止めるもの
-
-check deny "$feat" "--force" \
+check allow "$feat" "開発ブランチへの --force" \
   'git push --force origin feat/x'
 
-check deny "$feat" "-f" \
+check allow "$feat" "開発ブランチへの -f" \
   'git push -f origin feat/x'
 
-check deny "$feat" "--force-with-lease" \
+check allow "$feat" "開発ブランチへの --force-with-lease" \
   'git push --force-with-lease origin feat/x'
 
-check deny "$feat" "複合短縮フラグ (-fu)" \
+check allow "$feat" "開発ブランチへの複合短縮フラグ (-fu)" \
   'git push -fu origin feat/x'
 
-check deny "$feat" "refspec の + プレフィックス" \
+check allow "$feat" "開発ブランチへの + プレフィックス refspec" \
   'git push origin +feat/x'
+
+check allow "$feat" "現在ブランチが開発ブランチでの引数省略 force push" \
+  'git push -f'
+
+check allow "$onmain" "現在ブランチが main でも宛先が開発ブランチなら force push は通す" \
+  'git push --force origin HEAD:feat/x'
+
+check allow "$feat" "main を含む名前の開発ブランチ (main そのものではない)" \
+  'git push --force origin feat/main-cleanup'
+
+# ---------------------------------------------------------------- 止めるもの
+
+check deny "$feat" "main への --force" \
+  'git push --force origin main'
+
+check deny "$feat" "main への -f" \
+  'git push -f origin main'
+
+check deny "$feat" "main への --force-with-lease" \
+  'git push --force-with-lease origin main'
+
+check deny "$feat" "main への複合短縮フラグ (-fu)" \
+  'git push -fu origin HEAD:main'
+
+check deny "$feat" "main への + プレフィックス refspec" \
+  'git push origin +refs/heads/main'
+
+check deny "$feat" "stg への force push" \
+  'git push --force origin stg'
+
+check deny "$feat" "production への force push" \
+  'git push --force-with-lease origin production'
+
+check deny "$feat" "develop への force push" \
+  'git push -f origin develop'
+
+check deny "$feat" "release/* への force push" \
+  'git push --force origin release/1.0'
+
+check deny "$onstg" "現在ブランチが共有ブランチでの引数省略 force push" \
+  'git push --force'
 
 check deny "$feat" "main を引数で明示" \
   'git push origin main'
@@ -124,7 +165,7 @@ check deny "$feat" "git -C 先のブランチで判定する" \
 
 check deny "$feat" "シェルに食わせるヒアドキュメント本体は落とさない" \
   "bash <<'EOF'
-git push --force origin feat/x
+git push --force origin main
 EOF"
 
 printf '\n判定: %s (成功 %d / 失敗 %d)\n' \
