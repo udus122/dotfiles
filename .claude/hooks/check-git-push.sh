@@ -1,5 +1,6 @@
 #!/bin/bash
-# force push と既定ブランチへの直 push を止める。
+# 共有ブランチの履歴を書き換える force push と、既定ブランチへの直 push を止める。
+# 開発ブランチへの force push は作業履歴を整えるための手段なので通す。
 #
 # 判定はコマンド文字列全体ではなく、実際に実行される単位に対して行う。
 # 全体を見ると、禁止対象の語が「実行される部分」以外に現れただけで拒否され、
@@ -62,6 +63,42 @@ split_segments() {
 /g'
 }
 
+# 共有ブランチ。ここを書き換えると、書き換え前のコミットが誰かの手元やリモートに
+# 残り続け、取り消せない。宛先を判定できなかったとき (空文字) も保護扱いにする。
+is_protected() {  # is_protected <branch>
+  case "$1" in
+    ""|main|master|trunk) return 0 ;;
+    develop|development|dev) return 0 ;;
+    staging|stage|stg|qa|uat) return 0 ;;
+    production|prod|prd) return 0 ;;
+    release|releases|release/*|releases/*) return 0 ;;
+  esac
+  return 1
+}
+
+# push の宛先ブランチを列挙する。
+# フラグを除いた最初の語は remote、それ以降が refspec。refspec がなければ現在ブランチ。
+# +HEAD:refs/heads/x のような形は x に正規化する。
+push_targets() {  # push_targets <args> <dir>
+  local args="$1" dir="${2:-.}" cur token dest remote_seen=0 found=0
+  cur=$(git -C "$dir" symbolic-ref --short HEAD 2>/dev/null || echo "")
+  while IFS= read -r token; do
+    [ -n "$token" ] || continue
+    case "$token" in -*) continue ;; esac
+    if [ "$remote_seen" = 0 ]; then
+      remote_seen=1
+      continue
+    fi
+    found=1
+    dest="${token#+}"
+    dest="${dest##*:}"
+    dest="${dest#refs/heads/}"
+    if [ "$dest" = "HEAD" ]; then dest="$cur"; fi
+    printf '%s\n' "$dest"
+  done <<< "$(printf '%s' "$args" | tr ' \t' '\n')"
+  if [ "$found" = 0 ]; then printf '%s\n' "$cur"; fi
+}
+
 segments=$(printf '%s\n' "$cmd" | strip_heredocs | split_segments)
 
 # cd したディレクトリを覚える (cd x && git push)。git -C があればそちらを優先する。
@@ -80,44 +117,47 @@ while IFS= read -r seg; do
   args=$(printf '%s' "$seg" \
     | sed -E 's/.*git[[:space:]]+(-C[[:space:]]+[^[:space:]]+[[:space:]]+)?push//')
 
-  # force push の検出 (--force / -f / --force-with-lease / 複合短縮 -fu, -uf, -fn など)
-  if [[ "$args" =~ (^|[[:space:]])(--force(-with-lease)?|-[a-zA-Z]*f[a-zA-Z]*)([[:space:]=]|$) ]]; then
-    deny "force push は禁止"
-  fi
-
-  # refspec の + プレフィックス (例: +HEAD:main, +refs/heads/main) も force push 扱い
-  if [[ "$args" =~ (^|[[:space:]])\+[A-Za-z0-9/_.-]+ ]]; then
-    deny "force push refspec (+) は禁止"
-  fi
-
   # push が実行されるディレクトリ
   push_dir=$(printf '%s' "$seg" | sed -nE 's/.*git[[:space:]]+-C[[:space:]]+([^[:space:]]+).*/\1/p')
   [ -n "$push_dir" ] || push_dir="$cd_dir"
   push_dir="${push_dir/#\~/$HOME}"
 
+  targets=$(push_targets "$args" "${push_dir:-.}")
+
+  # force push の検出。
+  # フラグ (--force / -f / --force-with-lease / 複合短縮 -fu, -uf, -fn など) と、
+  # refspec の + プレフィックス (例: +HEAD:main, +refs/heads/main) の両方。
+  force=0
+  if [[ "$args" =~ (^|[[:space:]])(--force(-with-lease)?|-[a-zA-Z]*f[a-zA-Z]*)([[:space:]=]|$) ]]; then
+    force=1
+  fi
+  if [[ "$args" =~ (^|[[:space:]])\+[A-Za-z0-9/_.-]+ ]]; then
+    force=1
+  fi
+
+  if [ "$force" = 1 ]; then
+    while IFS= read -r dest; do
+      if is_protected "$dest"; then
+        deny "共有ブランチ (${dest:-宛先不明}) への force push は禁止"
+      fi
+    done <<< "$targets"
+  fi
+
   # 個人リポジトリ (~/knowledge, ~/dotfiles) は main 直 push を許可
-  # (force push 禁止は上で判定済み)
+  # (force push は上で判定済み)
   toplevel=$(git -C "${push_dir:-.}" rev-parse --show-toplevel 2>/dev/null || echo "")
   case "$toplevel" in
     "$HOME/knowledge"|"$HOME/dotfiles") continue ;;
   esac
 
-  # 明示的に main/master を引数で指定しているケース
-  # git push origin main / git push origin HEAD:main / git push origin refs/heads/main など
-  if [[ "$args" =~ (^|[[:space:]:/])(main|master)([[:space:]:]|$) ]]; then
-    deny "main/master への push は禁止"
-  fi
-
-  # 暗黙の main/master push: git push / git push origin / git push -u origin のように
-  # branch 引数を省略しているケース。現在ブランチを見て判定する。
-  non_flag_args=$(printf '%s\n' "$args" | tr ' ' '\n' | grep -Ev '^(-|$)' || true)
-  arg_count=$(printf '%s' "$non_flag_args" | grep -c '^' || true)
-  if [ "$arg_count" -le 1 ]; then
-    branch=$(git -C "${push_dir:-.}" symbolic-ref --short HEAD 2>/dev/null || echo "")
-    if [[ "$branch" == "main" || "$branch" == "master" ]]; then
-      deny "現在ブランチが $branch のため暗黙の main/master push を禁止"
+  # main/master への直 push。引数で明示した場合 (git push origin main,
+  # git push origin HEAD:main など) と、引数を省略して現在ブランチが main/master の
+  # 場合の両方が targets に出る。
+  while IFS= read -r dest; do
+    if [[ "$dest" == "main" || "$dest" == "master" ]]; then
+      deny "main/master への push は禁止"
     fi
-  fi
+  done <<< "$targets"
 done <<< "$segments"
 
 exit 0
