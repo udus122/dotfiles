@@ -14,10 +14,11 @@ allowed-tools: Bash, Read, Grep, Glob, Task
 2. 実装とプランのずれを拾う
 3. semantic-commit スキルでコミットする
 4. ブランチを確認する
-5. サブエージェントでレビューし、指摘を直す
-6. PR 本文を組み立てる
-7. `gh pr create` で作成する
-8. plan ファイルを削除する
+5. レビュー用に履歴を整える
+6. サブエージェントでレビューし、指摘を直す
+7. PR 本文を組み立てる
+8. `gh pr create` で作成する
+9. plan ファイルを削除する
 
 ## plan ファイルの特定
 
@@ -36,6 +37,30 @@ allowed-tools: Bash, Read, Grep, Glob, Task
 ## ブランチ
 
 `main` にいる場合は PR 用にブランチを切る。命名はリポジトリの既存ブランチに合わせる（`git branch -a` で確認。多くは `feat/*` / `fix/*`）。
+
+## 履歴の整理
+
+レビュアーは差分だけでなくコミットの並びで変更を理解する。依頼する前に、作業ブランチのコミットを上から順に読める形に整える。
+
+整えるもの:
+
+- 途中の手戻り（typo 直し、`wip`、直後の修正）は、直す対象のコミットへ畳む
+- 1つのコミットに複数の意図が混ざっていたら分ける。分割の基準は semantic-commit スキル
+- 土台となる変更が先、その上に乗る変更が後になるよう並べ替える
+- 各コミットが単体でビルド・テストを通る状態にする
+- メッセージが実際の変更内容と合っているか見直す
+
+```shell
+git fetch origin
+git rebase -i --autosquash origin/main   # 対話エディタを開けない場合は先頭に GIT_SEQUENCE_EDITOR=: を付ける
+git push --force-with-lease
+```
+
+`origin/main` はリポジトリの既定ブランチに読み替える。
+
+`--force` ではなく `--force-with-lease` を使う。`--force` は自分が最後に見た後にリモートへ入った push を黙って捨てる。
+
+PR にレビューコメントが付いた後は履歴を書き換えない。レビュアーが見た差分と行がずれ、既存のコメントが元の位置を失う。指摘への対応は追加コミットで積む。
 
 ## レビュー
 
@@ -84,7 +109,7 @@ CLAUDE.md や AGENTS.md に「main への直接コミット」「PR は明示的
 
 ## 制約
 
-- 共有ブランチ（main / develop / staging / production / release など）への force push はしない。自分の作業ブランチの履歴を整えるための force push は可で、その場合は `--force-with-lease` を使う
+- 共有ブランチ（main / develop / staging / production / release など）への force push はしない
 - CI を弱める変更（テスト削除 / lint スキップ / 閾値変更）はしない
 - マージはしない。人間が行う
 - plan ファイルの削除は PR 作成（または最終コミット）が成功したあとに行う
