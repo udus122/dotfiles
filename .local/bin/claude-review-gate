@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+# PR 作成前のレビュー記録を読み書きする。
+#
+# 記録はブランチ単位で <git-common-dir>/claude-review/refs/heads/<branch>.json に置く。
+# git の refs レイアウトをそのまま階層で再現するので、ブランチ名のスラッシュを潰す
+# 必要がなく、feat/x と feat-x が同じ記録になることがない。common-dir に置くのは
+# worktree 間で記録を共有するため（worktree を消しても記録が残る）。
+#
+#   claude-review-gate record <<'EOF'
+#   何を見て、何を直し、何を残したか
+#   EOF
+#   claude-review-gate check
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+使い方:
+  claude-review-gate record [--dir <path>] [--branch <name>] [--skip <理由>]
+      レビュー結果を記録する。要約は標準入力から渡す。
+      --skip はユーザーがレビュー不要と明示した場合に限る。理由は必須。
+  claude-review-gate check  [--dir <path>] [--branch <name>]
+      記録があれば 0、なければ 1 を返す。
+  claude-review-gate show   [--dir <path>] [--branch <name>]
+      記録の内容と、記録後に積んだコミット数を表示する。
+  claude-review-gate clear  [--dir <path>] [--branch <name>]
+      記録を消す。
+EOF
+}
+
+die() {
+  printf 'claude-review-gate: %s\n' "$1" >&2
+  exit "${2:-1}"
+}
+
+# worktree からでも本体の .git を返す。--path-format は git 2.31 以降なので、
+# 無い場合は dir 基準の相対パスとして解決する。
+common_dir() {
+  local dir="$1" out
+  if out=$(git -C "$dir" rev-parse --path-format=absolute --git-common-dir 2>/dev/null); then
+    printf '%s' "$out"
+    return 0
+  fi
+  out=$(git -C "$dir" rev-parse --git-common-dir 2>/dev/null) || return 1
+  case "$out" in
+    /*) printf '%s' "$out" ;;
+    *) printf '%s/%s' "$(cd "$dir" && pwd -P)" "$out" ;;
+  esac
+}
+
+current_branch() {
+  local dir="$1" name
+  if name=$(git -C "$dir" symbolic-ref --short HEAD 2>/dev/null) && [ -n "$name" ]; then
+    printf '%s' "$name"
+    return 0
+  fi
+  name=$(git -C "$dir" rev-parse --short HEAD 2>/dev/null) || return 1
+  printf 'detached/%s' "$name"
+}
+
+marker_path() {  # marker_path <common-dir> <branch>
+  printf '%s/claude-review/refs/heads/%s.json' "$1" "$2"
+}
+
+cmd="${1:-}"
+[ -n "$cmd" ] || { usage >&2; exit 1; }
+shift
+
+case "$cmd" in
+  -h|--help|help) usage; exit 0 ;;
+  record|check|show|clear) ;;
+  *) die "不明なサブコマンド: $cmd" ;;
+esac
+
+dir="."
+branch=""
+skip_reason=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --dir)
+      [ $# -ge 2 ] || die "--dir にはパスが必要です"
+      dir="$2"; shift 2 ;;
+    --branch)
+      [ $# -ge 2 ] || die "--branch にはブランチ名が必要です"
+      branch="$2"; shift 2 ;;
+    --skip)
+      [ $# -ge 2 ] && [ -n "$2" ] || die "--skip には理由が必要です"
+      skip_reason="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) die "不明な引数: $1" ;;
+  esac
+done
+
+[ -d "$dir" ] || die "ディレクトリがありません: $dir"
+common=$(common_dir "$dir") || die "git リポジトリではありません: $dir"
+[ -n "$branch" ] || branch=$(current_branch "$dir") || die "ブランチを解決できません: $dir"
+path=$(marker_path "$common" "$branch")
+
+case "$cmd" in
+  record)
+    if [ -n "$skip_reason" ]; then
+      summary="$skip_reason"
+      skipped=true
+    else
+      if [ -t 0 ]; then
+        die "要約を標準入力から渡してください (claude-review-gate record <<'EOF' ... EOF)"
+      fi
+      summary=$(cat)
+      skipped=false
+      # 空実行を防ぐだけの下限。バイト数で見る（日本語なら 7 文字程度）。
+      # 下限を上げるほど水増しを誘発するので上げない。
+      compact=$(printf '%s' "$summary" | tr -d '[:space:]')
+      len=$(printf '%s' "$compact" | LC_ALL=C wc -c | tr -d ' ')
+      [ "$len" -ge 20 ] || die "要約が短すぎます。指摘と対応が分かる内容を渡してください" 2
+    fi
+
+    mkdir -p "$(dirname "$path")" \
+      || die "記録を置けません: $(dirname "$path")"
+    head=$(git -C "$dir" rev-parse --short HEAD 2>/dev/null || echo "")
+    # head は記録時点の参考値。判定はブランチ単位なので、これが古くても記録は有効。
+    jq -n \
+      --arg branch "$branch" \
+      --arg recorded_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+      --arg head "$head" \
+      --argjson skipped "$skipped" \
+      --arg summary "$summary" \
+      '{branch: $branch, recorded_at: $recorded_at, head: $head, skipped: $skipped, summary: $summary}' \
+      > "$path"
+    printf 'レビュー記録を作成しました: %s\n' "$branch"
+    ;;
+
+  check)
+    [ -f "$path" ] || exit 1
+    ;;
+
+  show)
+    [ -f "$path" ] || die "記録がありません: $branch"
+    jq . "$path"
+    head=$(jq -r '.head // ""' "$path")
+    if [ -n "$head" ] && git -C "$dir" rev-parse --quiet --verify "$head^{commit}" >/dev/null 2>&1; then
+      ahead=$(git -C "$dir" rev-list --count "$head..HEAD" 2>/dev/null || echo "")
+      if [ -n "$ahead" ]; then
+        printf '記録後のコミット: %s\n' "$ahead"
+      fi
+    fi
+    ;;
+
+  clear)
+    rm -f "$path"
+    ;;
+esac
