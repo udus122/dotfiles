@@ -9,6 +9,10 @@
 # PR は Bash の gh pr create だけでなく MCP の create_pull_request からも作られるので、
 # tool_name で入口を分ける。
 #
+# settings.json 側で "if" を付けずに全 Bash で発火させている。
+# "if": "Bash(gh pr create:*)" は前方一致なので、
+# git push -u origin feat/x && gh pr create のような複合コマンドを取り逃す。
+#
 # Bash の判定はコマンド文字列全体ではなく、実際に実行される単位に対して行う。
 # PR 本文はヒアドキュメントで渡すため、本文に書いた gh pr create を拾ってしまう。
 # 前処理の 2 関数は check-git-push.sh から複製している。
@@ -57,9 +61,23 @@ strip_heredocs() {
 }
 
 # 複合コマンドを実行単位に割る。&& || ; | と改行が区切り。
+# gh pr create は --title / --body に任意のテキストを取るので、引数の中の
+# && や | でも割れてしまう。そのため割った単位は「PR を作るか」の判定にだけ使い、
+# ブランチ名は割る前の文字列から取る。
 split_segments() {
   sed -E 's/(&&|\|\||;|\|)/\
 /g'
+}
+
+# クォートで囲まれた部分を落とす。PR のタイトルや本文に書いた -h や --dry-run を
+# フラグと取り違えないようにする。
+strip_quoted() {
+  sed -E "s/'[^']*'//g; s/\"[^\"]*\"//g"
+}
+
+# --head / -H の値を取る。--head=x、--head "x"、--head x のいずれも同じ形に落とす。
+extract_head() {
+  sed -nE "s/.*(--head|-H)([[:space:]]+|=)['\"]?([^[:space:]'\"]+).*/\3/p"
 }
 
 work_dir="$cwd"
@@ -72,33 +90,47 @@ case "$tool" in
     # PR 作成でない Bash では git を一切呼ばずに抜ける
     [[ "$cmd" =~ pr[[:space:]]+create ]] || exit 0
 
-    segments=$(printf '%s\n' "$cmd" | strip_heredocs | split_segments)
+    stripped=$(printf '%s\n' "$cmd" | strip_heredocs)
     cd_dir=""
     target=""
     while IFS= read -r seg; do
-      if [[ "$seg" =~ ^[[:space:]]*cd[[:space:]]+([^[:space:]]+) ]]; then
-        cd_dir="${BASH_REMATCH[1]}"
+      # サブシェルの括弧は区切りとして扱う ((cd x; gh pr create) の形)
+      seg=$(printf '%s' "$seg" | tr '()' '  ')
+      # コメントは実行されない
+      if [[ "$seg" =~ ^[[:space:]]*# ]]; then
         continue
       fi
-      # gh [-R owner/repo] pr create の形だけを見る。任意のフラグを許す緩い形にすると
+      if [[ "$seg" =~ ^[[:space:]]*cd[[:space:]]+(.+)$ ]]; then
+        # クォートを剥がし、最初の語だけを取る
+        cd_dir=$(printf '%s' "${BASH_REMATCH[1]}" \
+          | sed -E "s/^[[:space:]]*//; s/^'([^']*)'.*/\1/; s/^\"([^\"]*)\".*/\1/; s/^([^[:space:]]+).*/\1/")
+        continue
+      fi
+      # gh pr create の形だけを見る。任意のフラグを許す緩い形にすると
       # gh issue create --title "gh pr create を止める" のようなコマンドを誤検知する。
-      if [[ ! "$seg" =~ (^|[[:space:]])gh([[:space:]]+(-R|--repo)[[:space:]]+[^[:space:]]+)?[[:space:]]+pr[[:space:]]+create([[:space:]]|$) ]]; then
+      # 別のシェルに文字列として渡す形 (bash -c "gh pr create") は解析しない。
+      if [[ ! "$seg" =~ (^|[[:space:]])([^[:space:]]*/)?gh([[:space:]]+(-R|--repo)([[:space:]]+|=)[^[:space:]]+)?[[:space:]]+pr[[:space:]]+create([[:space:]]|$) ]]; then
         continue
       fi
-      # 表示するだけのものは PR を作らない
-      if [[ "$seg" =~ (^|[[:space:]])(--help|-h|--dry-run)([[:space:]]|$) ]]; then
+      # 表示するだけのものは PR を作らない。判定は pr create 以降の引数に限る。
+      args=$(printf '%s' "$seg" \
+        | sed -E 's/.*[[:space:]]pr[[:space:]]+create//' | strip_quoted)
+      if [[ "$args" =~ (^|[[:space:]])(--help|-h|--dry-run)([[:space:]]|$) ]]; then
         continue
       fi
       target="$seg"
       break
-    done <<< "$segments"
+    done <<< "$(printf '%s\n' "$stripped" | split_segments)"
 
     [ -n "$target" ] || exit 0
     if [ -n "$cd_dir" ]; then
-      work_dir="${cd_dir/#\~/$HOME}"
+      case "$cd_dir" in
+        /*) work_dir="$cd_dir" ;;
+        "~"*) work_dir="${cd_dir/#\~/$HOME}" ;;
+        *) work_dir="${cwd:-.}/$cd_dir" ;;
+      esac
     fi
-    branch=$(printf '%s' "$target" \
-      | sed -nE 's/.*(--head|-H)[[:space:]]+([^[:space:]]+).*/\2/p')
+    branch=$(printf '%s' "$stripped" | extract_head)
     ;;
   *)
     branch=$(printf '%s' "$input" | jq -r '.tool_input.head // empty')
@@ -143,17 +175,16 @@ reason=$(cat <<EOF
 
   1. サブエージェントを1つ起動し、その中でレビューさせる。メインの会話ではレビューしない
      渡すもの: リポジトリのパス、ブランチ名、比較元 (origin/main など)、変更の意図
-     指示: code-review スキルを実行し、修正はせず指摘だけを重大度順に返す
-     スキルが使えない場合は git diff <base>...HEAD を対象に、
-     バグ・退行・設計の逸脱・テストの穴を見る
+     指示: git diff <base>...HEAD を対象に、バグ・退行・設計の逸脱・テストの穴を
+     重大度順に返す。修正はさせない
 
   2. 返ってきた指摘を直す。直さないものは理由を1行で残す。修正はコミットまで済ませる
 
-  3. レビュー結果を記録する
+  3. レビュー結果を記録する (行頭から実行する)
 
-       claude-review-gate record <<'REVIEW'
-       何を見て、何を直し、何を残したかを数行で
-       REVIEW
+claude-review-gate record <<'REVIEW'
+何を見て、何を直し、何を残したかを数行で
+REVIEW
 
   4. もう一度 PR を作成する
 

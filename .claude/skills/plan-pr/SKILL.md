@@ -1,7 +1,7 @@
 ---
 name: plan-pr
 description: 実装が終わった変更を、プランの内容を本文に載せた PR にまとめる。「PR作って」「PR出して」「プランをPRに」などの依頼、およびプランに沿った実装が完了したときに使用。
-allowed-tools: Bash, Read, Grep, Glob, Task, Agent
+allowed-tools: Bash, Read, Grep, Glob, Task
 ---
 
 # Plan PR
@@ -45,8 +45,8 @@ allowed-tools: Bash, Read, Grep, Glob, Task, Agent
 
 指示すること:
 
-- code-review スキルを実行し、修正はせず指摘だけを重大度順に返す
-- スキルが使えない場合は `git diff <base>...HEAD` を対象に、バグ・退行・設計の逸脱・テストの穴を見る
+- `git diff <base>...HEAD` を対象に、バグ・退行・設計の逸脱・テストの穴を重大度順に返す
+- 修正はさせない。指摘だけ返させる。直すかどうかの判断には実装の文脈が要る
 
 返ってきた指摘は直すか、直さない理由を1行で残す。直したら 3 に戻ってコミットし直す。
 
