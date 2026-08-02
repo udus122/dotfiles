@@ -293,6 +293,14 @@ expect_ok "code-reviewer の終了で記録が作られる" \
 check allow "自動記録された後は PR 作成が通る" \
   "$(bash_json "$hookrepo" 'gh pr create --base main')"
 
+# 記録をそのまま jq に渡せること。補足行が標準出力に混ざると落ちる
+if bash "$GATE" show --dir "$hookrepo" 2>/dev/null | jq -e . >/dev/null 2>&1; then
+  pass=$((pass + 1))
+else
+  printf 'NG   %s\n' "show の標準出力は記録の JSON だけ"
+  fail=$((fail + 1))
+fi
+
 run_record_hook "$hookrepo" security-reviewer 'セキュリティ観点では指摘なしでした。認証まわりを確認済みです。'
 first=$(bash "$GATE" show --dir "$hookrepo" 2>/dev/null | jq -r '.summary' | head -n 1)
 case "$first" in
