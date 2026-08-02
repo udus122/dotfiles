@@ -91,6 +91,14 @@ while [ $# -gt 0 ]; do
 done
 
 [ -d "$dir" ] || die "ディレクトリがありません: $dir"
+# 記録はブランチ名からパスを組み立てる。フック側と同じ制約を掛ける。
+if [ -n "$branch" ]; then
+  case "$branch" in
+    *..*) die "ブランチ名に .. は使えません: $branch" ;;
+  esac
+  [[ "$branch" =~ ^[A-Za-z0-9._/-]+$ ]] \
+    || die "ブランチ名に使えない文字があります: $branch"
+fi
 common=$(common_dir "$dir") || die "git リポジトリではありません: $dir"
 [ -n "$branch" ] || branch=$(current_branch "$dir") || die "ブランチを解決できません: $dir"
 path=$(marker_path "$common" "$branch")
@@ -117,6 +125,10 @@ case "$cmd" in
       || die "記録を置けません: $(dirname "$path")"
     head=$(git -C "$dir" rev-parse --short HEAD 2>/dev/null || echo "")
     # head は記録時点の参考値。判定はブランチ単位なので、これが古くても記録は有効。
+    # 一時ファイルに書いてから移す。jq が落ちたときに、フックが有効な記録として
+    # 扱ってしまう空ファイルを残さない。
+    tmp="$path.tmp.$$"
+    trap 'rm -f "$tmp"' EXIT
     jq -n \
       --arg branch "$branch" \
       --arg recorded_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
@@ -124,7 +136,8 @@ case "$cmd" in
       --argjson skipped "$skipped" \
       --arg summary "$summary" \
       '{branch: $branch, recorded_at: $recorded_at, head: $head, skipped: $skipped, summary: $summary}' \
-      > "$path"
+      > "$tmp"
+    mv "$tmp" "$path"
     printf 'レビュー記録を作成しました: %s\n' "$branch"
     ;;
 
