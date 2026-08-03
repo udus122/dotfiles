@@ -87,6 +87,18 @@ check allow "$ops" "$mine" "省略時は実行ディレクトリの origin か�
 check allow "$ops" "$other" "cd 先の origin から判定" \
   "cd $mine && gh pr close 1"
 
+check allow "$ops" "$other" "ヒアドキュメント本体に対象の語が現れる (実行されないデータ)" \
+  'git commit -m "$(cat <<'"'"'EOF'"'"'
+fix(hooks): gh pr close ガードの誤検知を直す
+EOF
+)"'
+
+check allow "$ops" "$other" "別の単位の -R は close の宛先ではない" \
+  'gh pr list -R someone-else/some-repo && gh pr close 1 -R owner-mine/some-repo'
+
+check allow "$ops" "$other" "close の直前の cd 先で判定する" \
+  "cd $other && gh pr view 1 && cd $mine && gh pr close 1"
+
 # ---------------------------------------------------------------- 止めるもの
 
 check deny "$ops" "$mine" "-R で他人の所有者を明示" \
@@ -103,6 +115,11 @@ check deny "$ops" "$tmp" "オーナーを判定できない (git リポジトリ
 
 check deny "$ops" "$mine" "所有者名の前方一致では通さない" \
   'gh pr close 1 -R owner-mine-evil/some-repo'
+
+check deny "$ops" "$mine" "シェルに食わせるヒアドキュメント本体は落とさない" \
+  "bash <<'EOF'
+gh pr close 1 -R someone-else/some-repo
+EOF"
 
 # 非公開層が無い環境では、素通りではなく拒否側に倒れること
 check deny "$tmp/ops-missing" "$mine" "非公開層が無い" \
