@@ -21,9 +21,21 @@ NOW=$(( $(date +%s) * 1000 ))
 $S/sessions.sh prompts "$PWD" "$SINCE"
 ```
 
-`journals/weekly/<YYYY>-W<ww>.md` に次の形で書く。すでにあれば追記ではなく更新する
-（冪等にするため）。知識ベース以外のワークスペースからは `spool.sh put` に置き、
-回収は知識ベース担当のルーティンに任せる。
+`journals/weekly/<YYYY>-W<ww>-<ワークスペース>.md` に次の形で書く。すでにあれば
+追記ではなく更新する（冪等にするため）。ワークスペースごとに1本にするのは、
+どこの活動かを月次が見分けられるようにするため。
+
+知識ベース以外のワークスペースからは `spool.sh put` に置き、回収は知識ベース担当の
+ルーティンに任せる。**このとき第3引数に `weekly` を渡す。**
+
+```bash
+$S/spool.sh put "<YYYY>-W<ww>-$(basename "$PWD")" "$(date +%F)" weekly <<'EOF'
+...
+EOF
+```
+
+既定の `daily` のままだと `journals/daily/<日付>/` に着地する。月次はダイジェストしか
+読まないので、そこへ落ちたぶんは月次の入力に届かない。
 
 ```markdown
 ---
