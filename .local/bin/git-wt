@@ -16,7 +16,7 @@ function create-git-worktree-fzf() {
 
     REPO_ROOT=$(git rev-parse --show-toplevel)  # リポジトリのルートディレクトリの絶対パスを取得
 
-    WORKTREE_PATH="${REPO_ROOT}/git-worktrees/$branch"  # 新しい作業ツリーのパスを定義
+    WORKTREE_PATH="${HOME}/ws/worktrees/$(basename "$REPO_ROOT")/$branch"  # 新しい作業ツリーのパスを定義
 
     echo "create new worktree: ${WORKTREE_PATH}"
     if git show-ref --verify --quiet "refs/heads/$branch"; then
