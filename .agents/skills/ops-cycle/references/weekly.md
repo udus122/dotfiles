@@ -80,6 +80,7 @@ generator: ops-weekly
 そこに集約する**。個別 Issue 側には `clustered` ラベルだけを付ける。
 
 ```bash
+. "$S/ops-env.sh"
 KNOWLEDGE_REPO=$(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")
 gh issue create -R "$KNOWLEDGE_REPO" \
   --title "[cluster] <共通する主題>" \
