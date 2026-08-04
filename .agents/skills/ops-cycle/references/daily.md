@@ -188,6 +188,7 @@ git -C "$PWD" push
 **ローカルの作業ツリーは読まない。必ず `origin/main` から worktree を切る。**
 
 ```bash
+. "$S/ops-env.sh"
 git -C "$REPO_PATH" fetch -q origin
 git -C "$REPO_PATH" worktree add -b "<branch>" \
   "$CLAUDE_OPS_HOME/worktrees/<repo>-<slug>" origin/main
@@ -219,6 +220,7 @@ Issue の起票と消化の履歴を残す。複数リポジトリに分散す�
 `repo` 列を持たせて横断集計できる形にする。
 
 ```bash
+. "$S/ops-env.sh"
 REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
 REPOS="$REPOS $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
 for repo in $(printf '%s\n' $REPOS | sort -u); do
