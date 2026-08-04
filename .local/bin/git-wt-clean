@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# マージ済みの worktree を削除する。
+#
+#   git wt-clean [--dry-run] [リポジトリパス...]
+#
+# 対象は「ブランチがデフォルトブランチにマージ済み」かつ「未コミット変更なし」の worktree。
+# 未コミット変更があるものはスキップして一覧に出す。
+# リポジトリパスを省略すると、カレントリポジトリを対象にする。
+set -uo pipefail
+
+DRY_RUN=0
+if [[ "${1:-}" == "--dry-run" ]]; then
+    DRY_RUN=1
+    shift
+fi
+
+repos=("$@")
+if [[ ${#repos[@]} -eq 0 ]]; then
+    repos=("$(git rev-parse --show-toplevel)") || exit 1
+fi
+
+total_removed=0
+total_skipped=0
+
+for repo in "${repos[@]}"; do
+    root=$(git -C "$repo" rev-parse --show-toplevel 2>/dev/null) || {
+        echo "skip (git リポジトリではない): $repo"
+        continue
+    }
+
+    echo
+    echo "### $root"
+    git -C "$root" fetch --prune origin >/dev/null 2>&1
+
+    default=$(git -C "$root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
+    default=${default:-origin/main}
+
+    merged=$(git -C "$root" branch --merged "$default" --format='%(refname:short)' 2>/dev/null)
+
+    while IFS=$'\t' read -r path branch; do
+        [[ "$path" == "$root" ]] && continue
+        grep -qxF "$branch" <<<"$merged" || continue
+
+        dirty=$(git -C "$path" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+        if [[ "$dirty" != "0" ]]; then
+            echo "SKIP (未コミット変更 ${dirty}件): $branch  $path"
+            total_skipped=$((total_skipped + 1))
+            continue
+        fi
+
+        if [[ $DRY_RUN -eq 1 ]]; then
+            echo "would remove: $branch  $path"
+        elif git -C "$root" worktree remove --force "$path" 2>/dev/null; then
+            echo "removed: $branch  $path"
+        else
+            echo "FAILED : $branch  $path"
+            continue
+        fi
+        total_removed=$((total_removed + 1))
+    done < <(git -C "$root" worktree list --porcelain |
+        awk '/^worktree /{p=$2} /^branch /{sub("refs/heads/","",$2); print p"\t"$2}')
+
+    [[ $DRY_RUN -eq 0 ]] && git -C "$root" worktree prune
+done
+
+echo
+if [[ $DRY_RUN -eq 1 ]]; then
+    echo "dry-run: ${total_removed}件が削除対象 / ${total_skipped}件はスキップ"
+else
+    echo "removed=${total_removed} skipped=${total_skipped}"
+fi
