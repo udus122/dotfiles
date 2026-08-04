@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# 週次のストレージ整備。再取得できるものだけを機械的に掃除する。
+#
+#   storage-tend [--dry-run]
+#
+# 消すのは「マージ済み」「N日以上前」「再取得できるキャッシュ」の条件を満たすものだけ。
+# 判定できないものは消さずにログへ出す。
+set -uo pipefail
+
+DRY_RUN=0
+[[ "${1:-}" == "--dry-run" ]] && DRY_RUN=1
+
+# 空きがこれを下回ったら通知する (GiB)
+THRESHOLD_GB=${STORAGE_TEND_THRESHOLD_GB:-100}
+# scratchpad をこの日数より前のものだけ消す
+SCRATCH_KEEP_DAYS=${STORAGE_TEND_SCRATCH_KEEP_DAYS:-7}
+
+# PATH の df が GNU coreutils 版のことがあるため、POSIX 出力の -Pk から換算する
+free_gb() { df -Pk / | awk 'NR==2{printf "%d", $4/1048576}'; }
+
+run() {
+    if [[ $DRY_RUN -eq 1 ]]; then
+        echo "would run: $*"
+    else
+        "$@"
+    fi
+}
+
+echo "=== storage-tend $(date '+%F %T') ==="
+before=$(free_gb)
+echo "開始時の空き: ${before}GiB"
+
+echo
+echo "--- マージ済み worktree ---"
+# .git がディレクトリのものが本体リポジトリ (worktree 側は .git がファイル)
+repos=()
+while IFS= read -r gitdir; do
+    repos+=("$(dirname "$gitdir")")
+done < <(find "$HOME/ws/ghq" -maxdepth 4 -type d -name .git -prune 2>/dev/null)
+
+for repo in "${repos[@]}"; do
+    # worktree を持たないリポジトリは飛ばす (fetch のコストを避ける)
+    [[ $(git -C "$repo" worktree list 2>/dev/null | wc -l) -le 1 ]] && continue
+    if [[ $DRY_RUN -eq 1 ]]; then
+        git-wt-clean --dry-run "$repo"
+    else
+        git-wt-clean "$repo"
+    fi
+done
+
+echo
+echo "--- Claude Code の scratchpad (${SCRATCH_KEEP_DAYS}日以上前) ---"
+# worktree として登録されているものは先に外す。残骸だけを消す
+while IFS= read -r dir; do
+    echo "remove: $dir"
+    run rm -rf "$dir"
+done < <(find /private/tmp/claude-501 -maxdepth 2 -mindepth 2 -type d -mtime "+${SCRATCH_KEEP_DAYS}" 2>/dev/null)
+
+echo
+echo "--- パッケージキャッシュ ---"
+command -v uv >/dev/null && run uv cache prune
+command -v pnpm >/dev/null && run pnpm store prune
+command -v brew >/dev/null && run brew cleanup -s
+
+echo
+echo "--- コンテナ ---"
+if command -v colima >/dev/null && colima status >/dev/null 2>&1; then
+    run docker image prune -a -f
+    run docker builder prune -f
+    # VM 内で消しただけではホスト側の sparse ディスクは縮まない。fstrim で穴を開ける
+    run colima ssh -- sudo fstrim -a
+else
+    echo "colima 停止中のためスキップ"
+fi
+
+echo
+after=$(free_gb)
+echo "=== 終了時の空き: ${after}GiB (開始 ${before}GiB) ==="
+
+if [[ $after -lt $THRESHOLD_GB ]]; then
+    msg="空きが ${after}GiB です (閾値 ${THRESHOLD_GB}GiB)。手動の整理が必要です。"
+    echo "警告: $msg"
+    osascript -e "display notification \"${msg}\" with title \"storage-tend\"" 2>/dev/null || true
+fi
