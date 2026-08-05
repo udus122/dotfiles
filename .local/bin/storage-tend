@@ -14,6 +14,10 @@ DRY_RUN=0
 THRESHOLD_GB=${STORAGE_TEND_THRESHOLD_GB:-100}
 # scratchpad をこの日数より前のものだけ消す
 SCRATCH_KEEP_DAYS=${STORAGE_TEND_SCRATCH_KEEP_DAYS:-7}
+# worktree を探す走査根。~/ws の外にある個人リポジトリも含める
+REPO_ROOTS=("$HOME/ws" "$HOME/dotfiles" "$HOME/knowledge")
+# ~/ws/ghq/<host>/<owner>/<repo>/.git が最も深く、~/ws から 5 階層
+REPO_SCAN_DEPTH=5
 
 # PATH の df が GNU coreutils 版のことがあるため、POSIX 出力の -Pk から換算する
 free_gb() { df -Pk / | awk 'NR==2{printf "%d", $4/1048576}'; }
@@ -36,7 +40,8 @@ echo "--- マージ済み worktree ---"
 repos=()
 while IFS= read -r gitdir; do
     repos+=("$(dirname "$gitdir")")
-done < <(find "$HOME/ws/ghq" -maxdepth 4 -type d -name .git -prune 2>/dev/null)
+done < <(find "${REPO_ROOTS[@]}" -maxdepth "$REPO_SCAN_DEPTH" -type d -name .git -prune 2>/dev/null)
+echo "走査対象: ${#repos[@]} リポジトリ (${REPO_ROOTS[*]})"
 
 for repo in "${repos[@]}"; do
     # worktree を持たないリポジトリは飛ばす (fetch のコストを避ける)
