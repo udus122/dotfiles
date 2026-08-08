@@ -3,6 +3,11 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "includeCoAuthoredBy": false,
+  "deniedMcpServers": [
+    { "serverName": "003e3def-389f-43f8-8f4c-3bb9d25812a0" },
+    { "serverName": "claude.ai GitHub for Claude Web" },
+    { "serverName": "claude.ai GitHub for Claude Web (2)" }
+  ],
   "permissions": {
     "allow": [
       "Skill(semantic-commit)",
