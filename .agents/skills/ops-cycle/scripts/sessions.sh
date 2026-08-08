@@ -45,22 +45,26 @@ case "$cmd" in
     #
     # トランスクリプトでは、ハーネスが流し込む文字列も user 行として現れる。
     # スケジュールタスクの本文もここに入るため、落とさないと夜間ルーティンが
-    # 自分自身の指示書を「その日のユーザ発話」として読み込む。
+    # 自分自身の指示書を「その日のユーザ発話」として読み込む。本文は札の中に
+    # そのまま含まれ、再投入されるときも札の一部と一致するので、札に現れる
+    # 発話だけを落とす。スケジュール実行のセッションに人間が途中から割り込んだ
+    # 発話は札に無いため残る。
+    #
+    # 短い発話は札に偶然含まれうるので、長さで下限を設けて取りこぼしを防ぐ。
+    # 再投入される本文はタスク定義そのもので、常にこれより長い。
     out=$(printf '%s\n' "$files" | while IFS= read -r f; do
       [ -n "$f" ] || continue
-      # 無人実行のセッションは丸ごと飛ばす。人間はそこに居ないので、
-      # user 行はすべてハーネスが流し込んだものになる。先頭の発話が
-      # スケジュールタスクの札で始まっていれば、それが無人実行の目印。
-      first=$(jq -r '
+      # 先頭の発話。スケジュールタスクの札で始まっていれば無人実行の目印になる。
+      # JSON 文字列のまま取り出す。改行が \n に畳まれるので head -1 で1件に絞れ、
+      # シェルを通しても本文が壊れない。
+      tag=$(jq -c '
         select(.type == "user")
         | (.message.content
            | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("")) end)
         | select(length > 0)
       ' "$f" 2>/dev/null | head -1)
-      # ここで case を使わないこと。bash 3.2 は $( ) の中の `;;` を外側の
-      # case 節の終わりと読むため、この節が cmd に関係なく実行されてしまう。
-      [ "${first#<scheduled-task}" != "$first" ] && continue
-      jq -c --arg ws "$workspace" --argjson since "$since" '
+      [ -n "$tag" ] || tag='""'
+      jq -c --arg ws "$workspace" --argjson since "$since" --argjson tag "$tag" '
         select(.type == "user")
         | select(.isMeta != true and .isSidechain != true)
         | select((.userType // "external") == "external")
@@ -77,6 +81,13 @@ case "$cmd" in
         | map(select(test("^(<scheduled-task|<task-notification>|<local-command|\\[Request interrupted|Caveat:)") | not))
         | join("\n")
         | select(length > 0)
+        | . as $p
+        | select(
+            (($tag | startswith("<scheduled-task"))
+             and (($p | length) >= 40)
+             and ($tag | contains($p | gsub("^\\s+|\\s+$"; ""))))
+            | not
+          )
         | {ts: $ts, sessionId: $e.sessionId, prompt: .}
       ' "$f" 2>/dev/null
     done)
