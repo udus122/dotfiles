@@ -51,7 +51,11 @@ case "$cmd" in
     # 発話は札に無いため残る。
     #
     # 短い発話は札に偶然含まれうるので、長さで下限を設けて取りこぼしを防ぐ。
-    # 再投入される本文はタスク定義そのもので、常にこれより長い。
+    # 下限より短い本文を持つスケジュールタスクを作ると、その再投入は
+    # 発話として通り抜ける。現行のタスク定義はいずれもこれより長い。
+    #
+    # この節の中で case を使わないこと。bash 3.2 は $( ) の中の `;;` を外側の
+    # case 節の終わりと読むため、この節が cmd に関係なく実行されてしまう。
     out=$(printf '%s\n' "$files" | while IFS= read -r f; do
       [ -n "$f" ] || continue
       # 先頭の発話。スケジュールタスクの札で始まっていれば無人実行の目印になる。
@@ -59,6 +63,7 @@ case "$cmd" in
       # シェルを通しても本文が壊れない。
       tag=$(jq -c '
         select(.type == "user")
+        | select(.isSidechain != true)
         | (.message.content
            | if type == "string" then . else ([.[]? | select(.type == "text") | .text] | join("")) end)
         | select(length > 0)
@@ -105,13 +110,19 @@ case "$cmd" in
     max="${2:-4000}"
     file=$(find "$PROJECTS" -name "$session.jsonl" -type f 2>/dev/null | head -1)
     [ -n "$file" ] || exit 0
-    # ツール結果は落とし、人間が書いた発話とアシスタントの地の文だけを残す
+    # ツール結果は落とし、人間が書いた発話とアシスタントの地の文だけを残す。
+    # ids はスケジュール実行のセッションも返すため、ここで札を落とさないと
+    # 出力の先頭が丸ごと自分の指示書になり、max の予算をそれで使い切る。
     jq -r '
       if .type == "user" and (.message.content | type) == "string"
-        then "USER: " + .message.content
+        then .message.content
+             | select(test("^(<scheduled-task|<task-notification>|<local-command)") | not)
+             | "USER: " + .
       elif .type == "user" and (.message.content | type) == "array"
         then ([.message.content[] | select(.type == "text") | .text] | join("\n"))
-             | select(length > 0) | "USER: " + .
+             | select(length > 0)
+             | select(test("^(<scheduled-task|<task-notification>|<local-command)") | not)
+             | "USER: " + .
       elif .type == "assistant"
         then ([.message.content[]? | select(.type == "text") | .text] | join("\n"))
              | select(length > 0) | "ASSISTANT: " + .
