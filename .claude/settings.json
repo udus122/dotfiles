@@ -5,8 +5,7 @@
   "includeCoAuthoredBy": false,
   "deniedMcpServers": [
     { "serverName": "003e3def-389f-43f8-8f4c-3bb9d25812a0" },
-    { "serverName": "claude.ai GitHub for Claude Web" },
-    { "serverName": "claude.ai GitHub for Claude Web (2)" }
+    { "serverName": "claude.ai GitHub for Claude Web" }
   ],
   "permissions": {
     "allow": [
