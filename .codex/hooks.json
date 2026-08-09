@@ -9,6 +9,16 @@
             "command": "'/Users/usuda.yudai/dotfiles/.codex/hooks/webfetch-to-defuddle.sh'"
           }
         ]
+      },
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/usuda.yudai/dotfiles/.agents/hooks/check-git-push.sh'",
+            "statusMessage": "Checking git push"
+          }
+        ]
       }
     ],
     "PostToolUse": [
