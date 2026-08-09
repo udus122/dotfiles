@@ -23,9 +23,19 @@ case "$cmd" in
       ops_cfg '.knowledge_repo'
       printf '\n'
     } | grep -v '^$' | sort -u | while read -r repo; do
-      gh issue list -R "$repo" --state open --label needs-decision --limit 100 \
-        --json number,title,url,updatedAt 2>/dev/null \
-      | jq -c --arg repo "$repo" '.[] | {repo: $repo, number, title, url, updatedAt}'
+      # ラベルが正だが、それだけを入口にしない。判断待ちの節を書きながら
+      # ラベルを付け忘れた Issue は、再検証に一度も掛からないまま残る。
+      # 本文に節を持つものは、ラベルの有無にかかわらず拾う。
+      {
+        gh issue list -R "$repo" --state open --label needs-decision --limit 100 \
+          --json number,title,url,updatedAt 2>/dev/null \
+        | jq -c '.[] | {number, title, url, updatedAt}'
+        gh issue list -R "$repo" --state open --label from-nightly --limit 100 \
+          --json number,title,url,updatedAt,body 2>/dev/null \
+        | jq -c '.[]
+            | select((.body // "") | test("(^|\n)## 判断待ち *(\n|$)"))
+            | {number, title, url, updatedAt}'
+      } | jq -c -s --arg repo "$repo" 'unique_by(.number)[] | {repo: $repo} + .'
     done
     ;;
 
