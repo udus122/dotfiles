@@ -54,6 +54,11 @@ case "$cmd" in
     # 下限より短い本文を持つスケジュールタスクを作ると、その再投入は
     # 発話として通り抜ける。現行のタスク定義はいずれもこれより長い。
     #
+    # スケジュール実行の cwd はハーネスの既定値で、対象ワークスペースとは
+    # 限らない。cwd だけで絞ると、そのワークスペースを対象とする夜間の
+    # セッションが丸ごと範囲外になり、そこへ人間が割り込んだ発話も落ちる。
+    # 札が対象ワークスペースのパスを名乗っていれば、そのセッションを範囲に含める。
+    #
     # この節の中で case を使わないこと。bash 3.2 は $( ) の中の `;;` を外側の
     # case 節の終わりと読むため、この節が cmd に関係なく実行されてしまう。
     out=$(printf '%s\n' "$files" | while IFS= read -r f; do
@@ -69,11 +74,23 @@ case "$cmd" in
         | select(length > 0)
       ' "$f" 2>/dev/null | head -1)
       [ -n "$tag" ] || tag='""'
-      jq -c --arg ws "$workspace" --argjson since "$since" --argjson tag "$tag" '
+
+      # 札がこのワークスペースを対象と名乗っているか。パスの前後に区切りを
+      # 求めて、接頭辞が同じだけの別ワークスペースに引っかからないようにする。
+      owned=false
+      if [ "${tag#\"<scheduled-task}" != "$tag" ]; then
+        ws_re=$(printf '%s' "$workspace" | sed 's/[][\.*^$()+?{}|\\]/\\&/g')
+        printf '%s' "$tag" \
+          | grep -qE "(^|[^[:alnum:]_/-])$ws_re([^[:alnum:]_-]|$)" && owned=true
+      fi
+
+      jq -c --arg ws "$workspace" --argjson since "$since" --argjson tag "$tag" \
+            --argjson owned "$owned" '
         select(.type == "user")
         | select(.isMeta != true and .isSidechain != true)
         | select((.userType // "external") == "external")
-        | select(.cwd != null and (.cwd == $ws or (.cwd | startswith($ws + "/"))))
+        | select($owned
+                 or (.cwd != null and (.cwd == $ws or (.cwd | startswith($ws + "/")))))
         | . as $e
         | ((.timestamp // "")
            | if . == "" then 0
