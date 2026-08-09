@@ -66,3 +66,6 @@ Brewfileの更新後は `brew bundle install --upgrade --global && brew bundle c
 
 - このリポジトリでは `main` への直接コミットを基本とする
 - PRの作成は明示的に指示されたときのみ行う
+- ただし worktree から入れる変更は PR にする。push ガードの個人リポジトリ例外は
+  チェックアウトのパスで判定しており、worktree からは効かない。無人のルーティンは
+  worktree で作業するので、この経路の変更には必ず人間のマージが挟まる
