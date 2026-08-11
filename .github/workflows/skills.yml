@@ -1,0 +1,21 @@
+name: skills
+
+# スキルのスクリプトは夜間に無人で走る。壊れても出力は正常に見えることが多く、
+# 気付くのは何日か経ってからになる。代表的な入力の表で機械的に点検する。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  spool-put:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: 草案の generator 補完の判定表
+        run: ./tools/test-spool-put.sh
