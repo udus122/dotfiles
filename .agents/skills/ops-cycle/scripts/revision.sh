@@ -30,10 +30,20 @@ behind=$(git -C "$repo" rev-list --count "HEAD..$base" 2>/dev/null || echo "")
 dirty=""
 git -C "$repo" diff --quiet 2>/dev/null || dirty=" / 未コミットの変更あり"
 
+# チェックアウトが最新でも、$HOME へのリンクが配られていなければ稼働しない。
+# 追加されたスキルやフックは、リンクが作られるまで存在しないのと同じで、
+# しかも欠けたフックは exit 127 になるだけで何も止めないため、静かに失効する。
+# 配る条件はリポジトリ側の link.sh が持っているので、判定もそこへ委ねる。
+links=""
+if [ -x "$repo/link.sh" ]; then
+  n=$("$repo/link.sh" --check 2>/dev/null | grep -c . || true)
+  [ "${n:-0}" -gt 0 ] && links=" / \$HOME へのリンクが $n 件未作成（link.sh で解消）"
+fi
+
 case "$behind" in
   "")  state="$base と比較できない" ;;
   0)   state="最新" ;;
   *)   state="$base より $behind コミット遅れ" ;;
 esac
 
-printf '%s@%s (%s)%s\n' "$branch" "$head" "$state" "$dirty"
+printf '%s@%s (%s)%s%s\n' "$branch" "$head" "$state" "$dirty" "$links"
