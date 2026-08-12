@@ -4,7 +4,14 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKIPPED="$(mktemp)"
 IGNORED="$(mktemp)"
-trap 'rm -f "$SKIPPED" "$IGNORED"' EXIT
+MISSING="$(mktemp)"
+trap 'rm -f "$SKIPPED" "$IGNORED" "$MISSING"' EXIT
+
+# --check: リンクを作らず、まだ $HOME に配られていないものを列挙して終わる。
+# 配る条件をこのスクリプトの外に写すと、判定だけが古びて嘘をつくため、
+# 検出も同じ walk の上に載せる。
+MODE=link
+[[ "${1:-}" == "--check" ]] && MODE=check
 
 # git が無視しているファイルは $HOME に配らない。
 # このリポジトリには追跡しないローカル専用の設定が置かれることがあり、
@@ -19,8 +26,16 @@ function make_link () {
     # （スキップされたファイルはこのリポジトリの管理から外れて内容が乖離するため、
     #   最後にまとめて警告する）
     if [[ -e $dst && ! -L $dst ]]; then
+        [[ $MODE == check ]] && return 0
         echo "$dst already exists and is not a symbolic link. Skipping..."
         echo "$dst" >> "$SKIPPED"
+        return 0
+    fi
+
+    # 実体を伴わないものだけを未作成として数える。実体があって
+    # リンクでないものは上で除いてあり、人間が承知の上で置いている。
+    if [[ $MODE == check ]]; then
+        [[ -e $dst || -L $dst ]] || echo "$dst" >> "$MISSING"
         return 0
     fi
     # ディレクトリが存在しない場合は作成
@@ -48,7 +63,18 @@ done
 
 # Karabiner-Elements はディレクトリごとシンボリックリンクを作成する（個別に作成すると上書きされる）
 # https://karabiner-elements.pqrs.org/docs/manual/misc/configuration-file-path/
-ln -fns "${SCRIPT_DIR}/.config/karabiner" "$HOME/.config/karabiner"
+if [[ $MODE == check ]]; then
+    [[ -e "$HOME/.config/karabiner" || -L "$HOME/.config/karabiner" ]] \
+        || echo "$HOME/.config/karabiner" >> "$MISSING"
+else
+    ln -fns "${SCRIPT_DIR}/.config/karabiner" "$HOME/.config/karabiner"
+fi
+
+if [[ $MODE == check ]]; then
+    [[ -s "$MISSING" ]] || exit 0
+    cat "$MISSING"
+    exit 1
+fi
 
 if [[ -s "$SKIPPED" ]]; then
     echo
