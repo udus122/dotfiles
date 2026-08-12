@@ -58,8 +58,10 @@ find "${SCRIPT_DIR}" \( -type f -o -type l \) -path '*/.*' | while read -r dotfi
     [[ "$dotfile" == "${SCRIPT_DIR}/.git" ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.git/"* ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.github/"* ]] && continue
-    # このリポジトリ自身の無視設定であり、$HOME に置くものではない
+    # このリポジトリ自身のメタデータであり、$HOME に置くものではない。
+    # ~/.gitconfig や ~/.gitattributes と違って $HOME 側に対応する設定が無い。
     [[ "$dotfile" == "${SCRIPT_DIR}/.gitignore" ]] && continue
+    [[ "$dotfile" == "${SCRIPT_DIR}/.gitmodules" ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.DS_Store" ]] && continue
     grep -qxF "${dotfile#"$SCRIPT_DIR"/}" "$IGNORED" && continue
     # karabiner はこのあとディレクトリごとリンクするので、配下は個別に扱わない
