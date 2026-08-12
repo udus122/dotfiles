@@ -16,6 +16,11 @@
 #
 # 週次ダイジェストは `<YYYY>-W<ww>-<ワークスペース>` を slug に、subdir に weekly を渡す。
 # 月次はこのダイジェストしか読まないため、daily に着地すると入力に届かない。
+#
+# put は frontmatter に `generator` が無ければ置き場から導いて補う
+# （daily → ops-daily / weekly → ops-weekly）。すでにある値は変えない。
+# 週次はこの値で消化する草案を選ぶので、欠けた草案は手書きの知見と見なされ、
+# 昇格も削除もされずに残り続ける。
 set -uo pipefail
 . "$(dirname "$0")/ops-env.sh"
 ops_ready || exit 0
@@ -59,6 +64,31 @@ case "$cmd" in
     mkdir -p "$SPOOL/$subdir"
     dest="$SPOOL/$subdir/$date_part--$slug.md"
     cat > "$dest"
+
+    # frontmatter に generator が無ければ、置き場から導いて補う。
+    # 週次は `type: capture` かつ `generator: ops-daily` を消化の対象にするため、
+    # 欠けたまま着地した草案は手書きの知見と見なされ、昇格も削除もされずに残り続ける。
+    # 本文は毎回書き起こされるので、書き手の記憶ではなくここで担保する。
+    if head -1 "$dest" | grep -q '^---[[:space:]]*$'; then
+      fm_end=$(awk 'NR > 1 && /^---[[:space:]]*$/ { print NR; exit }' "$dest")
+      if [ -n "$fm_end" ] \
+         && ! sed -n "2,$((fm_end - 1))p" "$dest" | grep -q '^generator:'; then
+        # 置き場と層は1対1（daily → ops-daily / weekly → ops-weekly）
+        # 補えたときだけ知らせる。失敗を成功として報告すると、週次に拾われない
+        # 草案があるのに補完済みだと記録が言う状態になり、追う手がかりが消える。
+        if awk -v n="$fm_end" -v g="ops-$subdir" \
+             'NR == n && !done { print "generator: " g; done = 1 } { print }' \
+             "$dest" > "$dest.tmp" && mv "$dest.tmp" "$dest"; then
+          echo "generator が無かったので ops-$subdir を補いました: $dest" >&2
+        else
+          # 書き損じた一時ファイルは list にも drain にも出ない（どちらも *.md で絞る）。
+          # 置き去りにすると誰にも見えないまま残るので、ここで畳む。
+          rm -f "$dest.tmp"
+          echo "generator を補えませんでした: $dest" >&2
+        fi
+      fi
+    fi
+
     printf '%s\n' "$dest"
     ;;
 
