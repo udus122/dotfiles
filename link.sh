@@ -51,8 +51,15 @@ function make_link () {
 }
 
 find "${SCRIPT_DIR}" \( -type f -o -type l \) -path '*/.*' | while read -r dotfile; do
-    [[ "$dotfile" == "${SCRIPT_DIR}/.git"* ]] && continue
-    [[ "$dotfile" == "${SCRIPT_DIR}/.github"* ]] && continue
+    # git の内部と CI の定義は配らない。パターンにディレクトリ境界を付けるのは、
+    # 前方一致だと .gitignore のようなリポジトリ直下のファイルまで巻き込み、
+    # 配られない理由が除外リストにもエラーにも現れなくなるため。
+    # worktree では .git がディレクトリではなくファイルなので、それ自身も外す。
+    [[ "$dotfile" == "${SCRIPT_DIR}/.git" ]] && continue
+    [[ "$dotfile" == "${SCRIPT_DIR}/.git/"* ]] && continue
+    [[ "$dotfile" == "${SCRIPT_DIR}/.github/"* ]] && continue
+    # このリポジトリ自身の無視設定であり、$HOME に置くものではない
+    [[ "$dotfile" == "${SCRIPT_DIR}/.gitignore" ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.DS_Store" ]] && continue
     grep -qxF "${dotfile#"$SCRIPT_DIR"/}" "$IGNORED" && continue
     # karabiner はこのあとディレクトリごとリンクするので、配下は個別に扱わない
