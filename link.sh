@@ -50,7 +50,12 @@ function make_link () {
     fi
 }
 
-find "${SCRIPT_DIR}" \( -type f -o -type l \) -path '*/.*' | while read -r dotfile; do
+find "${SCRIPT_DIR}" \( -type f -o -type l \) | while read -r dotfile; do
+    relpath="${dotfile#"$SCRIPT_DIR"/}"
+    # 配るのはドットで始まる要素を含むものだけ。判定は SCRIPT_DIR からの相対パスで行う。
+    # find の -path はパス全体に当たるため、チェックアウトの置き場自体にドット成分が
+    # あると（例: ~/.local/share/... の worktree）リポジトリ内の全ファイルが一致する。
+    [[ "$relpath" == .* || "$relpath" == */.* ]] || continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.git"* ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.github"* ]] && continue
     [[ "$dotfile" == "${SCRIPT_DIR}/.DS_Store" ]] && continue
