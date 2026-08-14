@@ -285,8 +285,10 @@ Issue の起票と消化の履歴を残す。複数リポジトリに分散す�
 REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
 REPOS="$REPOS $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
 for repo in $(printf '%s\n' $REPOS | sort -u); do
-  gh issue list -R "$repo" --state all --label from-nightly --limit 200 \
-    --json number,title,state,createdAt,closedAt,url,labels 2>/dev/null \
+  out=$(gh issue list -R "$repo" --state all --label from-nightly --limit 200 \
+          --json number,title,state,createdAt,closedAt,url,labels) \
+    || { echo "計測の収集に失敗: $repo" >&2; continue; }
+  printf '%s' "$out" \
   | jq -c --arg repo "$repo" --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '.[] | {
       ts: $ts, repo: $repo, number, title, state,
       created_at: .createdAt, closed_at: .closedAt, url,
@@ -304,6 +306,9 @@ done
 
 同じ Issue が何度も追記されるのは想定内。集計時に `repo` と `number` で
 最新の行を採ればよい。
+
+ここも終了ステータスを見る。追記は毎回繰り返されるので次回の実行で埋まるが、
+潰すとその時刻の断面だけが欠け、あとから欠けていること自体が分からなくなる。
 
 ## 7. 処理済みの位置を進める
 
