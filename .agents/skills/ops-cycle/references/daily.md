@@ -194,7 +194,7 @@ list=$(mktemp)
 failed=""
 for repo in $(printf '%s\n' $REPOS | sort -u); do
   for label in ops improve; do
-    out=$(gh issue list -R "$repo" --state open --label "$label" --limit 50 \
+    out=$(gh issue list -R "$repo" --state open --label "$label" --limit 200 \
             --json number,title,labels) \
       || { failed="$failed $repo/$label"; continue; }
     printf '%s' "$out" | jq -r --arg repo "$repo" '
@@ -204,7 +204,7 @@ for repo in $(printf '%s\n' $REPOS | sort -u); do
   done
 done
 sort -u "$list"; rm -f "$list"
-[ -n "$failed" ] && echo "列挙に失敗:$failed" >&2
+if [ -n "$failed" ]; then echo "列挙に失敗:$failed" >&2; fi
 ```
 
 **呼び出しの終了ステータスを必ず見ること。** `2>/dev/null` で潰して出力の有無だけを
@@ -219,6 +219,8 @@ sort -u "$list"; rm -f "$list"
 - 両方のラベルを持つ Issue は2回出るので `sort -u` で畳む
 - パイプの中でループを回さない。`for ... done | sort` にすると `failed` が
   サブシェルの中で消え、失敗を数えたつもりが常に空になる
+- 最後を `[ -n "$failed" ] && echo ...` で終えない。失敗が無いときに
+  この行が偽になり、ブロック全体の終了ステータスが 1 になる
 - `needs-decision` が付いたものは消化しない（`references/deferral.md`）
 
 ### 着手の前に、すでに否定されていないかを見る
