@@ -184,6 +184,43 @@ git -C "$PWD" push
 対象になる作業: PR レビュー、Issue 整理、ドキュメント改善、CI/CD 改善、
 リファクタリング、セキュリティ観点の洗い出し。
 
+### 消化対象を列挙する
+
+```bash
+. "$S/ops-env.sh"
+REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
+REPOS="$REPOS $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
+list=$(mktemp)
+failed=""
+for repo in $(printf '%s\n' $REPOS | sort -u); do
+  for label in ops improve; do
+    out=$(gh issue list -R "$repo" --state open --label "$label" --limit 50 \
+            --json number,title,labels) \
+      || { failed="$failed $repo/$label"; continue; }
+    printf '%s' "$out" | jq -r --arg repo "$repo" '
+      .[]
+      | select([.labels[].name] | contains(["needs-decision"]) | not)
+      | "\($repo)#\(.number)\t\(.title)"' >> "$list"
+  done
+done
+sort -u "$list"; rm -f "$list"
+[ -n "$failed" ] && echo "列挙に失敗:$failed" >&2
+```
+
+**呼び出しの終了ステータスを必ず見ること。** `2>/dev/null` で潰して出力の有無だけを
+見ると、「対象が無い」と「呼び出しが失敗した」が同じ見え方になる。失敗した側は
+何も出さずに次のリポジトリへ進むため、消化が丸ごと飛んでも報告には現れず、
+翌日に滞留の原因を追えない。存在しないラベルは `[]` を返して終了ステータス 0 なので、
+これで潰れるのは本当の失敗だけ。
+
+失敗したリポジトリは報告の「スキップ」に出す。
+
+- `--label` は AND で効く。`ops` と `improve` は分けて引く
+- 両方のラベルを持つ Issue は2回出るので `sort -u` で畳む
+- パイプの中でループを回さない。`for ... done | sort` にすると `failed` が
+  サブシェルの中で消え、失敗を数えたつもりが常に空になる
+- `needs-decision` が付いたものは消化しない（`references/deferral.md`）
+
 ### 着手の前に、すでに否定されていないかを見る
 
 **その項目に対応する PR が、マージされずクローズされていないかを先に確かめる。**
