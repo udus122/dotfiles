@@ -46,7 +46,6 @@ ops_dirs() {
     "$CLAUDE_OPS_HOME/spool/knowledge" \
     "$CLAUDE_OPS_HOME/state" \
     "$CLAUDE_OPS_HOME/locks" \
-    "$CLAUDE_OPS_HOME/digests" \
     "$CLAUDE_OPS_HOME/backup"
 }
 
