@@ -184,6 +184,45 @@ git -C "$PWD" push
 対象になる作業: PR レビュー、Issue 整理、ドキュメント改善、CI/CD 改善、
 リファクタリング、セキュリティ観点の洗い出し。
 
+### 消化対象を列挙する
+
+```bash
+. "$S/ops-env.sh"
+REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
+REPOS="$REPOS $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
+list=$(mktemp)
+failed=""
+for repo in $(printf '%s\n' $REPOS | sort -u); do
+  for label in ops improve; do
+    out=$(gh issue list -R "$repo" --state open --label "$label" --limit 200 \
+            --json number,title,labels) \
+      || { failed="$failed $repo/$label"; continue; }
+    printf '%s' "$out" | jq -r --arg repo "$repo" '
+      .[]
+      | select([.labels[].name] | contains(["needs-decision"]) | not)
+      | "\($repo)#\(.number)\t\(.title)"' >> "$list"
+  done
+done
+sort -u "$list"; rm -f "$list"
+if [ -n "$failed" ]; then echo "列挙に失敗:$failed" >&2; fi
+```
+
+**呼び出しの終了ステータスを必ず見ること。** `2>/dev/null` で潰して出力の有無だけを
+見ると、「対象が無い」と「呼び出しが失敗した」が同じ見え方になる。失敗した側は
+何も出さずに次のリポジトリへ進むため、消化が丸ごと飛んでも報告には現れず、
+翌日に滞留の原因を追えない。存在しないラベルは `[]` を返して終了ステータス 0 なので、
+これで潰れるのは本当の失敗だけ。
+
+失敗したリポジトリは報告の「スキップ」に出す。
+
+- `--label` は AND で効く。`ops` と `improve` は分けて引く
+- 両方のラベルを持つ Issue は2回出るので `sort -u` で畳む
+- パイプの中でループを回さない。`for ... done | sort` にすると `failed` が
+  サブシェルの中で消え、失敗を数えたつもりが常に空になる
+- 最後を `[ -n "$failed" ] && echo ...` で終えない。失敗が無いときに
+  この行が偽になり、ブロック全体の終了ステータスが 1 になる
+- `needs-decision` が付いたものは消化しない（`references/deferral.md`）
+
 ### 着手の前に、すでに否定されていないかを見る
 
 **その項目に対応する PR が、マージされずクローズされていないかを先に確かめる。**
@@ -248,8 +287,10 @@ Issue の起票と消化の履歴を残す。複数リポジトリに分散す�
 REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
 REPOS="$REPOS $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
 for repo in $(printf '%s\n' $REPOS | sort -u); do
-  gh issue list -R "$repo" --state all --label from-nightly --limit 200 \
-    --json number,title,state,createdAt,closedAt,url,labels 2>/dev/null \
+  out=$(gh issue list -R "$repo" --state all --label from-nightly --limit 200 \
+          --json number,title,state,createdAt,closedAt,url,labels) \
+    || { echo "計測の収集に失敗: $repo" >&2; continue; }
+  printf '%s' "$out" \
   | jq -c --arg repo "$repo" --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" '.[] | {
       ts: $ts, repo: $repo, number, title, state,
       created_at: .createdAt, closed_at: .closedAt, url,
@@ -267,6 +308,9 @@ done
 
 同じ Issue が何度も追記されるのは想定内。集計時に `repo` と `number` で
 最新の行を採ればよい。
+
+ここも終了ステータスを見る。追記は毎回繰り返されるので次回の実行で埋まるが、
+潰すとその時刻の断面だけが欠け、あとから欠けていること自体が分からなくなる。
 
 ## 7. 処理済みの位置を進める
 
