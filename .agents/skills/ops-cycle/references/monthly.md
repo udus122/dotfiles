@@ -21,8 +21,11 @@ git -C "$KNOWLEDGE_ROOT" ls-tree -r --name-only origin/main -- journals/weekly
 知識ベースにはまだ現れない。
 
 ```bash
-$S/spool.sh list
+$S/spool.sh list | grep '/weekly/'
 ```
+
+**`spool.sh list` は日次の草案も一緒に出す。** 週次の置き場で絞らずに数えると、
+回収待ちの日次が残っているだけで「ダイジェストがある」と読めてしまう。
 
 どちらにも1本も無いときだけ「入力なし」と判定する。**その場合は理由を突き止めて
 から先へ進む。** 入力ゼロを既定として受け入れると、週次が動いていないことに
