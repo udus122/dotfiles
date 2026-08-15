@@ -3,6 +3,31 @@
 **入力は週次ダイジェストの蓄積と計測ログだけ。生のセッション記録は読まない。**
 圧縮の階層を守る。ここで生ログに戻ると、月次が日次の焼き直しになる。
 
+## 0. ダイジェストの置き場
+
+週次ダイジェストは知識ベースのリポジトリにある。非公開層の下ではない。
+
+```bash
+S=~/.claude/skills/ops-cycle/scripts
+. "$S/ops-env.sh"
+KNOWLEDGE_ROOT=$(ops_expand "$(ops_cfg '.knowledge_root')")   # 先頭の ~ は展開が要る
+git -C "$KNOWLEDGE_ROOT" fetch -q origin
+git -C "$KNOWLEDGE_ROOT" ls-tree -r --name-only origin/main -- journals/weekly
+```
+
+**空に見えても、置き場を取り違えていないかを先に確かめること。** 週次は
+`spool.sh put` に置き、回収は知識ベース担当のルーティンが行う。回収が済むまでは
+スプール側（`$CLAUDE_OPS_HOME/spool/knowledge/weekly/`）にあり、
+知識ベースにはまだ現れない。
+
+```bash
+$S/spool.sh list
+```
+
+どちらにも1本も無いときだけ「入力なし」と判定する。**その場合は理由を突き止めて
+から先へ進む。** 入力ゼロを既定として受け入れると、週次が動いていないことに
+気付かないまま月次だけが回り続ける。
+
 ## 1. 設定の棚卸し
 
 利用実績に基づいて、削除と更新の候補を出す。**自動で削除しない。**
