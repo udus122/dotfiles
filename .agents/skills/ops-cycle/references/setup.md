@@ -37,8 +37,11 @@
 metrics/        計測ログ (JSONL)
 spool/knowledge/ 知識ベースへ渡す草案
 state/          前回実行時刻、リポジトリのメタ情報のキャッシュ
-digests/ locks/ backup/
+locks/ backup/
 ```
+
+週次ダイジェストはここには置かない。知識ベースの
+`journals/weekly/<YYYY>-W<ww>-<ワークスペース>.md` が置き場で、月次はそこを読む。
 
 ## 2. ワークスペースの目印
 
