@@ -126,9 +126,9 @@ cask "microsoft-excel"
 cask "microsoft-word"
 cask "google-gemini"
 cask "antigravity"
-# cask "tourbox-console"
 cask "superwhisper"
 cask "zed"
+cask "drawio"
 
 # App Store applications
 mas "Endel: Focus, Sleep, Relax", id:1346247457
