@@ -1,0 +1,22 @@
+name: link
+
+# link.sh はこのリポジトリの内容を $HOME に配る唯一の経路で、スキル・フック・
+# エージェント定義はすべてここを通って稼働する側に届く。選別が壊れても
+# link.sh 自身は正常に終わるため、配布集合を判定表で機械的に点検する。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  link-selection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: 配布集合の判定表
+        run: ./tools/test-link-selection.sh
