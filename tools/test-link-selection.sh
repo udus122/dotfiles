@@ -55,6 +55,14 @@ build_fixture() {  # build_fixture <dir>
   mkdir -p "$d/.local/bin"
   printf '#!/bin/sh\n'          > "$d/.local/bin/mytool"
 
+  # 実際に配られている中身の代表を1つずつ置く。一般の選別だけを試すと、
+  # 特定の木だけを外す規則（例: `*/skills/*` を飛ばす）が素通りし、
+  # このテストが守るはずのスキルとフックが黙って配られなくなる。
+  mkdir -p "$d/.claude/skills/example"
+  printf -- '---\nname: example\n---\n' > "$d/.claude/skills/example/SKILL.md"
+  mkdir -p "$d/.agents/hooks"
+  printf '#!/bin/sh\n'          > "$d/.agents/hooks/guard.sh"
+
   # karabiner はディレクトリごと1本で配るので、配下は個別に配られない
   mkdir -p "$d/.config/karabiner"
   printf '{}\n'                 > "$d/.config/karabiner/karabiner.json"
@@ -103,6 +111,8 @@ check_set() {  # check_set <説明> <fixture dir>   期待する集合は標準�
 plain="$tmp/plain/wt"
 build_fixture "$plain"
 check_set "配布集合が期待どおりの集合になる" "$plain" <<'EOF'
+.agents/hooks/guard.sh
+.claude/skills/example/SKILL.md
 .config/karabiner
 .config/nvim/init.lua
 .local/bin/mytool
@@ -116,6 +126,8 @@ EOF
 hidden="$tmp/.hidden/wt"
 build_fixture "$hidden"
 check_set "ドット成分を含む置き場でも配布集合が変わらない" "$hidden" <<'EOF'
+.agents/hooks/guard.sh
+.claude/skills/example/SKILL.md
 .config/karabiner
 .config/nvim/init.lua
 .local/bin/mytool
@@ -148,6 +160,10 @@ excluded() {  # excluded <説明> <relpath>
 
 excluded "リポジトリ自身のメタデータは配らない"          ".gitignore"
 excluded "サブモジュール定義は配らない"                  ".gitmodules"
+# `.github` は link.sh に専用の行があるが、いまは手前の `.git` の前方一致が
+# 先に外すため、その行を消してもここは通る。固定できるのは「配られない」という
+# 結果だけで、どの行が効いているかではない。`.git` に境界を付ける変更が
+# 入ったときに初めて専用の行が効き始める。
 excluded "GitHub の設定は配らない"                       ".github/workflows/ci.yml"
 excluded "macOS の副産物は配らない"                      ".DS_Store"
 excluded "git が無視しているものは配らない"              ".env.local"
