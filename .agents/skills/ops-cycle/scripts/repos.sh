@@ -33,6 +33,11 @@ slug_from_url() {
 
 # owner/repo のメタ情報を取る。24 時間キャッシュする。
 # 出力: nameWithOwner <TAB> public|private|unknown <TAB> issues|no-issues
+#
+# 引けなかったことを「引いた結果 unknown だった」として保存しないこと。
+# unknown は --issuable から落ちるので、API の一時障害を保存すると、そのリポジトリは
+# TTL のあいだ起票先の候補から消える。消えたことは出力に現れず、夜間は
+# 「起票すべきものが無かった」と同じ見え方になる。
 repo_meta() {
   local slug="$1" cached age meta
   cached=$(jq -c --arg k "$slug" '.[$k] // empty' "$cache" 2>/dev/null)
@@ -46,17 +51,24 @@ repo_meta() {
 
   meta=$(gh repo view "$slug" --json nameWithOwner,isPrivate,hasIssuesEnabled 2>/dev/null)
   if [ -z "$meta" ]; then
-    # remote が解決しない（アーカイブ済み・リネーム済み・権限なし）
-    meta=$(jq -nc --arg s "$slug" \
-      '{nameWithOwner: $s, visibility: "unknown", issues: "no-issues"}')
-  else
-    meta=$(printf '%s' "$meta" | jq -c '{
-      nameWithOwner,
-      visibility: (if .isPrivate then "private" else "public" end),
-      issues: (if .hasIssuesEnabled then "issues" else "no-issues" end)
-    }')
+    # 引けなかった。一時障害か、remote が解決しない（アーカイブ済み・
+    # リネーム済み・権限なし）かは区別が付かないので、保存はしない。
+    # 期限切れの値が残っていればそれを使う。古い可視性で起票するほうが、
+    # 起票先ごと消えるより害が小さい。TTL は更新しないので次の実行が引き直す。
+    echo "メタ情報を引けない: $slug" >&2
+    if [ -n "$cached" ]; then
+      printf '%s' "$cached" | jq -r '[.nameWithOwner, .visibility, .issues] | @tsv'
+    else
+      printf '%s\tunknown\tno-issues\n' "$slug"
+    fi
+    return 0
   fi
 
+  meta=$(printf '%s' "$meta" | jq -c '{
+    nameWithOwner,
+    visibility: (if .isPrivate then "private" else "public" end),
+    issues: (if .hasIssuesEnabled then "issues" else "no-issues" end)
+  }')
   meta=$(printf '%s' "$meta" | jq -c --argjson ts "$now" '. + {ts: $ts}')
   jq --arg k "$slug" --argjson v "$meta" '.[$k] = $v' "$cache" > "$cache.tmp" \
     && mv "$cache.tmp" "$cache"
