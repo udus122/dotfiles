@@ -3,10 +3,6 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "includeCoAuthoredBy": false,
-  "deniedMcpServers": [
-    { "serverName": "003e3def-389f-43f8-8f4c-3bb9d25812a0" },
-    { "serverName": "claude.ai GitHub for Claude Web" }
-  ],
   "permissions": {
     "allow": [
       "Skill(semantic-commit)",
@@ -211,10 +207,10 @@
     "ask": [],
     "defaultMode": "auto"
   },
+  "model": "opus",
   "skillOverrides": {
     "cloudflare": "off",
     "durable-objects": "off",
-    "web-perf": "off",
     "workers-best-practices": "off",
     "wrangler": "off",
     "agents-sdk": "off",
@@ -222,6 +218,14 @@
     "sandbox-sdk": "off",
     "knowledge-tend": "off"
   },
+  "deniedMcpServers": [
+    {
+      "serverName": "003e3def-389f-43f8-8f4c-3bb9d25812a0"
+    },
+    {
+      "serverName": "claude.ai GitHub for Claude Web"
+    }
+  ],
   "hooks": {
     "PreToolUse": [
       {
@@ -334,7 +338,9 @@
     "command": "sh ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "codex@openai-codex": true
+    "codex@openai-codex": true,
+    "chrome-devtools-mcp@chrome-devtools-plugins": true,
+    "drawio@drawio": true
   },
   "extraKnownMarketplaces": {
     "dagster": {
@@ -348,9 +354,24 @@
         "source": "github",
         "repo": "openai/codex-plugin-cc"
       }
+    },
+    "chrome-devtools-plugins": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp.git",
+        "sparsePaths": [
+          ".claude-plugin",
+          "skills"
+        ]
+      }
+    },
+    "drawio": {
+      "source": {
+        "source": "github",
+        "repo": "jgraph/drawio-mcp"
+      }
     }
   },
-  "model": "opus",
   "language": "Japanese",
   "spinnerTipsEnabled": false,
   "alwaysThinkingEnabled": true,
