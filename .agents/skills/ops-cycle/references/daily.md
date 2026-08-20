@@ -189,10 +189,11 @@ git -C "$PWD" push
 ```bash
 . "$S/ops-env.sh"
 REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
-REPOS="$REPOS $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
+REPOS="$REPOS
+$(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
 list=$(mktemp)
 failed=""
-for repo in $(printf '%s\n' $REPOS | sort -u); do
+for repo in $(printf '%s\n' "$REPOS" | sort -u); do
   for label in ops improve; do
     out=$(gh issue list -R "$repo" --state open --label "$label" --limit 200 \
             --json number,title,labels) \
@@ -217,6 +218,9 @@ if [ -n "$failed" ]; then echo "列挙に失敗:$failed" >&2; fi
 
 - `--label` は AND で効く。`ops` と `improve` は分けて引く
 - 両方のラベルを持つ Issue は2回出るので `sort -u` で畳む
+- `$REPOS` は改行で連結する。空白で連結すると、実行シェル（zsh）は引用符なしの
+  パラメータ展開を語分割しないため、その1行が分かれずに残り、`sort -u` が畳めない。
+  横断的な置き場が `--issuable` にも入っているワークスペースでは、そこだけ2回引くことになる
 - パイプの中でループを回さない。`for ... done | sort` にすると `failed` が
   サブシェルの中で消え、失敗を数えたつもりが常に空になる
 - 最後を `[ -n "$failed" ] && echo ...` で終えない。失敗が無いときに
@@ -285,8 +289,9 @@ Issue の起票と消化の履歴を残す。複数リポジトリに分散す�
 ```bash
 . "$S/ops-env.sh"
 REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
-REPOS="$REPOS $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
-for repo in $(printf '%s\n' $REPOS | sort -u); do
+REPOS="$REPOS
+$(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
+for repo in $(printf '%s\n' "$REPOS" | sort -u); do
   out=$(gh issue list -R "$repo" --state all --label from-nightly --limit 200 \
           --json number,title,state,createdAt,closedAt,url,labels) \
     || { echo "計測の収集に失敗: $repo" >&2; continue; }
