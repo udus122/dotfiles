@@ -9,6 +9,7 @@
 # detached HEAD の worktree も走査すること。ブランチ名でしか列挙しないと、
 # 消しても失うもののない複製が一覧にすら現れず、無期限に積み上がる。
 # 未コミット変更があるものはスキップして一覧に出す。
+# 無視されたファイルを抱えている worktree は、その件数を添えて出す（消える対象なので）。
 # リポジトリパスを省略すると、カレントリポジトリを対象にする。
 set -uo pipefail
 
@@ -52,17 +53,31 @@ for repo in "${repos[@]}"; do
             grep -qxF "$branch" <<<"$merged" || continue
         fi
 
-        dirty=$(git -C "$path" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+        # 無視されたファイルは status に出ないが、worktree remove では一緒に消える。
+        # git から復元できないローカルの作業状態（ビルド成果物、ローカル DB、依存）が
+        # そこに入っているので、消える件数を出して人間が止められるようにする。
+        status=$(git -C "$path" status --porcelain --ignored 2>/dev/null)
+        if [[ -n "$status" ]]; then
+            dirty=$(grep -cv '^!! ' <<<"$status")
+            ignored=$(grep -c '^!! ' <<<"$status")
+        else
+            dirty=0
+            ignored=0
+        fi
+
         if [[ "$dirty" != "0" ]]; then
             echo "SKIP (未コミット変更 ${dirty}件): $label  $path"
             total_skipped=$((total_skipped + 1))
             continue
         fi
 
+        note=""
+        [[ "$ignored" != "0" ]] && note="  (無視されたファイル ${ignored}件も消える)"
+
         if [[ $DRY_RUN -eq 1 ]]; then
-            echo "would remove: $label  $path"
+            echo "would remove: $label  $path$note"
         elif git -C "$root" worktree remove --force "$path" 2>/dev/null; then
-            echo "removed: $label  $path"
+            echo "removed: $label  $path$note"
         else
             echo "FAILED : $label  $path"
             continue

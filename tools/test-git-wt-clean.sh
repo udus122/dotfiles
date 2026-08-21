@@ -27,6 +27,8 @@ commit() {  # commit <message>
   git -C "$root" commit -q -m "$1"
 }
 
+echo 'ignored-stuff/' > "$root/.gitignore"
+git -C "$root" add .gitignore
 commit base
 git -C "$root" branch -M main
 git -C "$root" push -q -u origin main
@@ -55,6 +57,8 @@ git -C "$root" worktree add -q "$tmp/wt-unmerged" unmerged
 git -C "$root" worktree add -q --detach "$tmp/wt-detached-merged" "$merged_head"
 git -C "$root" worktree add -q --detach "$tmp/wt-detached-unmerged" "$unmerged_head"
 echo dirt > "$tmp/wt-merged-dirty/untracked.txt"
+mkdir "$tmp/wt-merged-clean/ignored-stuff"
+echo build-artifact > "$tmp/wt-merged-clean/ignored-stuff/out.bin"
 
 out=$(bash "$WT_CLEAN" --dry-run "$root" 2>&1)
 
@@ -73,6 +77,10 @@ check() {  # check present|absent <部分文字列> <説明>
 }
 
 check present "would remove: merged-clean" "マージ済みのブランチは削除対象になる"
+check present "(無視されたファイル 1件も消える)" \
+  "無視されたファイルを抱えていることを出力に添える"
+check absent  "SKIP (未コミット変更 1件): merged-clean" \
+  "無視されたファイルは未コミット変更として数えない"
 check present "would remove: (detached ${merged_head:0:7})" \
   "main の祖先を指す detached HEAD も削除対象になる"
 check present "SKIP (未コミット変更 1件): merged-dirty" \
