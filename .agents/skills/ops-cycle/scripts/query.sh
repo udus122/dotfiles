@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 計測ログ (JSONL) を SQL で集計する。
 #
-# 使えるビュー: instructions / knowledge_refs / issues
+# 使えるビュー: instructions / knowledge_refs / skills / issues
 # issues は repo 列を持つので、複数リポジトリにまたがる Issue も横断できる。
 #
 #   query.sh "SELECT repo, count(*) FROM issues GROUP BY 1 ORDER BY 2 DESC"
@@ -22,6 +22,7 @@ metrics = pathlib.Path(os.environ["CLAUDE_OPS_HOME"]) / "metrics"
 views = {
     "instructions": "instructions.jsonl",
     "knowledge_refs": "knowledge-refs.jsonl",
+    "skills": "skills.jsonl",
     "issues": "issues.jsonl",
 }
 
