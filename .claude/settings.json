@@ -299,7 +299,7 @@
             "type": "command",
             "command": "~/.claude/hooks/ops-log-knowledge-ref.sh",
             "async": true,
-            "timeout": 5000
+            "timeout": 5
           }
         ]
       }
@@ -323,7 +323,7 @@
             "type": "command",
             "command": "~/.claude/hooks/ops-log-instructions.sh",
             "async": true,
-            "timeout": 5000
+            "timeout": 5
           }
         ]
       }
