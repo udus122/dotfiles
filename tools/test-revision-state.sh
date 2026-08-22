@@ -21,13 +21,24 @@ trap 'rm -rf "$tmp"' EXIT
 pass=0
 fail=0
 
-git_q() { git -C "$1" "${@:2}" >/dev/null 2>&1; }
+# 準備の失敗は握りつぶさない。設定や push が黙って落ちると、判定表は
+# 別の状態を測ったまま「期待どおり」を数えてしまう。
+git_q() {
+  if ! git -C "$1" "${@:2}" >/dev/null 2>&1; then
+    printf 'NG   準備に失敗: git -C %s %s\n' "$1" "${*:2}" >&2
+    exit 1
+  fi
+}
 
 # 実体の置き場から repo を引く実装に合わせ、スクリプトを複製した先で走らせる。
 # origin は同じディスク上のベアリポジトリにして、ネットワークに依存させない。
 setup() {  # setup <名前>  → 作業リポジトリのパスを出す
   local name="$1" work="$tmp/$1" origin="$tmp/$1.git"
-  git init -q --bare "$origin"
+  # 既定ブランチ名を明示する。省略すると origin の HEAD が実行環境の
+  # init.defaultBranch に従い、main を push しても HEAD が指す先が存在しない
+  # ベアリポジトリになる。そこからの clone は作業ツリーを持たず、以降の
+  # push が空振りして「遅れ」も「分岐」も作れなくなる。
+  git init -q --bare -b main "$origin"
   git init -q -b main "$work"
   git_q "$work" config user.email t@example.com
   git_q "$work" config user.name t
