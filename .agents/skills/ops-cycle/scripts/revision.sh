@@ -9,7 +9,11 @@
 # 取り込みはしない。作業チェックアウトは未コミットの変更を抱えていることが
 # 多く、無条件に引き寄せると人間の作業を壊す。古いことを伝えるだけにする。
 #
-#   revision.sh          <ブランチ>@<短縮ハッシュ> (最新 | N コミット遅れ)
+# 遅れと同じ理由で、進み（未 push のコミット）も出す。既定ブランチに無いコミットの
+# 上で走っているなら、稼働しているのはレビューもマージも経ていない版であり、
+# 報告の「最新」が指しているものが実際とずれる。
+#
+#   revision.sh          <ブランチ>@<短縮ハッシュ> (最新 | N コミット遅れ | 未 push N 件)
 set -uo pipefail
 
 # 自分自身の置き場から実体のリポジトリを引く。シンボリックリンク経由で
@@ -25,7 +29,9 @@ base=$(git -C "$repo" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
 base="${base:-origin/main}"
 
 git -C "$repo" fetch -q origin 2>/dev/null || true
-behind=$(git -C "$repo" rev-list --count "HEAD..$base" 2>/dev/null || echo "")
+counts=$(git -C "$repo" rev-list --left-right --count "HEAD...$base" 2>/dev/null || echo "")
+ahead=$(printf '%s' "$counts" | cut -f1)
+behind=$(printf '%s' "$counts" | cut -f2)
 
 dirty=""
 git -C "$repo" diff --quiet 2>/dev/null || dirty=" / 未コミットの変更あり"
@@ -40,10 +46,16 @@ if [ -x "$repo/link.sh" ]; then
   [ "${n:-0}" -gt 0 ] && links=" / \$HOME へのリンクが $n 件未作成（link.sh で解消）"
 fi
 
-case "$behind" in
-  "")  state="$base と比較できない" ;;
-  0)   state="最新" ;;
-  *)   state="$base より $behind コミット遅れ" ;;
-esac
+if [ -z "$behind" ] || [ -z "$ahead" ]; then
+  state="$base と比較できない"
+elif [ "$behind" -gt 0 ] && [ "$ahead" -gt 0 ]; then
+  state="$base と分岐 — $behind コミット遅れ / 未 push が $ahead 件"
+elif [ "$behind" -gt 0 ]; then
+  state="$base より $behind コミット遅れ"
+elif [ "$ahead" -gt 0 ]; then
+  state="$base に未 push のコミットが $ahead 件"
+else
+  state="最新"
+fi
 
 printf '%s@%s (%s)%s%s\n' "$branch" "$head" "$state" "$dirty" "$links"
