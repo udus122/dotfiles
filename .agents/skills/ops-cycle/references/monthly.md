@@ -42,6 +42,10 @@ S=~/.claude/skills/ops-cycle/scripts
 $S/query.sh "SELECT file_path, memory_type, count(*) AS n, max(ts) AS last_seen
              FROM instructions GROUP BY 1, 2 ORDER BY n DESC"
 
+# 起動されたスキルの実績
+$S/query.sh "SELECT skill, count(*) AS n, max(ts) AS last_seen
+             FROM skills GROUP BY 1 ORDER BY n DESC"
+
 # 実在する指示ファイル
 ls ~/.claude/skills ~/.claude/hooks 2>/dev/null
 find ~/.claude -maxdepth 2 -name 'CLAUDE.md' -o -maxdepth 3 -path '*/rules/*.md' 2>/dev/null
@@ -52,6 +56,11 @@ find ~/.claude -maxdepth 2 -name 'CLAUDE.md' -o -maxdepth 3 -path '*/rules/*.md'
 - 実在するが一度も読み込まれていない → 削除候補
 - 読み込まれているが記述が古い（週次ダイジェストの事実と食い違う）→ 更新候補
 - `skillOverrides` で無効にされたままのもの → 削除候補（無効のまま使われていない）
+
+**スキルは `instructions` に現れない。** `InstructionsLoaded` が記録するのは
+CLAUDE.md 系の memory ファイルだけなので、スキルの実績は `skills` ビューで見る。
+記録は `Skill` ツールの起動ごとに1行。**計測を始めた時点より前の実績は無い**ので、
+記録の無いスキルを削除候補に出すのは、計測開始から十分な期間が経ってからにする。
 
 知識ベースの概念も同じ扱い。
 
