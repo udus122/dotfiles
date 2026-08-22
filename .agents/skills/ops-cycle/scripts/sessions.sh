@@ -110,7 +110,7 @@ case "$cmd" in
              and ($tag | contains($p | gsub("^\\s+|\\s+$"; ""))))
             | not
           )
-        | {ts: $ts, sessionId: $e.sessionId, prompt: .}
+        | {ts: $ts, sessionId: $e.sessionId, uuid: $e.uuid, prompt: .}
       ' "$f" 2>/dev/null
     done)
     [ -n "$out" ] || exit 0
@@ -118,7 +118,18 @@ case "$cmd" in
     if [ "$cmd" = "ids" ]; then
       printf '%s\n' "$out" | jq -r 'select(.sessionId != null) | .sessionId' | sort -u
     else
-      printf '%s\n' "$out" | jq -s -c 'sort_by(.ts) | .[]'
+      # 再開されたセッションは親の履歴を自分のファイルへ引き継ぐので、同じ発話が
+      # 複数の sessionId で現れる。message の uuid は引き継ぎ後も変わらないため、
+      # これで畳む。件数を根拠にする集計が数倍に膨らむのを防ぐ。
+      # 畳む前に [ts, sessionId] で並べて、残る1件を決定的にする。
+      #
+      # uuid が無い行は畳まない。全部を同じキーに落とすと、数えるための
+      # スクリプトが黙って1件に潰す。重複が残るほうが、消えるより害が小さい。
+      printf '%s\n' "$out" \
+        | jq -s -c '
+            sort_by([.ts, .sessionId])
+            | unique_by(.uuid // "\(.ts)\u0000\(.sessionId)\u0000\(.prompt)")
+            | sort_by(.ts) | .[] | del(.uuid)'
     fi
     ;;
 
