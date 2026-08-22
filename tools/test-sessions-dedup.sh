@@ -101,6 +101,18 @@ check "同じ入力なら出力も同じ" "$(run | md5sum 2>/dev/null || run | m
 rm -f "$PROJECTS/sess-bbb.jsonl" "$PROJECTS/sess-ccc.jsonl"
 check "引き継ぎが無ければ件数は変わらない" 3 "$(run | grep -c .)"
 
+# uuid の無い行は畳まない。全部を同じキーに落とすと、数えるためのスクリプトが
+# 黙って1件に潰す。いまのトランスクリプトは必ず uuid を持つが、欠けたときに
+# 件数が消える壊れ方は出力を見ても気付けない。
+rm -f "$PROJECTS/sess-aaa.jsonl"
+for i in 1 2 3; do
+  jq -n -c --arg s "no-uuid" --arg t "2026-08-20T02:0${i}:00.000Z" \
+        --arg p "uuid の無い発話 ${i} 件目。長さの下限に届くように少しだけ長く書きます。" \
+        --arg cwd "$WS" '
+    {type:"user", sessionId:$s, timestamp:$t, cwd:$cwd, message:{content:$p}}'
+done > "$PROJECTS/no-uuid.jsonl"
+check "uuid が無くても件数は保たれる" 3 "$(run | grep -c .)"
+
 printf '\n%s 件中 %s 件が期待どおり' "$((pass + fail))" "$pass"
 if [ "$fail" -gt 0 ]; then
   printf '（%s 件が不一致）\n' "$fail"
