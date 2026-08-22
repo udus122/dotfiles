@@ -259,6 +259,16 @@
             "command": "~/.claude/hooks/webfetch-to-defuddle.sh"
           }
         ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/ops-log-skill.sh",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "Notification": [
@@ -289,7 +299,7 @@
             "type": "command",
             "command": "~/.claude/hooks/ops-log-knowledge-ref.sh",
             "async": true,
-            "timeout": 5000
+            "timeout": 5
           }
         ]
       }
@@ -313,7 +323,7 @@
             "type": "command",
             "command": "~/.claude/hooks/ops-log-instructions.sh",
             "async": true,
-            "timeout": 5000
+            "timeout": 5
           }
         ]
       }

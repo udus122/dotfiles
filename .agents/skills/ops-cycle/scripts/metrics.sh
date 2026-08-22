@@ -14,7 +14,7 @@ cmd="${1:?usage: metrics.sh <append|path> <stream>}"
 stream="${2:?stream required}"
 
 case "$stream" in
-  instructions|knowledge-refs|issues) : ;;
+  instructions|knowledge-refs|skills|issues) : ;;
   *) echo "unknown stream: $stream" >&2; exit 2 ;;
 esac
 
