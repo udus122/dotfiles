@@ -6,6 +6,10 @@
 # gitignore を尊重しない検索が本体と複製の両方に当たるようになる。
 # 出力は「対象なし」と見分けが付かないので、退行に気付く手段がここしかない。
 #
+# 未取り込みの worktree も同じ理由で一覧に出す。ただし削除の対象には決して
+# しない。この2つを分けて検査するため、削除を指示する行だけを抜き出して
+# そちらに現れないことを見る。
+#
 #   tools/test-git-wt-clean.sh
 set -uo pipefail
 
@@ -85,11 +89,25 @@ check present "would remove: (detached ${merged_head:0:7})" \
   "main の祖先を指す detached HEAD も削除対象になる"
 check present "SKIP (未コミット変更 1件): merged-dirty" \
   "未コミット変更があるものはスキップして一覧に出す"
-check absent  "$tmp/wt-unmerged" "未マージのブランチは対象にしない"
-check absent  "${unmerged_head:0:7}" "main の祖先でない detached HEAD は対象にしない"
-check present "dry-run: 2件が削除対象 / 1件はスキップ" "件数が合う"
-# `### <root>` の見出しは出るので、削除対象の行だけを見る。
-acted=$(grep -E '^(would remove|removed|SKIP|FAILED)' <<<"$out")
+check present "KEEP (未取り込み): unmerged" "未取り込みのブランチは一覧に出す"
+check present "KEEP (未取り込み): (detached ${unmerged_head:0:7})" \
+  "main の祖先でない detached HEAD も一覧に出す"
+check present "dry-run: 2件が削除対象 / 1件はスキップ / 2件は未取り込み" "件数が合う"
+
+# 一覧に出すことと、削除の対象にすることは別。削除を指示する行だけを抜き出して、
+# 未取り込みのものがそちらに現れないことを見る。
+removing=$(grep -E '^(would remove|removed)' <<<"$out")
+for needle in "$tmp/wt-unmerged" "$tmp/wt-detached-unmerged"; do
+  if grep -qF -- "$needle" <<<"$removing"; then
+    printf 'NG   未取り込みの worktree は削除の対象にしない\n       %s\n' "$needle"
+    fail=$((fail + 1))
+  else
+    pass=$((pass + 1))
+  fi
+done
+
+# `### <root>` の見出しは出るので、worktree ごとの行だけを見る。
+acted=$(grep -E '^(would remove|removed|SKIP|KEEP|FAILED)' <<<"$out")
 if grep -qF -- "$root" <<<"$acted"; then
   printf 'NG   本体のチェックアウト自体は対象にしない\n'
   fail=$((fail + 1))

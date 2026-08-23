@@ -9,6 +9,9 @@
 # detached HEAD の worktree も走査すること。ブランチ名でしか列挙しないと、
 # 消しても失うもののない複製が一覧にすら現れず、無期限に積み上がる。
 # 未コミット変更があるものはスキップして一覧に出す。
+# 取り込み済みでないものは消さないが、これも一覧に出す。黙って飛ばすと、
+# worktree が 1 つも無いリポジトリと出力が同じになり、二度と取り込まれない
+# 複製がそこに在ること自体が分からなくなる。
 # 無視されたファイルを抱えている worktree は、その件数を添えて出す（消える対象なので）。
 # リポジトリパスを省略すると、カレントリポジトリを対象にする。
 set -uo pipefail
@@ -26,6 +29,7 @@ fi
 
 total_removed=0
 total_skipped=0
+total_kept=0
 
 for repo in "${repos[@]}"; do
     root=$(git -C "$repo" rev-parse --show-toplevel 2>/dev/null) || {
@@ -47,10 +51,18 @@ for repo in "${repos[@]}"; do
 
         if [[ "$branch" == "-" ]]; then
             label="(detached ${head:0:7})"
-            git -C "$root" merge-base --is-ancestor "$head" "$default" 2>/dev/null || continue
+            git -C "$root" merge-base --is-ancestor "$head" "$default" 2>/dev/null
+            taken=$?
         else
             label="$branch"
-            grep -qxF "$branch" <<<"$merged" || continue
+            grep -qxF "$branch" <<<"$merged"
+            taken=$?
+        fi
+
+        if [[ $taken -ne 0 ]]; then
+            echo "KEEP (未取り込み): $label  $path"
+            total_kept=$((total_kept + 1))
+            continue
         fi
 
         # 無視されたファイルは status に出ないが、worktree remove では一緒に消える。
@@ -96,7 +108,7 @@ done
 
 echo
 if [[ $DRY_RUN -eq 1 ]]; then
-    echo "dry-run: ${total_removed}件が削除対象 / ${total_skipped}件はスキップ"
+    echo "dry-run: ${total_removed}件が削除対象 / ${total_skipped}件はスキップ / ${total_kept}件は未取り込み"
 else
-    echo "removed=${total_removed} skipped=${total_skipped}"
+    echo "removed=${total_removed} skipped=${total_skipped} kept=${total_kept}"
 fi
