@@ -12,6 +12,9 @@
 # 取り込み済みでないものは消さないが、これも一覧に出す。黙って飛ばすと、
 # worktree が 1 つも無いリポジトリと出力が同じになり、二度と取り込まれない
 # 複製がそこに在ること自体が分からなくなる。
+# 未取り込みのものには、どのリモートにも無いコミットの件数を添える。
+# 「取り込まれていない」だけでは、リモートに控えがあるものと、この機械が
+# 唯一の複製であるものが同じ行に見える。後者を消すと復元できない。
 # 無視されたファイルを抱えている worktree は、その件数を添えて出す（消える対象なので）。
 # リポジトリパスを省略すると、カレントリポジトリを対象にする。
 set -uo pipefail
@@ -60,7 +63,20 @@ for repo in "${repos[@]}"; do
         fi
 
         if [[ $taken -ne 0 ]]; then
-            echo "KEEP (未取り込み): $label  $path"
+            # どのリモートからも辿れないコミットの数。0 なら控えがあるので、
+            # worktree を消しても内容は remote から取り戻せる。
+            # 数えられなかったことを 0 に読み替えない。但し書きの無い行は
+            # 「控えがある」と読まれるので、分からないまま安全側に見せると、
+            # 唯一の複製を消させることになる。
+            if unpushed=$(git -C "$root" rev-list --count "$head" --not --remotes 2>/dev/null); then
+                if [[ "$unpushed" != "0" ]]; then
+                    echo "KEEP (未取り込み・未 push ${unpushed}件): $label  $path"
+                else
+                    echo "KEEP (未取り込み): $label  $path"
+                fi
+            else
+                echo "KEEP (未取り込み・未 push 件数不明): $label  $path"
+            fi
             total_kept=$((total_kept + 1))
             continue
         fi
