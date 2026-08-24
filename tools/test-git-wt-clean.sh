@@ -23,7 +23,12 @@ WT_CLEAN="$REPO/.local/bin/git-wt-clean"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
+# 既定ブランチ名を環境に委ねない。init.defaultBranch が未設定だと bare 側の HEAD が
+# refs/heads/master を指し、remote set-head が「Cannot determine remote HEAD」で失敗する。
+# 検査は落ちないが、origin/HEAD を読む経路ではなく既定値へのフォールバックを
+# 通るようになるため、確かめたいものが確かめられなくなる。
 git init -q --bare "$tmp/origin.git"
+git -C "$tmp/origin.git" symbolic-ref HEAD refs/heads/main
 git clone -q "$tmp/origin.git" "$tmp/root"
 root="$tmp/root"
 git -C "$root" config user.email t@example.com
