@@ -1,0 +1,23 @@
+name: bin
+
+# .local/bin の補助コマンドは worktree やブランチを実際に消す。判定を誤ると
+# 失うものがある操作なので、代表的な組み合わせを判定表で機械的に点検する。
+# これらのコマンドは手元でしか実行されず、壊れても静かに「対象なし」と同じ
+# 出力になるため、退行に気付く手段が判定表しかない。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wt-clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: worktree の走査と削除判定の判定表
+        run: ./tools/test-git-wt-clean.sh
