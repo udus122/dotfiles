@@ -10,6 +10,10 @@
 # しない。この2つを分けて検査するため、削除を指示する行だけを抜き出して
 # そちらに現れないことを見る。
 #
+# 未取り込みのうち、どのリモートにも無いコミットを抱えるものは、消すと
+# 復元できない。控えのあるものと同じ行に見えないことを、push 済みの
+# 未取り込みブランチと push していない未取り込みブランチの両方で見る。
+#
 #   tools/test-git-wt-clean.sh
 set -uo pipefail
 
@@ -19,7 +23,12 @@ WT_CLEAN="$REPO/.local/bin/git-wt-clean"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
+# 既定ブランチ名を環境に委ねない。init.defaultBranch が未設定だと bare 側の HEAD が
+# refs/heads/master を指し、remote set-head が「Cannot determine remote HEAD」で失敗する。
+# 検査は落ちないが、origin/HEAD を読む経路ではなく既定値へのフォールバックを
+# 通るようになるため、確かめたいものが確かめられなくなる。
 git init -q --bare "$tmp/origin.git"
+git -C "$tmp/origin.git" symbolic-ref HEAD refs/heads/main
 git clone -q "$tmp/origin.git" "$tmp/root"
 root="$tmp/root"
 git -C "$root" config user.email t@example.com
@@ -49,10 +58,18 @@ git -C "$root" merge -q --no-ff -m 'merge merged-clean' merged-clean
 git -C "$root" merge -q --no-ff -m 'merge merged-dirty' merged-dirty
 git -C "$root" push -q origin main
 
-# main に取り込まれない側。
+# main に取り込まれない側。push 済みのものは、worktree を消しても
+# remote から取り戻せる。
 git -C "$root" checkout -q -b unmerged main
 commit unmerged
 unmerged_head=$(git -C "$root" rev-parse HEAD)
+git -C "$root" push -q -u origin unmerged
+git -C "$root" checkout -q main
+
+# 未取り込みかつ push もしていない側。ここが唯一の複製になる。
+git -C "$root" checkout -q -b unpushed main
+commit unpushed-1
+commit unpushed-2
 git -C "$root" checkout -q main
 
 git -C "$root" worktree add -q "$tmp/wt-merged-clean" merged-clean
@@ -60,6 +77,7 @@ git -C "$root" worktree add -q "$tmp/wt-merged-dirty" merged-dirty
 git -C "$root" worktree add -q "$tmp/wt-unmerged" unmerged
 git -C "$root" worktree add -q --detach "$tmp/wt-detached-merged" "$merged_head"
 git -C "$root" worktree add -q --detach "$tmp/wt-detached-unmerged" "$unmerged_head"
+git -C "$root" worktree add -q "$tmp/wt-unpushed" unpushed
 echo dirt > "$tmp/wt-merged-dirty/untracked.txt"
 mkdir "$tmp/wt-merged-clean/ignored-stuff"
 echo build-artifact > "$tmp/wt-merged-clean/ignored-stuff/out.bin"
@@ -92,12 +110,16 @@ check present "SKIP (未コミット変更 1件): merged-dirty" \
 check present "KEEP (未取り込み): unmerged" "未取り込みのブランチは一覧に出す"
 check present "KEEP (未取り込み): (detached ${unmerged_head:0:7})" \
   "main の祖先でない detached HEAD も一覧に出す"
-check present "dry-run: 2件が削除対象 / 1件はスキップ / 2件は未取り込み" "件数が合う"
+check present "KEEP (未取り込み・未 push 2件): unpushed" \
+  "どのリモートにも無いコミットは件数を添える"
+check absent  "KEEP (未取り込み・未 push 0件)" \
+  "控えがあるものに未 push の但し書きを付けない"
+check present "dry-run: 2件が削除対象 / 1件はスキップ / 3件は未取り込み" "件数が合う"
 
 # 一覧に出すことと、削除の対象にすることは別。削除を指示する行だけを抜き出して、
 # 未取り込みのものがそちらに現れないことを見る。
 removing=$(grep -E '^(would remove|removed)' <<<"$out")
-for needle in "$tmp/wt-unmerged" "$tmp/wt-detached-unmerged"; do
+for needle in "$tmp/wt-unmerged" "$tmp/wt-detached-unmerged" "$tmp/wt-unpushed"; do
   if grep -qF -- "$needle" <<<"$removing"; then
     printf 'NG   未取り込みの worktree は削除の対象にしない\n       %s\n' "$needle"
     fail=$((fail + 1))
