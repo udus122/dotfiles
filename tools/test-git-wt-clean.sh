@@ -14,13 +14,20 @@
 # 復元できない。控えのあるものと同じ行に見えないことを、push 済みの
 # 未取り込みブランチと push していない未取り込みブランチの両方で見る。
 #
+# リポジトリ配下に切られた worktree は、置き場のルールから外れているうえ
+# gitignore を尊重しない検索を汚す。消せないものにも印が付くことを、
+# 未取り込みの worktree をリポジトリ配下に切って確かめる。
+#
 #   tools/test-git-wt-clean.sh
 set -uo pipefail
 
 REPO=$(cd "$(dirname "$0")/.." && pwd -P)
 WT_CLEAN="$REPO/.local/bin/git-wt-clean"
 
-tmp=$(mktemp -d)
+# 物理パスに直しておく。macOS の mktemp は /var/... を返すが、git が出すのは
+# 実体の /private/var/... なので、直さないと検査側のパスと出力側のパスが食い違う。
+# 前方一致は素通りしてしまうため、行の位置まで見る検査が黙って当たらなくなる。
+tmp=$(cd "$(mktemp -d)" && pwd -P)
 trap 'rm -rf "$tmp"' EXIT
 
 # 既定ブランチ名を環境に委ねない。init.defaultBranch が未設定だと bare 側の HEAD が
@@ -72,12 +79,20 @@ commit unpushed-1
 commit unpushed-2
 git -C "$root" checkout -q main
 
+# リポジトリ配下に置かれる側。実際に積み上がっているのは Claude Code が
+# .claude/worktrees/ に切るもので、いずれも未取り込みのまま残る。
+git -C "$root" checkout -q -b inside-unmerged main
+commit inside-unmerged
+git -C "$root" checkout -q main
+
 git -C "$root" worktree add -q "$tmp/wt-merged-clean" merged-clean
 git -C "$root" worktree add -q "$tmp/wt-merged-dirty" merged-dirty
 git -C "$root" worktree add -q "$tmp/wt-unmerged" unmerged
 git -C "$root" worktree add -q --detach "$tmp/wt-detached-merged" "$merged_head"
 git -C "$root" worktree add -q --detach "$tmp/wt-detached-unmerged" "$unmerged_head"
 git -C "$root" worktree add -q "$tmp/wt-unpushed" unpushed
+inside="$root/.claude/worktrees/inside"
+git -C "$root" worktree add -q "$inside" inside-unmerged
 echo dirt > "$tmp/wt-merged-dirty/untracked.txt"
 mkdir "$tmp/wt-merged-clean/ignored-stuff"
 echo build-artifact > "$tmp/wt-merged-clean/ignored-stuff/out.bin"
@@ -114,7 +129,33 @@ check present "KEEP (未取り込み・未 push 2件): unpushed" \
   "どのリモートにも無いコミットは件数を添える"
 check absent  "KEEP (未取り込み・未 push 0件)" \
   "控えがあるものに未 push の但し書きを付けない"
-check present "dry-run: 2件が削除対象 / 1件はスキップ / 3件は未取り込み" "件数が合う"
+check present "dry-run: 2件が削除対象 / 1件はスキップ / 4件は未取り込み" "件数が合う"
+
+# 置き場の印は、行に対して付く。消せないものにも付いていることを見る。
+inside_line=$(grep -F -- "$inside" <<<"$out")
+check_line() {  # check_line <行> <部分文字列> <説明>
+  if [ -n "$1" ] && grep -qF -- "$2" <<<"$1"; then
+    pass=$((pass + 1))
+  else
+    printf 'NG   %s\n       この行に %s が要る: %s\n' "$3" "$2" "${1:-（行が無い）}"
+    fail=$((fail + 1))
+  fi
+}
+check_line "$inside_line" "[リポジトリ配下]" \
+  "リポジトリ配下の worktree には印を添える"
+check_line "$inside_line" "KEEP (未取り込み・未 push 1件)" \
+  "印を添えても未取り込みの判定は変わらない"
+
+# 規定どおりの置き場にあるものには付けない。付くと、印が置き場を指さなくなる。
+for outside in "$tmp/wt-unmerged" "$tmp/wt-merged-dirty"; do
+  line=$(grep -F -- "$outside" <<<"$out")
+  if grep -qF -- "[リポジトリ配下]" <<<"$line"; then
+    printf 'NG   リポジトリ外の worktree に印を付けない\n       %s\n' "$line"
+    fail=$((fail + 1))
+  else
+    pass=$((pass + 1))
+  fi
+done
 
 # 一覧に出すことと、削除の対象にすることは別。削除を指示する行だけを抜き出して、
 # 未取り込みのものがそちらに現れないことを見る。
@@ -129,8 +170,19 @@ for needle in "$tmp/wt-unmerged" "$tmp/wt-detached-unmerged" "$tmp/wt-unpushed";
 done
 
 # `### <root>` の見出しは出るので、worktree ごとの行だけを見る。
+# 部分一致では見られない。リポジトリ配下の worktree のパスは "$root" で始まるため、
+# 含むかどうかで見ると、そちらが出ているだけで本体を対象にしたと誤検知する。
+# パスの区切りで分ける。"$root/" と続くならリポジトリ配下の worktree、
+# そこで終わる（または但し書きが続く）なら本体そのもの。
 acted=$(grep -E '^(would remove|removed|SKIP|KEEP|FAILED)' <<<"$out")
-if grep -qF -- "$root" <<<"$acted"; then
+root_acted=0
+while IFS= read -r line; do
+  case "$line" in
+    *"  $root"/*) ;;
+    *"  $root"*) root_acted=1 ;;
+  esac
+done <<<"$acted"
+if [ "$root_acted" -eq 1 ]; then
   printf 'NG   本体のチェックアウト自体は対象にしない\n'
   fail=$((fail + 1))
 else
