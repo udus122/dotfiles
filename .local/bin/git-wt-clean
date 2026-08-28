@@ -12,9 +12,10 @@
 # 取り込み済みでないものは消さないが、これも一覧に出す。黙って飛ばすと、
 # worktree が 1 つも無いリポジトリと出力が同じになり、二度と取り込まれない
 # 複製がそこに在ること自体が分からなくなる。
-# 未取り込みのものには、どのリモートにも無いコミットの件数を添える。
-# 「取り込まれていない」だけでは、リモートに控えがあるものと、この機械が
-# 唯一の複製であるものが同じ行に見える。後者を消すと復元できない。
+# 未取り込みのものには、どのリモートにも無いコミットの件数と、未コミット変更の
+# 件数を添える。「取り込まれていない」だけでは、リモートに控えがあるものと、
+# この機械が唯一の複製であるものが同じ行に見える。後者を消すと復元できない。
+# 未コミット変更はコミットより先に唯一の複製になるので、未 push が 0 件でも添える。
 # 無視されたファイルを抱えている worktree は、その件数を添えて出す（消える対象なので）。
 # リポジトリ配下に切られたものには [リポジトリ配下] を添える。置き場のルールから
 # 外れているうえ、gitignore を尊重しない検索が本体と複製の両方に当たる。
@@ -74,35 +75,33 @@ for repo in "${repos[@]}"; do
             taken=$?
         fi
 
+        # 未コミット変更は取り込みの判定より先に数える。未取り込みの行にも
+        # 要るため。コミットされていない変更はどのリモートにも無く、この機械が
+        # 唯一の複製になる。未 push の件数だけを添えて未コミット変更を伏せると、
+        # 控えのある worktree と同じ行に見え、消したときだけ失われる。
+        # 語は SKIP 行と揃える。出力を語で絞り込むと、揃っていない側が落ちる。
+        # ここでは --ignored を付けない。無視されたファイルの件数が要るのは
+        # 削除の対象になったときだけで、走査は依存ディレクトリまで降りて重い。
+        dirty=$(git -C "$path" status --porcelain 2>/dev/null | grep -c '^')
+
         if [[ $taken -ne 0 ]]; then
             # どのリモートからも辿れないコミットの数。0 なら控えがあるので、
             # worktree を消しても内容は remote から取り戻せる。
             # 数えられなかったことを 0 に読み替えない。但し書きの無い行は
             # 「控えがある」と読まれるので、分からないまま安全側に見せると、
             # 唯一の複製を消させることになる。
+            # 但し書きを継ぎ足すときは ${keep} と括ること。bash 3.2 は
+            # "$keep・" の `・` を変数名の一部として読み、未定義として落ちる。
+            keep="未取り込み"
             if unpushed=$(git -C "$root" rev-list --count "$head" --not --remotes 2>/dev/null); then
-                if [[ "$unpushed" != "0" ]]; then
-                    echo "KEEP (未取り込み・未 push ${unpushed}件): $label  $path$place"
-                else
-                    echo "KEEP (未取り込み): $label  $path$place"
-                fi
+                [[ "$unpushed" != "0" ]] && keep="${keep}・未 push ${unpushed}件"
             else
-                echo "KEEP (未取り込み・未 push 件数不明): $label  $path$place"
+                keep="${keep}・未 push 件数不明"
             fi
+            [[ "$dirty" != "0" ]] && keep="${keep}・未コミット変更 ${dirty}件"
+            echo "KEEP ($keep): $label  $path$place"
             total_kept=$((total_kept + 1))
             continue
-        fi
-
-        # 無視されたファイルは status に出ないが、worktree remove では一緒に消える。
-        # git から復元できないローカルの作業状態（ビルド成果物、ローカル DB、依存）が
-        # そこに入っているので、消える件数を出して人間が止められるようにする。
-        status=$(git -C "$path" status --porcelain --ignored 2>/dev/null)
-        if [[ -n "$status" ]]; then
-            dirty=$(grep -cv '^!! ' <<<"$status")
-            ignored=$(grep -c '^!! ' <<<"$status")
-        else
-            dirty=0
-            ignored=0
         fi
 
         if [[ "$dirty" != "0" ]]; then
@@ -110,6 +109,12 @@ for repo in "${repos[@]}"; do
             total_skipped=$((total_skipped + 1))
             continue
         fi
+
+        # 無視されたファイルは status に出ないが、worktree remove では一緒に消える。
+        # git から復元できないローカルの作業状態（ビルド成果物、ローカル DB、依存）が
+        # そこに入っているので、消える件数を出して人間が止められるようにする。
+        # 削除の対象がここまで絞られてから数える。
+        ignored=$(git -C "$path" status --porcelain --ignored 2>/dev/null | grep -c '^!! ')
 
         note=""
         [[ "$ignored" != "0" ]] && note="  (無視されたファイル ${ignored}件も消える)"
