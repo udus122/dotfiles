@@ -14,6 +14,11 @@
 # 復元できない。控えのあるものと同じ行に見えないことを、push 済みの
 # 未取り込みブランチと push していない未取り込みブランチの両方で見る。
 #
+# 未コミット変更も同じ理由で行に添える。コミットより先に唯一の複製になるため、
+# push 済みで未 push が 0 件の未取り込み worktree でも添わることを見る。
+# ここが抜けると、控えがあるものと同じ行に見えて、消したときだけ失われる。
+# 未 push と併せ持つ worktree でも、片方がもう片方を隠さないことを見る。
+#
 # リポジトリ配下に切られた worktree は、置き場のルールから外れているうえ
 # gitignore を尊重しない検索を汚す。消せないものにも印が付くことを、
 # 未取り込みの worktree をリポジトリ配下に切って確かめる。
@@ -73,10 +78,23 @@ unmerged_head=$(git -C "$root" rev-parse HEAD)
 git -C "$root" push -q -u origin unmerged
 git -C "$root" checkout -q main
 
+# 未取り込み・push 済みだが、未コミット変更を抱える側。コミットは remote から
+# 取り戻せるが、その変更だけは手元にしか無い。
+git -C "$root" checkout -q -b unmerged-dirty main
+commit unmerged-dirty
+git -C "$root" push -q -u origin unmerged-dirty
+git -C "$root" checkout -q main
+
 # 未取り込みかつ push もしていない側。ここが唯一の複製になる。
 git -C "$root" checkout -q -b unpushed main
 commit unpushed-1
 commit unpushed-2
+git -C "$root" checkout -q main
+
+# 未 push のコミットと未コミット変更の両方を抱える側。但し書きは片方が
+# もう片方を隠さず、2 つとも並ぶ。
+git -C "$root" checkout -q -b unpushed-dirty main
+commit unpushed-dirty
 git -C "$root" checkout -q main
 
 # リポジトリ配下に置かれる側。実際に積み上がっているのは Claude Code が
@@ -90,10 +108,14 @@ git -C "$root" worktree add -q "$tmp/wt-merged-dirty" merged-dirty
 git -C "$root" worktree add -q "$tmp/wt-unmerged" unmerged
 git -C "$root" worktree add -q --detach "$tmp/wt-detached-merged" "$merged_head"
 git -C "$root" worktree add -q --detach "$tmp/wt-detached-unmerged" "$unmerged_head"
+git -C "$root" worktree add -q "$tmp/wt-unmerged-dirty" unmerged-dirty
 git -C "$root" worktree add -q "$tmp/wt-unpushed" unpushed
+git -C "$root" worktree add -q "$tmp/wt-unpushed-dirty" unpushed-dirty
 inside="$root/.claude/worktrees/inside"
 git -C "$root" worktree add -q "$inside" inside-unmerged
 echo dirt > "$tmp/wt-merged-dirty/untracked.txt"
+echo dirt > "$tmp/wt-unmerged-dirty/untracked.txt"
+echo dirt > "$tmp/wt-unpushed-dirty/untracked.txt"
 mkdir "$tmp/wt-merged-clean/ignored-stuff"
 echo build-artifact > "$tmp/wt-merged-clean/ignored-stuff/out.bin"
 
@@ -129,7 +151,13 @@ check present "KEEP (未取り込み・未 push 2件): unpushed" \
   "どのリモートにも無いコミットは件数を添える"
 check absent  "KEEP (未取り込み・未 push 0件)" \
   "控えがあるものに未 push の但し書きを付けない"
-check present "dry-run: 2件が削除対象 / 1件はスキップ / 4件は未取り込み" "件数が合う"
+check present "KEEP (未取り込み・未コミット変更 1件): unmerged-dirty" \
+  "未 push が無くても未コミット変更の件数を添える"
+check present "KEEP (未取り込み・未 push 1件・未コミット変更 1件): unpushed-dirty" \
+  "未 push と未コミット変更は片方がもう片方を隠さない"
+check absent  "SKIP (未コミット変更 1件): unmerged-dirty" \
+  "未取り込みのものを未コミット変更でスキップ扱いにしない"
+check present "dry-run: 2件が削除対象 / 1件はスキップ / 6件は未取り込み" "件数が合う"
 
 # 置き場の印は、行に対して付く。消せないものにも付いていることを見る。
 inside_line=$(grep -F -- "$inside" <<<"$out")
