@@ -38,9 +38,22 @@ done
 コミットと PR が積まれ続ける。そこが週の活動の実体になる。
 
 ```bash
-git -C <repo> log origin/main --since=<窓の開始> --pretty='%ad %h %s' --date=short --no-merges
-gh pr list -R <owner/repo> --state merged --limit 50 --json number,title,mergedAt,headRefName
+FROM_ISO=$(jq -rn --argjson ms "$SINCE" '($ms / 1000 | floor) | todate')
+git -C <repo> log origin/main --since="@$(( SINCE / 1000 ))" \
+  --pretty='%ad %h %s' --date=short --no-merges
+gh pr list -R <owner/repo> --state merged --limit 50 \
+  --json number,title,mergedAt,headRefName \
+  --jq ".[] | select(.mergedAt >= \"$FROM_ISO\")"
 ```
+
+`$SINCE` はミリ秒なので、**そのまま `--since` に渡さないこと。** git は
+ミリ秒の数値を日付として読めないが、エラーを出さずに0件を返す。
+この段が防ごうとしている0件と、見分けが付かなくなる。秒に直して `@` を付ける。
+`date` は経過秒を読む書式が実装で分かれるので、ISO への変換は `jq` に寄せる。
+
+`$SINCE` はミリ秒なので、**そのまま `--since` に渡さないこと。** git は
+ミリ秒の数値を日付として読めないが、エラーを出さずに0件を返す。
+この段が防ごうとしている0件と、見分けが付かなくなる。秒に直して `@` を付ける。
 
 指示パターンの節（手順2）は入力が無いので空になる。**そのとき「繰り返しは
 無かった」と書かないこと。** 数える対象が存在しなかったことを書く。
