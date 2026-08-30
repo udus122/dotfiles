@@ -172,7 +172,8 @@
       "Bash(basename:*)",
       "Bash(printf:*)",
       "Bash(mktemp:*)",
-      "Bash(rmdir:*)"
+      "Bash(rmdir:*)",
+      "DesignSync"
     ],
     "deny": [
       "Bash(sudo:*)",
