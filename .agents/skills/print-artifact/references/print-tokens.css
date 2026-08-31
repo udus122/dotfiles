@@ -1,0 +1,55 @@
+/* 印刷物の共通トークン。
+   パレット層（生の色）→ 役割層（コンポーネントが参照）→ 出力先の差し替え、の3層。
+   コンポーネントは役割トークンだけを参照し、生の色を書かないこと。
+   これを守れば、PDF に書き出した瞬間に印刷用の色が自動で効く。 */
+
+:root {
+  /* 1. パレット ------------------------------------------------ */
+  /* 画面用（ブランド） */
+  --brand:            #8e51ff;
+  --brand-deep:       oklch(0.491 0.27 292.6);
+  /* 印刷用。CMYK の色域内に収めた同色相。画面用をそのまま刷ると彩度が
+     3分の1に落ちてくすむため、明度を下げて色相を保つ方向で選んである。
+     実測: #8e51ff → C62 M71（くすむ） / #6d28d9 → C71 M82（色相を保つ） */
+  --brand-print:      #6d28d9;
+  --brand-deep-print: oklch(0.42 0.24 292);
+
+  --ink:      oklch(0.208 0.02 280);
+  --fg:       oklch(0.145 0 0);
+  --fg-print: #000;            /* 純黒。K 単色化を狙うとき用 */
+
+  /* 2. 役割 ---------------------------------------------------- */
+  --primary:      var(--brand);
+  --primary-deep: var(--brand-deep);
+  --text:         var(--fg);
+
+  /* 3. 版面の定数 ---------------------------------------------- */
+  --trim-w: 210mm;   /* 仕上がり */
+  --trim-h: 297mm;
+  --bleed:  3mm;     /* 塗り足し */
+  --safe:   5mm;     /* 仕上がり線から内側に確保する余白 */
+}
+
+/* 4. 出力先による差し替え。印刷を知っているのはここだけ ---------- */
+@media print {
+  :root {
+    --primary:      var(--brand-print);
+    --primary-deep: var(--brand-deep-print);
+    --text:         var(--fg-print);
+  }
+}
+
+/* 版面 */
+@page { size: 216mm 303mm; margin: 0; }
+
+.sheet {
+  width: 216mm; height: 303mm; margin: 0 auto; flex: 0 0 auto;
+  display: flex; flex-direction: column; overflow: hidden;
+  background: #fff; color: var(--text);
+}
+.pad { padding-left: 13mm; padding-right: 13mm; }
+
+/* 画面では複数ページを横に並べて見比べ、印刷では改ページする */
+.sheets { display: flex; flex-wrap: wrap; gap: 8mm; justify-content: center; align-items: flex-start; }
+.sheet + .sheet { break-before: page; page-break-before: always; }
+@media print { .sheets { display: block; gap: 0; } }
