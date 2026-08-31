@@ -20,6 +20,9 @@
 # リポジトリ配下に切られたものには [リポジトリ配下] を添える。置き場のルールから
 # 外れているうえ、gitignore を尊重しない検索が本体と複製の両方に当たる。
 # リポジトリパスを省略すると、カレントリポジトリを対象にする。
+# 渡すのは本体のチェックアウトでも linked worktree でもよい。どちらを渡しても
+# そのリポジトリ全体を対象にする。worktree の置き場をまとめて渡せるようにするため
+# （`git wt-clean --dry-run ~/ws/worktrees/*/*`）。同じリポジトリが重なったぶんは畳む。
 set -uo pipefail
 
 DRY_RUN=0
@@ -37,11 +40,33 @@ total_removed=0
 total_skipped=0
 total_kept=0
 
+seen=()
+
 for repo in "${repos[@]}"; do
-    root=$(git -C "$repo" rev-parse --show-toplevel 2>/dev/null) || {
+    # 渡されたパスは本体のチェックアウトとは限らない。worktree の置き場を
+    # まとめて渡す使い方（`git wt-clean ~/ws/worktrees/*/*`）では、渡るのは
+    # すべて linked worktree になる。--show-toplevel はそこで渡された
+    # worktree 自身を返すので、本体を root と取り違える。すると本体が
+    # worktree の一覧に紛れ、削除対象として名指しされる一方、確かめたかった
+    # worktree のほうは root と同一視されて走査から落ちる。
+    # worktree list の先頭は常に本体なので、そこから root を決める。
+    # パスに空白を含みうるので $2 では切らない。
+    root=$(git -C "$repo" worktree list --porcelain 2>/dev/null |
+        awk '/^worktree /{ sub(/^worktree /, ""); print; exit }')
+    if [[ -z "$root" ]]; then
         echo "skip (git リポジトリではない): $repo"
         continue
-    }
+    fi
+
+    # 同じリポジトリの worktree が複数渡ると、同じ root を何度も走査する。
+    # 出力が重なるだけでなく、末尾の件数が渡した数だけ倍になり、
+    # 消える worktree が実際より多いように見える。
+    dup=0
+    for s in ${seen+"${seen[@]}"}; do
+        [[ "$s" == "$root" ]] && { dup=1; break; }
+    done
+    [[ $dup -eq 1 ]] && continue
+    seen+=("$root")
 
     echo
     echo "### $root"
