@@ -62,6 +62,9 @@ jq -n '[
   { number: 30, title: "棚卸しの報告。件数を述べただけで確認方法が無い",
     url: "https://example.invalid/30", updatedAt: "2026-09-01T00:00:00Z",
     body: "## 判断待ち\n\n再検証したが、6 件とも前提が成立したままだった。\n" },
+  { number: 31, title: "同じ形がもう1件。警告が複数行に割れないかを見る",
+    url: "https://example.invalid/31", updatedAt: "2026-09-01T00:00:00Z",
+    body: "## 判断待ち\n\n件数を述べただけ。\n" },
   { number: 40, title: "節をどちらも持たないただの Issue",
     url: "https://example.invalid/40", updatedAt: "2026-09-01T00:00:00Z",
     body: "## 何が起きたか\n\n本文だけ。\n" }
@@ -103,6 +106,14 @@ listed 40; check "節を持たない Issue は一覧に入らない" "$([ $? -ne
 
 grep -q '#30' "$tmp/err"
 check "落とした Issue の番号を標準エラーに出す" $?
+
+grep -q '#31' "$tmp/err"
+check "落とした Issue を1件も取りこぼさない" $?
+
+# 改行のまま連結すると、2 件目が本文の付かない裸の番号として次の行に出る。
+# 同じ標準エラーに並ぶ「列挙に失敗」の警告は1行なので、形をそろえる。
+check "落としたものが複数でも警告は1行に収める" \
+  "$([ "$(wc -l < "$tmp/err")" -eq 1 ] && echo 0 || echo 1)"
 
 grep -q '#10' "$tmp/err"
 check "ラベルで拾えているものを警告に混ぜない" "$([ $? -ne 0 ] && echo 0 || echo 1)"
