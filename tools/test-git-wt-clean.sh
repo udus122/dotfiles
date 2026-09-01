@@ -23,6 +23,12 @@
 # gitignore を尊重しない検索を汚す。消せないものにも印が付くことを、
 # 未取り込みの worktree をリポジトリ配下に切って確かめる。
 #
+# 渡されるパスは本体のチェックアウトとは限らない。worktree の置き場をまとめて
+# 渡す使い方では、渡るのはすべて linked worktree になる。本体を root と
+# 取り違えると、本体が削除対象として名指しされ、確かめたかった worktree の
+# ほうは走査から落ちる。どちらを渡しても同じ一覧になることを見る。
+# 同じリポジトリの worktree を複数渡したときに件数が倍にならないことも見る。
+#
 #   tools/test-git-wt-clean.sh
 set -uo pipefail
 
@@ -216,6 +222,33 @@ if [ "$root_acted" -eq 1 ]; then
 else
   pass=$((pass + 1))
 fi
+
+# linked worktree を渡しても、本体を渡したときと同じ一覧になる。ここが崩れると
+# 置き場をまとめて渡す使い方で、本体が削除対象として名指しされる。
+via_linked=$(bash "$WT_CLEAN" --dry-run "$tmp/wt-unmerged" 2>&1)
+if [ "$via_linked" = "$out" ]; then
+  pass=$((pass + 1))
+else
+  printf 'NG   linked worktree を渡しても本体を渡したときと同じ一覧になる\n'
+  printf -- '--- linked worktree を渡した出力 ---\n%s\n' "$via_linked"
+  fail=$((fail + 1))
+fi
+
+# 同じリポジトリの worktree を複数渡しても、走査は 1 回に畳む。畳まないと
+# 末尾の件数が渡した数だけ倍になり、消える worktree が実際より多く見える。
+twice=$(bash "$WT_CLEAN" --dry-run "$tmp/wt-unmerged" "$tmp/wt-unpushed" "$root" 2>&1)
+if [ "$twice" = "$out" ]; then
+  pass=$((pass + 1))
+else
+  printf 'NG   同じリポジトリを複数渡しても走査は 1 回に畳む\n'
+  printf -- '--- 3 つ渡した出力 ---\n%s\n' "$twice"
+  fail=$((fail + 1))
+fi
+
+# git リポジトリでないパスは、これまでどおり名指しして飛ばす。
+notrepo=$(bash "$WT_CLEAN" --dry-run "$tmp" 2>&1)
+check_line "$notrepo" "skip (git リポジトリではない)" \
+  "git リポジトリでないパスは名指しして飛ばす"
 
 printf '\n%d/%d ok\n' "$pass" "$((pass + fail))"
 [ "$fail" -eq 0 ] || { printf '\n--- 実際の出力 ---\n%s\n' "$out"; exit 1; }
