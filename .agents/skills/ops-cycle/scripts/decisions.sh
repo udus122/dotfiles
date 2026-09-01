@@ -29,6 +29,7 @@ case "$cmd" in
     # ループはパイプの外で回す。パイプの中だと failed がサブシェルで消え、
     # 失敗を数えたつもりが常に空になる。
     failed=""
+    malformed=""
     for repo in $repos; do
       # ラベルが正だが、それだけを入口にしない。判断待ちの節を書きながら
       # ラベルを付け忘れた Issue は、再検証に一度も掛からないまま残る。
@@ -39,13 +40,36 @@ case "$cmd" in
       bodied=$(gh issue list -R "$repo" --state open --label from-nightly --limit 100 \
         --json number,title,url,updatedAt,body) \
         || { failed="$failed $repo"; continue; }
+
+      # 受け皿は「判断待ち」と「解決の確認方法」が対になったものだけを拾う。
+      # 判断待ちの記録はこの2節で1つの形と決まっている（references/deferral.md）。
+      # 「判断待ち」だけを入口にすると、棚卸しの報告のように判断待ちの件数を
+      # 述べただけの Issue が毎晩一覧に並ぶ。確認方法が無いので何度再検証しても
+      # 判定できず、open のまま件数だけが減らない。
+      shaped=$(printf '%s' "$bodied" | jq -c '
+        def has($h): (.body // "") | test("(^|\n)## \($h) *(\n|$)");
+        .[] | . + {deferral: has("判断待ち"), howto: has("解決の確認方法")}')
+
+      # 落としたものは黙って捨てない。ラベルの付け忘れと確認方法の書き忘れが
+      # 重なった項目は、一覧にも警告にも出ないまま open で残ることになる。
+      unshaped=$(printf '%s' "$shaped" \
+        | jq -r --arg repo "$repo" \
+               --argjson labeled "$(printf '%s' "$labeled" | jq -c '[.[].number]')" '
+          select(.deferral and (.howto | not))
+          | select(.number as $n | $labeled | index($n) | not)
+          | "\($repo)#\(.number)"')
+      [ -z "$unshaped" ] || malformed="$malformed $unshaped"
+
       {
         printf '%s' "$labeled" | jq -c '.[] | {number, title, url, updatedAt}'
-        printf '%s' "$bodied" | jq -c '.[]
-            | select((.body // "") | test("(^|\n)## 判断待ち *(\n|$)"))
+        printf '%s' "$shaped" | jq -c 'select(.deferral and .howto)
             | {number, title, url, updatedAt}'
       } | jq -c -s --arg repo "$repo" 'unique_by(.number)[] | {repo: $repo} + .'
     done
+
+    if [ -n "$malformed" ]; then
+      echo "判断待ちの節はあるが「## 解決の確認方法」もラベルも無いため一覧に入れない:$malformed" >&2
+    fi
 
     if [ -n "$failed" ]; then
       echo "判断待ちの列挙に失敗:$failed" >&2
