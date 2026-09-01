@@ -16,7 +16,7 @@ git -C ~/knowledge status --short
 git -C ~/knowledge log origin/main..HEAD --oneline
 ```
 
-- 未コミットの変更があれば、意味単位に分割してコミットする(conventional commits、semantic-commit 準拠)
+- 未コミットの変更があれば、意味単位に分割してコミットする(conventional commits)
 - 未 push のコミットがあれば push する(このリポジトリは main 直 push が許可されている)
 - コンフリクトや意図不明の変更を見つけたら、勝手に処理せずユーザーに報告する
 
