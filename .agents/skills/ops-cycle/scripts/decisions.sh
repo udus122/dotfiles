@@ -58,7 +58,9 @@ case "$cmd" in
           select(.deferral and (.howto | not))
           | select(.number as $n | $labeled | index($n) | not)
           | "\($repo)#\(.number)"')
-      [ -z "$unshaped" ] || malformed="$malformed $unshaped"
+      # failed と同じく空白で連結する。改行のまま繋ぐと、2 件以上落ちたときに
+      # 警告が複数行に割れて、2 件目が本文の付かない裸の番号として出る。
+      [ -z "$unshaped" ] || malformed="$malformed $(printf '%s' "$unshaped" | tr '\n' ' ')"
 
       {
         printf '%s' "$labeled" | jq -c '.[] | {number, title, url, updatedAt}'
