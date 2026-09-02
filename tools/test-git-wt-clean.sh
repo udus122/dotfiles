@@ -29,6 +29,11 @@
 # ほうは走査から落ちる。どちらを渡しても同じ一覧になることを見る。
 # 同じリポジトリの worktree を複数渡したときに件数が倍にならないことも見る。
 #
+# パスに空白を含む worktree は、porcelain の行を空白で切ると最初の空白で千切れる。
+# 千切れたパスは worktree remove に当たらないので、片付かないまま「削除対象」として
+# 数えられ続ける。本体のパスに空白がある場合はさらに悪く、本体が linked worktree に
+# 化けて削除対象に名指しされる。どちらも出力の見た目は正常なので、ここで見るしかない。
+#
 #   tools/test-git-wt-clean.sh
 set -uo pipefail
 
@@ -249,6 +254,59 @@ fi
 notrepo=$(bash "$WT_CLEAN" --dry-run "$tmp" 2>&1)
 check_line "$notrepo" "skip (git リポジトリではない)" \
   "git リポジトリでないパスは名指しして飛ばす"
+
+# パスに空白を含む worktree。porcelain の行を空白で切ると最初の空白で千切れる。
+# 千切れたパスは worktree remove に渡しても当たらないため、空白入りの worktree は
+# 片付かないまま「削除対象」として数えられ続ける。出力の見た目は正常なので、
+# ここで見ないと退行に気付けない。
+spaced="$tmp/wt with space"
+git -C "$root" worktree add -q --detach "$spaced" "$merged_head"
+spaced_out=$(bash "$WT_CLEAN" --dry-run "$root" 2>&1)
+if grep -qF -- "$spaced" <<<"$spaced_out"; then
+  pass=$((pass + 1))
+else
+  printf 'NG   空白を含む worktree のパスを千切らない\n       この行が要る: %s\n' "$spaced"
+  printf -- '--- 実際の出力 ---\n%s\n' "$spaced_out"
+  fail=$((fail + 1))
+fi
+
+# 本体のチェックアウト自体のパスに空白がある場合。root は sub で正しく取れるのに
+# worktree 側を空白で切ると、両者が一致しなくなって本体が linked worktree に化け、
+# linked worktree が 1 つも無いのに本体が削除対象として名指しされる。
+spaced_repo=$(cd "$(mktemp -d)" && pwd -P)
+git init -q --bare "$spaced_repo/origin.git"
+git -C "$spaced_repo/origin.git" symbolic-ref HEAD refs/heads/main
+spaced_root="$spaced_repo/my repo"
+git clone -q "$spaced_repo/origin.git" "$spaced_root" 2>/dev/null
+git -C "$spaced_root" config user.email t@example.com
+git -C "$spaced_root" config user.name test
+echo base > "$spaced_root/log.txt"
+git -C "$spaced_root" add log.txt
+git -C "$spaced_root" commit -q -m base
+git -C "$spaced_root" branch -M main
+git -C "$spaced_root" push -q -u origin main
+git -C "$spaced_root" remote set-head origin -a >/dev/null
+spaced_root_out=$(bash "$WT_CLEAN" --dry-run "$spaced_root" 2>&1)
+# 「何も名指ししない」だけを見ると、走査が丸ごと死んだ場合も合格してしまう。
+# root の抽出が空白で千切れると、git -C が存在しないパスに当たって fatal で
+# 落ち、アクション行はやはり 1 行も出ない。そちらと区別するため、対象の
+# リポジトリを見出しとして正しく出せていることを併せて見る。
+if ! grep -qF -- "### $spaced_root" <<<"$spaced_root_out"; then
+  printf 'NG   本体のパスに空白があってもそのリポジトリを走査する\n'
+  printf -- '--- 実際の出力 ---\n%s\n' "$spaced_root_out"
+  fail=$((fail + 1))
+elif grep -qF -- 'fatal:' <<<"$spaced_root_out"; then
+  printf 'NG   本体のパスに空白があっても git の呼び出しが落ちない\n'
+  printf -- '--- 実際の出力 ---\n%s\n' "$spaced_root_out"
+  fail=$((fail + 1))
+elif grep -qE '^(would remove|removed|SKIP|KEEP|FAILED)' <<<"$spaced_root_out"; then
+  printf 'NG   本体のパスに空白があっても本体を対象にしない\n'
+  printf -- '--- 実際の出力 ---\n%s\n' "$spaced_root_out"
+  fail=$((fail + 1))
+else
+  pass=$((pass + 1))
+fi
+rm -rf "$spaced_repo"
 
 printf '\n%d/%d ok\n' "$pass" "$((pass + fail))"
 [ "$fail" -eq 0 ] || { printf '\n--- 実際の出力 ---\n%s\n' "$out"; exit 1; }
