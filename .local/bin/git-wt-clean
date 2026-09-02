@@ -154,10 +154,15 @@ for repo in "${repos[@]}"; do
         fi
         total_removed=$((total_removed + 1))
     done < <(git -C "$root" worktree list --porcelain |
+        # 行の頭を削って残り全部を取る。$2 で切ると、空白を含むパスが最初の空白で
+        # 千切れる。千切れたパスは worktree remove に渡しても当たらないので、
+        # 空白入りの worktree は永久に片付かないまま「削除対象」として数えられる。
+        # さらに本体のパスに空白があると、$root（sub で正しく取っている）と
+        # 一致しなくなり、本体が linked worktree に化けて削除対象に名指しされる。
         awk '
-            /^worktree /            { p = $2; h = ""; b = "-" }
-            /^HEAD /                { h = $2 }
-            /^branch /              { sub("refs/heads/", "", $2); b = $2 }
+            /^worktree /            { p = $0; sub(/^worktree /, "", p); h = ""; b = "-" }
+            /^HEAD /                { h = $0; sub(/^HEAD /, "", h) }
+            /^branch /              { b = $0; sub(/^branch refs\/heads\//, "", b) }
             /^$/                    { if (p != "" && h != "") print p"\t"h"\t"b; p = ""; h = ""; b = "-" }
             END                     { if (p != "" && h != "") print p"\t"h"\t"b }')
 
