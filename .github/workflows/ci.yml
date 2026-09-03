@@ -1,0 +1,21 @@
+name: ci
+
+# テストは配線されて初めて退行を止める。手元で通した時点で用が済んだように見えるため、
+# 配線の欠落は誰にも気付かれずに残る。配線そのものを点検する。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: テストの配線の点検
+        run: ./tools/test-ci-coverage.sh
