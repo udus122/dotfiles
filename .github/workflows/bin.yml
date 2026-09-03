@@ -1,0 +1,21 @@
+name: bin
+
+# .local/bin のコマンドは worktree の削除のように取り消せない操作を伴う。
+# 走査対象の選別が壊れても出力の見た目は変わらないため、判定表で機械的に点検する。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  git-wt-clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: worktree の走査対象の判定表
+        run: ./tools/test-git-wt-clean.sh
