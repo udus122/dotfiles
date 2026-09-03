@@ -26,3 +26,10 @@ jobs:
       - uses: actions/checkout@v5
       - name: セッション記録の重複除去の判定表
         run: ./tools/test-sessions-dedup.sh
+
+  decisions-list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: 判断待ちの一覧の判定表
+        run: ./tools/test-decisions-list.sh
