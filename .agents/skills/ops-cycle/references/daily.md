@@ -41,10 +41,24 @@ $S/sessions.sh replies <session_id>        # そのセッションの地の文�
 本文は要約であり、語っているのは要約が作られた時点＝窓の外の状態。
 「`prompts` に対応する発話があるか」で確かめても、要約自身が発話なので必ず通る。
 
+見分けるのは本文の冒頭で、`This session is being continued from a previous
+conversation that ran out of context.` で始まる。トランスクリプト側の印は
+`prompts` の整形で落ちるので、この文字列が唯一の手がかりになる。
+
 要約が挙げる「Pending Tasks」「未着手」「保留」「決まっていない」は、
 **主張ではなく手がかりとして扱う。** 着手する前に、その対象の現在の状態を
-一次情報で引き直す。マージ済みかは `gh pr view`、ファイルやディレクトリの有無は
-`origin/main` の `git ls-tree`、といったぐあいに要約の外にある権威的な出どころを見る。
+要約の外にある権威的な出どころで引き直す。
+
+```bash
+git -C "$REPO_PATH" fetch -q origin
+git -C "$REPO_PATH" cat-file -e "origin/main:<path>"   # 不在なら非ゼロ
+gh pr view <番号> --json state,mergedAt                # 番号が要約にあるとき
+gh pr list --state all --search "<関連する語>"          # 番号が無いとき
+```
+
+`fetch` を先に置く。`origin/main` は remote-tracking ref なので、引き直さないと
+手元に残った古い断面を見て「まだ着地していない」を追認する。
+`git ls-tree` は不在でも終了ステータスが 0 なので、有無の判定には使わない。
 
 ここを飛ばすと、決着済みの件を「判断待ち」として起票することになる。
 判断待ちは人間が読んで選ぶまで消えないので、存在しない選択肢を配ることになり、
