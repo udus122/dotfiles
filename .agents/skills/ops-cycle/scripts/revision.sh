@@ -30,6 +30,37 @@ behind=$(git -C "$repo" rev-list --count "HEAD..$base" 2>/dev/null || echo "")
 dirty=""
 git -C "$repo" diff --quiet 2>/dev/null || dirty=" / 未コミットの変更あり"
 
+# 競合したまま止まった rebase / merge は、そのままだと上の「未コミットの変更あり」に
+# 丸まる。しかし競合マーカーの入ったファイルもリンク越しに配られるため、$HOME から
+# 読む側（CLAUDE.md・フック・コマンド）は2つの版が併記された内容を読むことになる。
+# HEAD が既定ブランチに追いついていても起きるので、遅れとは別に名指しする。
+# 配布対象かどうかはここでは判定せず、ファイル名を出して読み手に委ねる。
+unmerged=$(git -C "$repo" diff --name-only --diff-filter=U 2>/dev/null)
+n=$(printf '%s' "$unmerged" | grep -c . || true)
+
+# 競合を git add してから止めた場合は unmerged エントリが残らない。マーカーは
+# ファイルに入ったままなので、途中で止まっている印そのものも見る。
+gitdir=$(git -C "$repo" rev-parse --absolute-git-dir 2>/dev/null || echo "")
+halted=""
+if [ -n "$gitdir" ]; then
+  if [ -e "$gitdir/rebase-merge" ] || [ -e "$gitdir/rebase-apply" ]; then
+    halted="rebase"
+  elif [ -e "$gitdir/MERGE_HEAD" ]; then
+    halted="merge"
+  elif [ -e "$gitdir/CHERRY_PICK_HEAD" ]; then
+    halted="cherry-pick"
+  fi
+fi
+
+if [ "${n:-0}" -gt 0 ]; then
+  first=$(printf '%s\n' "$unmerged" | head -n 1)
+  more=""
+  [ "$n" -gt 1 ] && more=" ほか $((n - 1)) 件"
+  dirty=" / 競合が未解決: $first$more"
+elif [ -n "$halted" ]; then
+  dirty=" / $halted が途中で止まっている"
+fi
+
 # チェックアウトが最新でも、$HOME へのリンクが配られていなければ稼働しない。
 # 追加されたスキルやフックは、リンクが作られるまで存在しないのと同じで、
 # しかも欠けたフックは exit 127 になるだけで何も止めないため、静かに失効する。
