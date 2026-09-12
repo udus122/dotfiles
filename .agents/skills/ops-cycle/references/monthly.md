@@ -100,7 +100,7 @@ Bash のコマンド文字列に現れる `.md` を指す語だけ。ディレ�
 
 草案は `spool.sh put` に置く。スキルとして実装はしない。
 
-置き場は既定の `daily` にし、frontmatter の `generator` は `ops-daily` にする。
+置き場は既定の `daily` にし、frontmatter は `type: capture` と `generator: ops-daily` にする。
 月次から出たことは本文に書く。週次が消化するのは `type: capture` かつ
 `generator: ops-daily` の草案だけなので（`references/weekly.md` の 5）、
 `ops-monthly` を名乗らせた草案は昇格も削除もされないまま知識ベースに残る。
