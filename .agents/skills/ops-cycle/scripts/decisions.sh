@@ -30,12 +30,13 @@ case "$cmd" in
     # 失敗を数えたつもりが常に空になる。
     failed=""
     malformed=""
+    undecidable=""
     for repo in $repos; do
       # ラベルが正だが、それだけを入口にしない。判断待ちの節を書きながら
       # ラベルを付け忘れた Issue は、再検証に一度も掛からないまま残る。
       # 本文に節を持つものは、ラベルの有無にかかわらず拾う。
       labeled=$(gh issue list -R "$repo" --state open --label needs-decision --limit 100 \
-        --json number,title,url,updatedAt) \
+        --json number,title,url,updatedAt,body) \
         || { failed="$failed $repo"; continue; }
       bodied=$(gh issue list -R "$repo" --state open --label from-nightly --limit 100 \
         --json number,title,url,updatedAt,body) \
@@ -62,6 +63,15 @@ case "$cmd" in
       # 警告が複数行に割れて、2 件目が本文の付かない裸の番号として出る。
       [ -z "$unshaped" ] || malformed="$malformed $(printf '%s' "$unshaped" | tr '\n' ' ')"
 
+      # ラベルは付いているが「## 解決の確認方法」が無いもの。一覧には入れる
+      # （ラベルが正なので再検証の対象ではある）が、何が起きれば解決なのかが
+      # どこにも書かれていないため、再検証は何度走っても判定に届かない。
+      # 黙って並べ続けると、毎晩読み直されるのに件数だけが減らない項目になる。
+      unjudgeable=$(printf '%s' "$labeled" | jq -r --arg repo "$repo" '
+        def has($h): (.body // "") | test("(^|\n)## \($h) *(\n|$)");
+        .[] | select(has("解決の確認方法") | not) | "\($repo)#\(.number)"')
+      [ -z "$unjudgeable" ] || undecidable="$undecidable $(printf '%s' "$unjudgeable" | tr '\n' ' ')"
+
       {
         printf '%s' "$labeled" | jq -c '.[] | {number, title, url, updatedAt}'
         printf '%s' "$shaped" | jq -c 'select(.deferral and .howto)
@@ -71,6 +81,10 @@ case "$cmd" in
 
     if [ -n "$malformed" ]; then
       echo "判断待ちの節はあるが「## 解決の確認方法」もラベルも無いため一覧に入れない:$malformed" >&2
+    fi
+
+    if [ -n "$undecidable" ]; then
+      echo "needs-decision だが「## 解決の確認方法」が無く、再検証では判定できない:$undecidable" >&2
     fi
 
     if [ -n "$failed" ]; then
