@@ -283,9 +283,14 @@ if [ -n "$failed" ]; then echo "列挙に失敗:$failed" >&2; fi
 **その項目に対応する PR が、マージされずクローズされていないかを先に確かめる。**
 
 ```bash
-gh pr list -R "$REPO" --state closed --search "<関連する語>" \
-  --json number,title,state,mergedAt,closedAt
+out=$(gh pr list -R "$REPO" --state closed --search "<関連する語>" \
+  --json number,title,state,mergedAt,closedAt </dev/null) \
+  || { echo "クローズ済みの PR を引けなかった: $REPO" >&2; }
 ```
+
+ここも終了ステータスを見る。引けなかったときの出力は空になるので、潰すと
+「否定された形跡は無い」と同じ見え方になり、人間が閉じた変更を作り直す。
+引けなければその項目は着手を見送り、報告の「スキップ」に出す。
 
 マージされずに閉じている PR があれば、クローズ時のコメントを読む。人間が
 「今のままで正しい」と判断して閉じたものは、同じ変更を作り直しても同じ理由で閉じられる。
