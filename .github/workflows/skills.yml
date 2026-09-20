@@ -40,3 +40,10 @@ jobs:
       - uses: actions/checkout@v5
       - name: 版の報告が見るリポジトリの判定表
         run: ./tools/test-revision.sh
+
+  query-missing-log:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: 計測ログを代用したときの名指しの判定表
+        run: ./tools/test-query-missing-log.sh
