@@ -100,7 +100,29 @@ printf 'untracked\n' > stray.txt
 out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
 check "追跡されていないファイルを見落とさない" \
   "$(printf '%s' "$out" | grep -q '未コミットの変更' && echo 0 || echo 1)"
-rm -f stray.txt
+# 部分一致で見ると、件数の境界（1件で「ほか 0 件」と出る）も、パスの切り出しが
+# 1桁ずれて先頭に空白が残る形も通ってしまう。1件のときの行そのものを等値で見る。
+check "1件のときは行ごと一致する（余分な件数も空白も付かない）" \
+  "$([ "$out" = "main@$(git rev-parse --short HEAD) (最新) / 未コミットの変更: stray.txt" ] \
+     && echo 0 || echo 1)"
+
+# 追跡外のディレクトリは、既定では中身が畳まれて1行になる。畳まれたままだと
+# スキルを丸ごと置いた状態が常に「1 件」になる。
+mkdir -p nested/deep
+printf 'a\n' > nested/deep/one.txt
+printf 'b\n' > nested/deep/two.txt
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "追跡外のディレクトリの中身を畳まずに数える" \
+  "$(printf '%s' "$out" | grep -q 'ほか 2 件' && echo 0 || echo 1)"
+rm -rf nested
+
+printf 'another\n' > stray2.txt
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "2件以上あれば残りの件数を添える" \
+  "$(printf '%s' "$out" | grep -q 'ほか 1 件' && echo 0 || echo 1)"
+check "件数を添えても1行に収める" \
+  "$([ "$(printf '%s\n' "$out" | grep -c .)" -eq 1 ] && echo 0 || echo 1)"
+rm -f stray.txt stray2.txt
 
 # ------------------------------ 遅れが 0 でも、競合したまま止まった rebase を名指しする
 
