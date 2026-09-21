@@ -79,6 +79,29 @@ check "そのパスを標準エラーに名指しする" \
 check "no-op と同じ見え方（標準出力が空で成功）にしない" \
   "$([ -n "$out" ] || [ "$status" -ne 0 ] && echo 0 || echo 1)"
 
+# --------------------------------------------- 未コミットの変更の見落とし
+
+# 引き寄せの可否を判断する材料なので、手元にしか無い作業は形を問わず出る必要がある。
+# 未ステージの変更だけを見ていると、add したまま止まった変更と追跡外のファイルが
+# 「最新」に紛れる。どちらも切り替えで壊れる側なので、ここで塞ぐ。
+
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "前提: 変更が無ければ未コミットの印を出さない" \
+  "$(printf '%s' "$out" | grep -q '未コミットの変更' && echo 1 || echo 0)"
+
+printf 'staged\n' > shared.txt
+git add shared.txt
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "ステージ済みのまま止まった変更を見落とさない" \
+  "$(printf '%s' "$out" | grep -q '未コミットの変更' && echo 0 || echo 1)"
+git reset -q --hard
+
+printf 'untracked\n' > stray.txt
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "追跡されていないファイルを見落とさない" \
+  "$(printf '%s' "$out" | grep -q '未コミットの変更' && echo 0 || echo 1)"
+rm -f stray.txt
+
 # ------------------------------ 遅れが 0 でも、競合したまま止まった rebase を名指しする
 
 # 上流を1つ進める。作業側はそれを取り込んだうえで、同じ行に触る枝を rebase する。
@@ -99,8 +122,8 @@ check "前提: 未解決の衝突が作業ツリーに在る" \
 out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
 check "競合しているファイルを名指しする" \
   "$(printf '%s' "$out" | grep -q 'shared.txt' && echo 0 || echo 1)"
-check "「未コミットの変更あり」に丸めない" \
-  "$(printf '%s' "$out" | grep -q '未コミットの変更あり' && echo 1 || echo 0)"
+check "未コミットの変更に丸めない" \
+  "$(printf '%s' "$out" | grep -q '未コミットの変更' && echo 1 || echo 0)"
 check "報告は1行に収める" \
   "$([ "$(printf '%s\n' "$out" | grep -c .)" -eq 1 ] && echo 0 || echo 1)"
 

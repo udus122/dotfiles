@@ -45,8 +45,14 @@ base="${base:-origin/main}"
 git -C "$repo" fetch -q origin 2>/dev/null || true
 behind=$(git -C "$repo" rev-list --count "HEAD..$base" 2>/dev/null || echo "")
 
+# 未コミットの変更は status で見る。diff --quiet が見るのは追跡下の未ステージ分だけで、
+# add したまま止まった変更と、追跡されていない新しいファイルはどちらも素通りする。
+# 素通りしたぶんは「最新」と名乗るので、手元にしか無い作業がそこに在ることが
+# 報告から読めない。引き寄せの可否を判断する材料としては、この2つのほうが重い
+# （ステージ済みの変更は切り替えで持ち回されて衝突し、追跡外のファイルは上書きされる）。
 dirty=""
-git -C "$repo" diff --quiet 2>/dev/null || dirty=" / 未コミットの変更あり"
+changed=$(git -C "$repo" status --porcelain 2>/dev/null)
+[ -n "$changed" ] && dirty=" / 未コミットの変更あり"
 
 # 競合したまま止まった rebase / merge は、そのままだと上の「未コミットの変更あり」に
 # 丸まる。しかし競合マーカーの入ったファイルもリンク越しに配られるため、$HOME から
