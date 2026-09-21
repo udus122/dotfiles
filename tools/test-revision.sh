@@ -79,6 +79,51 @@ check "そのパスを標準エラーに名指しする" \
 check "no-op と同じ見え方（標準出力が空で成功）にしない" \
   "$([ -n "$out" ] || [ "$status" -ne 0 ] && echo 0 || echo 1)"
 
+# --------------------------------------------- 未コミットの変更の見落とし
+
+# 引き寄せの可否を判断する材料なので、手元にしか無い作業は形を問わず出る必要がある。
+# 未ステージの変更だけを見ていると、add したまま止まった変更と追跡外のファイルが
+# 「最新」に紛れる。どちらも切り替えで壊れる側なので、ここで塞ぐ。
+
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "前提: 変更が無ければ未コミットの印を出さない" \
+  "$(printf '%s' "$out" | grep -q '未コミットの変更' && echo 1 || echo 0)"
+
+printf 'staged\n' > shared.txt
+git add shared.txt
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "ステージ済みのまま止まった変更を見落とさない" \
+  "$(printf '%s' "$out" | grep -q '未コミットの変更' && echo 0 || echo 1)"
+git reset -q --hard
+
+printf 'untracked\n' > stray.txt
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "追跡されていないファイルを見落とさない" \
+  "$(printf '%s' "$out" | grep -q '未コミットの変更' && echo 0 || echo 1)"
+# 部分一致で見ると、件数の境界（1件で「ほか 0 件」と出る）も、パスの切り出しが
+# 1桁ずれて先頭に空白が残る形も通ってしまう。1件のときの行そのものを等値で見る。
+check "1件のときは行ごと一致する（余分な件数も空白も付かない）" \
+  "$([ "$out" = "main@$(git rev-parse --short HEAD) (最新) / 未コミットの変更: stray.txt" ] \
+     && echo 0 || echo 1)"
+
+# 追跡外のディレクトリは、既定では中身が畳まれて1行になる。畳まれたままだと
+# スキルを丸ごと置いた状態が常に「1 件」になる。
+mkdir -p nested/deep
+printf 'a\n' > nested/deep/one.txt
+printf 'b\n' > nested/deep/two.txt
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "追跡外のディレクトリの中身を畳まずに数える" \
+  "$(printf '%s' "$out" | grep -q 'ほか 2 件' && echo 0 || echo 1)"
+rm -rf nested
+
+printf 'another\n' > stray2.txt
+out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
+check "2件以上あれば残りの件数を添える" \
+  "$(printf '%s' "$out" | grep -q 'ほか 1 件' && echo 0 || echo 1)"
+check "件数を添えても1行に収める" \
+  "$([ "$(printf '%s\n' "$out" | grep -c .)" -eq 1 ] && echo 0 || echo 1)"
+rm -f stray.txt stray2.txt
+
 # ------------------------------ 遅れが 0 でも、競合したまま止まった rebase を名指しする
 
 # 上流を1つ進める。作業側はそれを取り込んだうえで、同じ行に触る枝を rebase する。
@@ -99,8 +144,8 @@ check "前提: 未解決の衝突が作業ツリーに在る" \
 out=$(bash "$EX" "$tmp/work" 2>"$tmp/err")
 check "競合しているファイルを名指しする" \
   "$(printf '%s' "$out" | grep -q 'shared.txt' && echo 0 || echo 1)"
-check "「未コミットの変更あり」に丸めない" \
-  "$(printf '%s' "$out" | grep -q '未コミットの変更あり' && echo 1 || echo 0)"
+check "未コミットの変更に丸めない" \
+  "$(printf '%s' "$out" | grep -q '未コミットの変更' && echo 1 || echo 0)"
 check "報告は1行に収める" \
   "$([ "$(printf '%s\n' "$out" | grep -c .)" -eq 1 ] && echo 0 || echo 1)"
 
