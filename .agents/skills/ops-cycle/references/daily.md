@@ -243,6 +243,7 @@ REPOS=$($S/repos.sh "$PWD" --issuable | cut -f3)
 REPOS="$REPOS
 $(jq -r '.knowledge_repo' "$CLAUDE_OPS_HOME/config.json")"
 list=$(mktemp)
+held=$(mktemp)
 failed=""
 for repo in $(printf '%s\n' "$REPOS" | sort -u); do
   for label in ops improve; do
@@ -252,10 +253,17 @@ for repo in $(printf '%s\n' "$REPOS" | sort -u); do
     printf '%s' "$out" | jq -r --arg repo "$repo" '
       .[]
       | select([.labels[].name] | contains(["needs-decision"]) | not)
+      | select([.labels[].name] | contains(["needs-human"]) | not)
       | "\($repo)#\(.number)\t\(.title)"' >> "$list"
+    printf '%s' "$out" | jq -r --arg repo "$repo" '
+      .[]
+      | select([.labels[].name] | contains(["needs-human"]))
+      | "\($repo)#\(.number)\t\(.title)"' >> "$held"
   done
 done
-sort -u "$list"; rm -f "$list"
+echo "消化の候補:"; sort -u "$list"
+echo "人間待ち:";   sort -u "$held"
+rm -f "$list" "$held"
 if [ -n "$failed" ]; then echo "列挙に失敗:$failed" >&2; fi
 ```
 
@@ -277,6 +285,27 @@ if [ -n "$failed" ]; then echo "列挙に失敗:$failed" >&2; fi
 - 最後を `[ -n "$failed" ] && echo ...` で終えない。失敗が無いときに
   この行が偽になり、ブロック全体の終了ステータスが 1 になる
 - `needs-decision` が付いたものは消化しない（`references/deferral.md`）
+- `needs-human` が付いたものも消化しない。実行の手段が夜間に無いと確かめ済みのもので、
+  読み直しても結論は変わらない（`references/routing.md`）。ただし捨てずに `held` へ
+  振り分ける。報告の「人間待ち」はこの一覧から書く。ここで拾わないと、候補から
+  外れた項目がどこにも出ない
+
+### 実行の手段が無いと分かったら `needs-human` を付けて次へ進む
+
+候補が `references/routing.md` の「実行が人間にしかできないもの」に当たると分かったら、
+その項目に `needs-human` を付け、何が塞いでいるかと何が変われば戻せるかをコメントに書いて
+次の項目へ移る。判断待ちではないので `needs-decision` は付けない（`references/deferral.md`）。
+
+`needs-human` は新しいラベルなので、まだ持っていないリポジトリがある。`gh issue edit` は
+存在しないラベル名を渡すと非ゼロで終わるため、作ってから付ける。
+
+```bash
+gh label create needs-human -R "$REPO" -c 'FBCA04' -d '実行が人間か外部にしかできない' --force
+gh issue edit "$NUM" -R "$REPO" --add-label needs-human
+```
+
+付けずに残すと、その項目は毎晩 `ops` / `improve` の候補として読み直される。
+実行できないという結論は毎回同じなので、消化枠だけがそこで消える。
 
 ### 着手の前に、すでに否定されていないかを見る
 
