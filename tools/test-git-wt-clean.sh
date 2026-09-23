@@ -40,6 +40,12 @@ set -uo pipefail
 REPO=$(cd "$(dirname "$0")/.." && pwd -P)
 WT_CLEAN="$REPO/.local/bin/git-wt-clean"
 
+# squash merge されたブランチは、元のコミットが main の祖先にならないため --merged で
+# 拾えない。gh で引いたマージ済み PR の head と worktree の HEAD が一致するものだけを
+# 取り込み済みとする。マージ後にコミットが進んだものまで消すと、進んだぶんが失われる。
+# GitHub には繋がないので、gh は PATH の先頭に置いた代役に答えさせる。代役は
+# 受け取った -q の式を fixture の JSON にそのまま当てるので、絞り込みの式は本物が走る。
+#
 # 物理パスに直しておく。macOS の mktemp は /var/... を返すが、git が出すのは
 # 実体の /private/var/... なので、直さないと検査側のパスと出力側のパスが食い違う。
 # 前方一致は素通りしてしまうため、行の位置まで見る検査が黙って当たらなくなる。
@@ -108,6 +114,58 @@ git -C "$root" checkout -q -b unpushed-dirty main
 commit unpushed-dirty
 git -C "$root" checkout -q main
 
+# squash merge された側。GitHub と同じく、マージ後にリモートブランチは消える。
+git -C "$root" checkout -q -b squashed main
+commit squashed
+squashed_head=$(git -C "$root" rev-parse HEAD)
+git -C "$root" push -q -u origin squashed
+git -C "$root" checkout -q main
+git -C "$root" merge -q --squash squashed >/dev/null
+git -C "$root" commit -q -m 'squashed (#12)'
+git -C "$root" push -q origin main
+git -C "$root" push -q origin --delete squashed
+
+# squash merge のあとにコミットが進んだ側。PR の head とは一致しないので消さない。
+git -C "$root" checkout -q -b squashed-ahead main
+commit squashed-ahead-1
+ahead_pr_head=$(git -C "$root" rev-parse HEAD)
+git -C "$root" push -q -u origin squashed-ahead
+git -C "$root" checkout -q main
+git -C "$root" merge -q --squash squashed-ahead >/dev/null
+git -C "$root" commit -q -m 'squashed-ahead (#13)'
+git -C "$root" push -q origin main
+git -C "$root" push -q origin --delete squashed-ahead
+git -C "$root" checkout -q squashed-ahead
+commit squashed-ahead-2
+git -C "$root" checkout -q main
+
+mkdir -p "$tmp/bin" "$tmp/gh"
+cat > "$tmp/bin/gh" <<'EOF'
+#!/usr/bin/env bash
+head="" base="" state="" q="."
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --head) head="$2"; shift ;;
+    --base) base="$2"; shift ;;
+    --state) state="$2"; shift ;;
+    -q) q="$2"; shift ;;
+  esac
+  shift
+done
+# fixture はすべて main 向けのマージ済み PR。絞り込みが外れた問い合わせには
+# 答えない。答えると、open な PR や親ブランチ向けの PR まで取り込み済みと
+# 読む退行がテストをすり抜ける。
+[ "$state" = merged ] && [ "$base" = main ] || exit 0
+f="$GH_FIXTURES/$head.json"
+[ -f "$f" ] || exit 0
+jq -r "$q" "$f"
+EOF
+chmod +x "$tmp/bin/gh"
+printf '[{"number":12,"headRefOid":"%s"}]\n' "$squashed_head" > "$tmp/gh/squashed.json"
+printf '[{"number":13,"headRefOid":"%s"}]\n' "$ahead_pr_head" > "$tmp/gh/squashed-ahead.json"
+export GH_FIXTURES="$tmp/gh"
+export PATH="$tmp/bin:$PATH"
+
 # リポジトリ配下に置かれる側。実際に積み上がっているのは Claude Code が
 # .claude/worktrees/ に切るもので、いずれも未取り込みのまま残る。
 git -C "$root" checkout -q -b inside-unmerged main
@@ -122,6 +180,8 @@ git -C "$root" worktree add -q --detach "$tmp/wt-detached-unmerged" "$unmerged_h
 git -C "$root" worktree add -q "$tmp/wt-unmerged-dirty" unmerged-dirty
 git -C "$root" worktree add -q "$tmp/wt-unpushed" unpushed
 git -C "$root" worktree add -q "$tmp/wt-unpushed-dirty" unpushed-dirty
+git -C "$root" worktree add -q "$tmp/wt-squashed" squashed
+git -C "$root" worktree add -q "$tmp/wt-squashed-ahead" squashed-ahead
 inside="$root/.claude/worktrees/inside"
 git -C "$root" worktree add -q "$inside" inside-unmerged
 echo dirt > "$tmp/wt-merged-dirty/untracked.txt"
@@ -168,7 +228,11 @@ check present "KEEP (未取り込み・未 push 1件・未コミット変更 1�
   "未 push と未コミット変更は片方がもう片方を隠さない"
 check absent  "SKIP (未コミット変更 1件): unmerged-dirty" \
   "未取り込みのものを未コミット変更でスキップ扱いにしない"
-check present "dry-run: 2件が削除対象 / 1件はスキップ / 6件は未取り込み" "件数が合う"
+check present "would remove: squashed (squash merge 済み #12)" \
+  "HEAD がマージ済み PR の head と一致するブランチは削除対象になる"
+check present "): squashed-ahead  $tmp/wt-squashed-ahead" \
+  "squash merge のあとに進んだブランチは一覧に残す"
+check present "dry-run: 3件が削除対象 / 1件はスキップ / 7件は未取り込み" "件数が合う"
 
 # 置き場の印は、行に対して付く。消せないものにも付いていることを見る。
 inside_line=$(grep -F -- "$inside" <<<"$out")
@@ -199,7 +263,8 @@ done
 # 一覧に出すことと、削除の対象にすることは別。削除を指示する行だけを抜き出して、
 # 未取り込みのものがそちらに現れないことを見る。
 removing=$(grep -E '^(would remove|removed)' <<<"$out")
-for needle in "$tmp/wt-unmerged" "$tmp/wt-detached-unmerged" "$tmp/wt-unpushed"; do
+for needle in "$tmp/wt-unmerged" "$tmp/wt-detached-unmerged" "$tmp/wt-unpushed" \
+  "$tmp/wt-squashed-ahead"; do
   if grep -qF -- "$needle" <<<"$removing"; then
     printf 'NG   未取り込みの worktree は削除の対象にしない\n       %s\n' "$needle"
     fail=$((fail + 1))
