@@ -6,6 +6,11 @@
 # 対象は「デフォルトブランチに取り込み済み」かつ「未コミット変更なし」の worktree。
 # 取り込み済みかどうかは、ブランチが付いていれば --merged、detached HEAD なら
 # その commit がデフォルトブランチの祖先かどうかで判定する。
+# squash merge されたブランチは元のコミットがデフォルトブランチの祖先にならず、
+# --merged では拾えない。そこで祖先判定に落ちたブランチは、gh で同名の head を持つ
+# 既定ブランチ向けのマージ済み PR を引き、worktree の HEAD が PR の head と一致すれば取り込み済みとみなす。
+# 一致しない（マージ後にコミットが進んだ）ものは取り込み済みにしない。
+# gh が無い・引けないときは従来どおり未取り込みとして一覧に出す。
 # detached HEAD の worktree も走査すること。ブランチ名でしか列挙しないと、
 # 消しても失うもののない複製が一覧にすら現れず、無期限に積み上がる。
 # 未コミット変更があるものはスキップして一覧に出す。
@@ -98,6 +103,19 @@ for repo in "${repos[@]}"; do
             label="$branch"
             grep -qxF "$branch" <<<"$merged"
             taken=$?
+            if [[ $taken -ne 0 ]] && command -v gh >/dev/null 2>&1; then
+                # マージ後に GitHub がリモートブランチを消すので、未 push の件数でも
+                # 見分けられない。PR の head と HEAD が一致することだけを根拠にする。
+                # --base で既定ブランチ向けに絞る。スタック PR の子は親ブランチへ
+                # マージされても既定ブランチには届いていない。
+                pr=$(cd "$root" && gh pr list --head "$branch" --base "${default#origin/}" --state merged \
+                    --json number,headRefOid \
+                    -q ".[] | select(.headRefOid == \"$head\") | .number" 2>/dev/null </dev/null | head -1)
+                if [[ -n "$pr" ]]; then
+                    taken=0
+                    label="$branch (squash merge 済み #$pr)"
+                fi
+            fi
         fi
 
         # 未コミット変更は取り込みの判定より先に数える。未取り込みの行にも
