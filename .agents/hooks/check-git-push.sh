@@ -143,11 +143,12 @@ while IFS= read -r seg; do
     done <<< "$targets"
   fi
 
-  # 個人リポジトリ (~/knowledge, ~/dotfiles) は main 直 push を許可
-  # (force push は上で判定済み)
+  # main 直 push を許可するリポジトリ (force push は上で判定済み)
+  # - 個人リポジトリ (~/knowledge, ~/dotfiles)
+  # - queria-io/demos: デモの追加と撤収は main に直接 push する運用 (手順は同リポジトリの CLAUDE.md)
   toplevel=$(git -C "${push_dir:-.}" rev-parse --show-toplevel 2>/dev/null || echo "")
   case "$toplevel" in
-    "$HOME/knowledge"|"$HOME/dotfiles") continue ;;
+    "$HOME/knowledge"|"$HOME/dotfiles"|"$HOME/ws/ghq/github.com/queria-io/demos") continue ;;
   esac
 
   # main/master への直 push。引数で明示した場合 (git push origin main,
