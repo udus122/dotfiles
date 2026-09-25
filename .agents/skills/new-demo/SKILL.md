@@ -7,7 +7,13 @@ description: 打ち合わせで出た「こういうことはできますか」�
 
 デモの本体と手順は queria-io/demos (private) にある。このスキルは入口だけを持つ。
 
-1. `~/ws/ghq/github.com/queria-io/demos` が無ければ `gh repo clone queria-io/demos ~/ws/ghq/github.com/queria-io/demos` で取る。あれば `git -C ~/ws/ghq/github.com/queria-io/demos pull --ff-only`
+1. `~/ws/ghq/github.com/queria-io/demos` が無ければ `gh repo clone queria-io/demos ~/ws/ghq/github.com/queria-io/demos` で取る。あれば origin の既定ブランチに揃える。手元のチェックアウトは別ブランチのまま古いことがある
+   ```bash
+   git -C ~/ws/ghq/github.com/queria-io/demos fetch origin
+   git -C ~/ws/ghq/github.com/queria-io/demos remote set-head origin -a
+   git -C ~/ws/ghq/github.com/queria-io/demos switch "$(git -C ~/ws/ghq/github.com/queria-io/demos rev-parse --abbrev-ref origin/HEAD | sed 's#^origin/##')"
+   git -C ~/ws/ghq/github.com/queria-io/demos pull --ff-only
+   ```
 2. そのリポジトリの `CLAUDE.md` を読み、「新しいデモ」(撤収なら「撤収」) の手順に従う
 3. 要件が 1〜2 文しかなくても、決めるのは次の 3 つだけでよい。残りは雛形の既定に任せる
    - デモの名前 (URL のパスになる)
