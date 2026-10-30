@@ -56,6 +56,7 @@ find ~/.claude -maxdepth 2 -name 'CLAUDE.md' -o -maxdepth 3 -path '*/rules/*.md'
 - 実在するが一度も読み込まれていない → 削除候補
 - 読み込まれているが記述が古い（週次ダイジェストの事実と食い違う）→ 更新候補
 - `skillOverrides` で無効にされたままのもの → 削除候補（無効のまま使われていない）
+- 前回の月次から使うモデルが変わっていたら、モデルの書き癖を補うためのルール（clear-japanese、CLAUDE.md の「ドキュメント作成」）を確かめる。新しいモデルにルールを読ませずに文書を1本書かせ、そのルールの見直しを当てる。直す文が出なければ削除候補、出たら残す
 
 **スキルは `instructions` に現れない。** `InstructionsLoaded` が記録するのは
 CLAUDE.md 系の memory ファイルだけなので、スキルの実績は `skills` ビューで見る。
