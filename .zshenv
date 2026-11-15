@@ -10,3 +10,6 @@ export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME}/zsh"
 # editor
 export EDITOR="zed --wait"
 export VISUAL="$EDITOR"
+
+# claude code
+export ANTHROPIC_MODEL="claude-opus-5-5[1m]"
