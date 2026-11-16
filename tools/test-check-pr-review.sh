@@ -311,6 +311,42 @@ case "$first" in
     ;;
 esac
 
+# メインセッションの cwd が git リポジトリでなく、対象はプロンプトに書いた worktree。
+# 報告は last_assistant_message ではなく SubagentHandback で transcript に残る。
+run_record_hook_transcript() {  # run_record_hook_transcript <cwd> <prompt> <report>
+  local t="$tmp/agent-$RANDOM.jsonl"
+  {
+    jq -cn --arg p "$2" '{type: "user", message: {role: "user", content: $p}}'
+    jq -cn --arg p "$feat" '{type: "user", message: {role: "user", content: [{type: "tool_result", content: ($p + " も見た")}]}}'
+    jq -cn --arg m "$3" '{type: "assistant", message: {content: [{type: "tool_use", name: "SubagentHandback", input: {message: $m}}]}}'
+  } > "$t"
+  jq -n --arg cwd "$1" --arg t "$t" \
+    '{hook_event_name: "SubagentStop", cwd: $cwd, agent_type: "code-reviewer", agent_transcript_path: $t}' \
+    | PATH="$REPO/.local/bin:$PATH" bash "$RECORD_HOOK" >/dev/null 2>&1
+}
+
+make_repo "$tmp/repo-wt-base" main
+git -C "$tmp/repo-wt-base" worktree add -q -b feat/wt-review "$tmp/wt-review" >/dev/null 2>&1 || {
+  printf 'worktree の作成に失敗しました\n' >&2
+  exit 1
+}
+
+bash "$GATE" clear --dir "$feat" >/dev/null 2>&1
+run_record_hook_transcript "$plain" \
+  "リポジトリ: $tmp/wt-review（ブランチ feat/wt-review）。比較元: origin/main" \
+  'レビューしました。指摘は次の1件です。詳細は本文のとおり。'
+expect_ok "cwd が git でなくても、プロンプトの worktree に記録される" \
+  bash "$GATE" check --dir "$tmp/wt-review"
+expect_fail "レビュー中のツール結果に出たリポジトリには記録しない" \
+  bash "$GATE" check --dir "$feat"
+
+bash "$GATE" clear --dir "$onmain" >/dev/null 2>&1
+run_record_hook_transcript "$plain" \
+  "$feat と $onmain を見比べてください。比較元: origin/main" \
+  'レビューしました。指摘は次の1件です。詳細は本文のとおり。'
+expect_fail "プロンプトのリポジトリが2つあると、どちらにも記録しない" \
+  bash "$GATE" check --dir "$onmain"
+
 printf '\n判定: %s (成功 %d / 失敗 %d)\n' \
   "$([ "$fail" -eq 0 ] && echo 合格 || echo 不合格)" "$pass" "$fail"
 exit $((fail > 0))
