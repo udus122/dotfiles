@@ -1,6 +1,11 @@
 #!/bin/bash
-# 共有ブランチの履歴を書き換える force push と、既定ブランチへの直 push を止める。
-# 開発ブランチへの force push は作業履歴を整えるための手段なので通す。
+# 次の push を止める。
+# - 共有ブランチの履歴を書き換える force push
+# - 人のレビューが付いた PR のブランチへの force push
+# - 既定ブランチへの直 push
+# レビュー前の開発ブランチへの force push は、作業履歴を整えるための手段なので通す。
+# レビュー後に履歴を書き換えると、承認されたコミットが消え、指摘のコメントが元の行を失う。
+# 指摘への対応は追加のコミットで積む。
 #
 # 判定はコマンド文字列全体ではなく、実際に実行される単位に対して行う。
 # 全体を見ると、禁止対象の語が「実行される部分」以外に現れただけで拒否され、
@@ -76,6 +81,22 @@ is_protected() {  # is_protected <branch>
   return 1
 }
 
+# 宛先ブランチの PR に付いた、人のレビューの投稿者を出す（カンマ区切り）。
+# PR の作成者自身と bot（github-actions、*[bot]）のレビューは数えない。
+# PR が無ければ何も出さずに成功する。gh が失敗して判断できなければ 1 を返す。
+pr_reviewers() {  # pr_reviewers <branch> <dir>
+  local out
+  if ! out=$(cd "$2" && gh pr view "$1" --json author,reviews --jq '
+      .author.login as $author
+      | [.reviews[].author.login
+         | select(. != $author and . != "github-actions" and (endswith("[bot]") | not))]
+      | unique | join(", ")' 2>&1); then
+    case "$out" in *"no pull requests found"*) return 0 ;; esac
+    return 1
+  fi
+  printf '%s' "$out"
+}
+
 # push の宛先ブランチを列挙する。
 # フラグを除いた最初の語は remote、それ以降が refspec。refspec がなければ現在ブランチ。
 # +HEAD:refs/heads/x のような形は x に正規化する。
@@ -139,6 +160,17 @@ while IFS= read -r seg; do
     while IFS= read -r dest; do
       if is_protected "$dest"; then
         deny "共有ブランチ (${dest:-宛先不明}) への force push は禁止"
+      fi
+    done <<< "$targets"
+
+    # 人のレビューが付いた PR のブランチへの force push。
+    # レビューの有無を確かめられないときも止める（ユーザーに確認してもらう）。
+    while IFS= read -r dest; do
+      if ! reviewers=$(pr_reviewers "$dest" "${push_dir:-.}"); then
+        deny "$dest の PR のレビュー状況を gh で確認できないため、force push を止めた。レビューが付いていないことをユーザーに確認してから進めること"
+      fi
+      if [ -n "$reviewers" ]; then
+        deny "$dest の PR には $reviewers のレビューが付いているため、force push は禁止。履歴を書き換えず、指摘への対応は追加のコミットで積んで普通に push すること"
       fi
     done <<< "$targets"
   fi

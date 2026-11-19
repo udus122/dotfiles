@@ -25,7 +25,8 @@
 - CI を弱める変更（テスト削除 / lint スキップ / 閾値変更）はしない。問題は CI 側で直す
 - コミットは意味のある最小単位に分割し、conventional commits で記述する。型を決める前にリリース設定（commitlint の type-enum、semantic-release の major_on_zero / allow_zero_version など）を読み、リポジトリ独自の型を標準型に置き換えない
 - コミットメッセージの言語はリポジトリの git log に合わせる
-- サブエージェントや人にレビューを依頼する前に、作業ブランチの履歴を読み手が追える形に整える。rebase でのまとめ直しと、その結果を反映する `--force-with-lease` 付きの force push は推奨（手順は plan-pr スキル）
+- サブエージェントや人にレビューを依頼する前に、作業ブランチの履歴を読み手が追える形に整える。人のレビューが付く前なら、rebase でまとめ直して `--force-with-lease` で push してよい（手順は plan-pr スキル）
+- PR に人のレビュー（承認・コメント）が1件でも付いたら、そのブランチの履歴を書き換えない。指摘への対応は追加のコミットで積み、普通に push する。force push はフック（check-git-push.sh）が止める
 
 ## 図表
 
