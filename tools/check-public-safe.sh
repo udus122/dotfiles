@@ -3,7 +3,8 @@
 #
 # 検査は2種類ある。
 #
-#   構造検査 — 非公開層が無くても動く。成果物や、対象の実体を含むファイルが
+#   構造検査 — 非公開層が無くても動く。成果物や、対象の実体を含むファイル、
+#              手元にしか無い値の入った Claude Code の設定が
 #              追跡対象に紛れ込んでいないかを見る。CI はこちらだけを実行する。
 #
 #   導出検査 — 非公開層があるときだけ動く。禁止語をワークスペースの実体から
@@ -55,6 +56,64 @@ if [ -e "$HOME/.claude/scheduled-tasks" ]; then
     pass "スケジュールタスク定義はこのリポジトリの外にある"
   else
     fail "スケジュールタスク定義が追跡対象に入っています"
+  fi
+fi
+
+# 4. Claude Code の設定に、手元にしか無い値と非公開の情報が入っていないこと
+#    ~/.claude/settings.json はこのリポジトリへのリンクなので、Claude Code が書き込んだ
+#    値（ローカルのマーケットプレイス、auto mode の環境の説明）がそのまま差分に出る。
+#    非公開リポジトリの名前をここに書かずに済むよう、マーケットプレイスは GitHub に
+#    公開リポジトリとして実在するかで判定する。
+settings="$REPO/.claude/settings.json"
+if [ -f "$settings" ]; then
+  if jq -e '.autoMode.environment' "$settings" >/dev/null 2>&1; then
+    fail "settings.json に autoMode.environment があります（手元の環境の説明は公開しない）"
+  else
+    pass "settings.json に autoMode.environment は無い"
+  fi
+
+  abs=$(jq -r '.. | strings | select(test("^(/Users/|/home/)"))' "$settings" 2>/dev/null || true)
+  if [ -n "$abs" ]; then
+    fail "settings.json にローカルの絶対パスがあります"
+    printf '%s\n' "$abs" | sed 's/^/      /'
+  else
+    pass "settings.json にローカルの絶対パスは無い"
+  fi
+
+  bad_markets=""
+  while IFS=$'\t' read -r name type repo; do
+    [ -n "$name" ] || continue
+    case "$type" in
+      github) ;;
+      git)
+        repo=$(printf '%s' "$repo" | sed -nE 's#^https://github\.com/([^/]+/[^/]+)$#\1#p' | sed 's/\.git$//')
+        ;;
+      *) repo="" ;;
+    esac
+    if [ -z "$repo" ]; then
+      bad_markets="$bad_markets $name(GitHub の公開リポジトリではない: $type)"
+      continue
+    fi
+    # 1回のリクエストで本文と HTTP コードを取る。空の配列は bash 3.2 の set -u で
+    # 未定義扱いになるので、トークンの有無で curl の呼び方を分ける。
+    if [ -n "${GITHUB_TOKEN:-}" ]; then
+      resp=$(curl -s -w '\n%{http_code}' -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$repo")
+    else
+      resp=$(curl -s -w '\n%{http_code}' "https://api.github.com/repos/$repo")
+    fi
+    code=$(printf '%s' "$resp" | tail -n 1)
+    if [ "$code" != "200" ]; then
+      bad_markets="$bad_markets $name(HTTP $code)"
+      continue
+    fi
+    private=$(printf '%s' "$resp" | sed '$d' | jq -r '.private')
+    [ "$private" = "false" ] || bad_markets="$bad_markets $name(非公開)"
+  done < <(jq -r '.extraKnownMarketplaces // {} | to_entries[]
+      | [.key, .value.source.source, (.value.source.repo // .value.source.url // "")] | @tsv' "$settings")
+  if [ -n "$bad_markets" ]; then
+    fail "settings.json のマーケットプレイスに、公開リポジトリと確かめられないものがあります:$bad_markets"
+  else
+    pass "settings.json のマーケットプレイスはすべて GitHub の公開リポジトリ"
   fi
 fi
 
