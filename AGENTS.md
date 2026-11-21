@@ -51,7 +51,7 @@ Brewfileの更新後は `brew bundle install --upgrade --global && brew bundle c
 ### AI Coding Agent 設定
 
 複数のAIコーディングエージェントの設定を管理:
-- `.claude/`: Claude Code（settings.json, commands, skills, agents）
+- `.claude/`: Claude Code（settings.json, commands, agents）。スキルは udus122/skills で管理する
 - `.codex/`: Codex（AGENTS.md, config.toml）
 - `.gemini/`: Gemini（GEMINI.md, settings.json）
 
