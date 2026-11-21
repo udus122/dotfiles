@@ -75,6 +75,15 @@ else
     ln -fns "${SCRIPT_DIR}/.config/karabiner" "$HOME/.config/karabiner"
 fi
 
+# 個人用スキルは udus122/skills にある。Claude はプラグインとして入れるので、
+# Codex が読む ~/.agents/skills/ にだけリンクする。チェックアウトが無ければ何もしない。
+SKILLS_REPO="${SKILLS_REPO:-$HOME/ws/ghq/github.com/udus122/skills}"
+for skill in "$SKILLS_REPO"/plugins/*/skills/*/; do
+    [[ -f "${skill}SKILL.md" ]] || continue
+    skill="${skill%/}"
+    make_link "$skill" "$HOME/.agents/skills/$(basename "$skill")"
+done
+
 if [[ $MODE == check ]]; then
     [[ -s "$MISSING" ]] || exit 0
     cat "$MISSING"
