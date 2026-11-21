@@ -40,28 +40,14 @@ else
   pass "成果物・目印・スケジュールタスク定義は追跡されていない"
 fi
 
-# 2. 共有スキルにホーム配下の絶対パスが埋まっていないこと
-#    （ユーザ名やワークスペースの位置が漏れるうえ、他のマシンで動かない）
-skill_files=$(printf '%s\n' "$tracked" | grep '^\.agents/skills/ops-cycle/' || true)
-if [ -n "$skill_files" ]; then
-  abs=$(printf '%s\n' "$skill_files" | tr '\n' '\0' \
-        | xargs -0 grep -nI '/Users/' 2>/dev/null || true)
-  if [ -n "$abs" ]; then
-    fail "共有スキルに絶対パスが埋まっています"
-    printf '%s\n' "$abs" | sed 's/^/      /'
-  else
-    pass "共有スキルに絶対パスは無い"
-  fi
-fi
-
-# 3. 非公開層がこのリポジトリの中に置かれていないこと
+# 2. 非公開層がこのリポジトリの中に置かれていないこと
 ops_home="${CLAUDE_OPS_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/claude-ops}"
 case "$(cd "$ops_home" 2>/dev/null && pwd -P || printf '%s' "$ops_home")" in
   "$REPO"/*) fail "非公開層が公開リポジトリの中にあります: $ops_home" ;;
   *)         pass "非公開層は公開リポジトリの外にある" ;;
 esac
 
-# 4. スケジュールタスクの定義がこのリポジトリの管理範囲に無いこと
+# 3. スケジュールタスクの定義がこのリポジトリの管理範囲に無いこと
 #    （タスク名にワークスペース名が現れるため）
 if [ -e "$HOME/.claude/scheduled-tasks" ]; then
   if git check-ignore -q "$HOME/.claude/scheduled-tasks" 2>/dev/null \
@@ -76,7 +62,15 @@ fi
 
 # ---------------------------------------------------------------- 導出検査
 
-. "$REPO/.agents/skills/ops-cycle/scripts/ops-env.sh"
+# 禁止語の導出には ops-cycle のスクリプトを使う。スキルは udus122/skills にあり、
+# link.sh が ~/.agents/skills/ に配る。
+OPS_SCRIPTS="${OPS_SCRIPTS:-$HOME/.agents/skills/ops-cycle/scripts}"
+if [ ! -f "$OPS_SCRIPTS/ops-env.sh" ]; then
+  printf '\nops-cycle のスクリプトが無いため導出検査はスキップしました（構造検査のみ実行）: %s\n' "$OPS_SCRIPTS"
+  printf '判定: %s\n' "$([ "$failures" -eq 0 ] && echo 合格 || echo "不合格 ($failures 件)")"
+  exit $((failures > 0))
+fi
+. "$OPS_SCRIPTS/ops-env.sh"
 if ! ops_ready; then
   printf '\n非公開層が無いため導出検査はスキップしました（構造検査のみ実行）。\n'
   printf '判定: %s\n' "$([ "$failures" -eq 0 ] && echo 合格 || echo "不合格 ($failures 件)")"
@@ -96,8 +90,8 @@ while IFS= read -r workspace; do
   while IFS=$'\t' read -r _entry _real slug _vis _issues; do
     [ -n "${slug:-}" ] || continue
     tokens="$tokens ${slug%%/*} ${slug##*/}"
-  done < <("$REPO/.agents/skills/ops-cycle/scripts/repos.sh" "$workspace")
-done < <("$REPO/.agents/skills/ops-cycle/scripts/workspaces.sh")
+  done < <("$OPS_SCRIPTS/repos.sh" "$workspace")
+done < <("$OPS_SCRIPTS/workspaces.sh")
 
 denylist=$(
   printf '%s %s\n' "$tokens" "$extra" | tr ' ' '\n' \
