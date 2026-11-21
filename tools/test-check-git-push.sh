@@ -29,6 +29,25 @@ make_repo "$tmp/repo-on-main" main
 make_repo "$tmp/repo-on-feat" feat-x
 make_repo "$tmp/repo-on-stg" stg
 
+# gh の代役。フックは force push の宛先ブランチの PR を gh pr view で引くが、
+# テスト用リポジトリには GitHub のリモートが無く、本物の gh は必ず失敗する。
+# 宛先ブランチの名前で応答を決める。
+#   feat/reviewed  人のレビューが付いた PR がある
+#   feat/gh-error  gh が失敗する (認証切れ・通信断など)
+#   それ以外       PR が無い
+mkdir -p "$tmp/bin"
+cat > "$tmp/bin/gh" <<'EOF'
+#!/usr/bin/env bash
+[ "$1 $2" = "pr view" ] || { echo "unexpected gh call: $*" >&2; exit 2; }
+case "$3" in
+  feat/reviewed) echo "reviewer-a" ;;
+  feat/gh-error) echo "error connecting to api.github.com" >&2; exit 1 ;;
+  *) echo "no pull requests found for branch \"$3\"" >&2; exit 1 ;;
+esac
+EOF
+chmod +x "$tmp/bin/gh"
+export PATH="$tmp/bin:$PATH"
+
 pass=0
 fail=0
 
@@ -135,6 +154,15 @@ check deny "$feat" "develop への force push" \
 
 check deny "$feat" "release/* への force push" \
   'git push --force origin release/1.0'
+
+check deny "$feat" "人のレビューが付いた PR のブランチへの force push" \
+  'git push --force origin feat/reviewed'
+
+check allow "$feat" "人のレビューが付いた PR のブランチでも普通の push は通す" \
+  'git push origin feat/reviewed'
+
+check deny "$feat" "PR のレビュー状況を gh で確認できないときの force push" \
+  'git push --force origin feat/gh-error'
 
 check deny "$onstg" "現在ブランチが共有ブランチでの引数省略 force push" \
   'git push --force'
